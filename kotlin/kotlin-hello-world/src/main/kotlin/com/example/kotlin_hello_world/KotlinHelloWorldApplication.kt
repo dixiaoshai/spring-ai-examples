@@ -23,7 +23,7 @@ class KotlinHelloWorldApplication {
 		println("Setup: ${response.setup}")
 		println("Punchline: ${response.punchline}")
 		
-		// Exit the application after running
+		// 运行结束后退出应用
 		context.close()
 	}
 }

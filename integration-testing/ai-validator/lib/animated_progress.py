@@ -15,7 +15,7 @@ from typing import Optional
 class AnimatedProgress:
     """Simple spinner animation for long-running operations"""
     
-    # Braille spinner - looks professional and works on most terminals
+    # 盲文点阵 spinner - 看起来专业，且适用于大多数终端
     SPINNER_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
     
     def __init__(self, message: str = "🧠 Thinking", update_interval: float = 0.5):
@@ -35,7 +35,7 @@ class AnimatedProgress:
     def start(self):
         """Start the animation in a background thread"""
         if self.animation_thread and self.animation_thread.is_alive():
-            return  # Already running
+            return  # 已在运行
             
         self.stop_event.clear()
         self.frame_index = 0
@@ -50,7 +50,7 @@ class AnimatedProgress:
         if self.animation_thread and self.animation_thread.is_alive():
             self.animation_thread.join(timeout=1.0)
             
-        # Clear the line
+        # 清除当前行
         sys.stdout.write('\r' + ' ' * 50 + '\r')
         sys.stdout.flush()
         
@@ -59,21 +59,21 @@ class AnimatedProgress:
         start_time = time.time()
         
         while not self.stop_event.is_set():
-            # Get current spinner frame
+            # 获取当前的 spinner 帧
             frame = self.SPINNER_FRAMES[self.frame_index % len(self.SPINNER_FRAMES)]
             
-            # Calculate elapsed time
+            # 计算已耗时
             elapsed = time.time() - start_time
             elapsed_str = f"{elapsed:.1f}s"
             
-            # Build the progress line
+            # 构建进度行
             progress_line = f"\r{frame} {self.message}... {elapsed_str}"
             
-            # Write without newline and flush immediately
+            # 不换行写出并立即刷新
             sys.stdout.write(progress_line)
             sys.stdout.flush()
             
-            # Wait for next frame or stop signal
+            # 等待下一帧或停止信号
             if self.stop_event.wait(self.update_interval):
                 break
                 
@@ -94,7 +94,7 @@ def test_animation():
     print("Testing animated progress...")
     
     with AnimatedProgress("🧠 Claude Code analyzing") as progress:
-        time.sleep(10)  # Simulate a long operation
+        time.sleep(10)  # 模拟长时间操作
         
     print("✅ Animation test completed!")
 

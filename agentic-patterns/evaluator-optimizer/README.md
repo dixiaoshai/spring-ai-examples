@@ -1,23 +1,23 @@
-# Evaluator-Optimizer Pattern
+# 评估器—优化器模式
 
-This project demonstrates the Evaluator-Optimizer pattern for building effective LLM-based systems, as described in [Anthropic's research on building effective agents](https://www.anthropic.com/research/building-effective-agents).
+本项目演示用于构建高效 LLM 系统的评估器—优化器模式，参考 [Anthropic 关于构建高效智能体的研究](https://www.anthropic.com/research/building-effective-agents)。
 
-![Evaluator-Optimizer](https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F14f51e6406ccb29e695da48b17017e899a6119c7-2401x1000.png&w=3840&q=75)
+![评估器—优化器](https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F14f51e6406ccb29e695da48b17017e899a6119c7-2401x1000.png&w=3840&q=75)
 
-## Overview
+## 概述
 
-The Evaluator-Optimizer pattern implements a dual-LLM process where one model generates responses while another provides evaluation and feedback in an iterative loop, similar to a human writer's iterative refinement process. The pattern consists of two main components:
+评估器—优化器模式实现了一个双 LLM 流程：一个模型生成响应，另一个模型在迭代循环中提供评估和反馈，类似于人类作者的精炼过程。该模式包含两个主要组件：
 
-- **Generator LLM**: Produces initial responses and refines them based on feedback
-- **Evaluator LLM**: Analyzes responses and provides detailed feedback for improvement
+- **生成器 LLM**：生成初始响应，并根据反馈对其进行精炼
+- **评估器 LLM**：分析响应并提供详细的改进反馈
 
-## How It Works
+## 工作原理
 
-1. The generator LLM produces an initial solution for the given task
-2. The evaluator LLM assesses the solution against quality criteria
-3. If the solution passes evaluation, it's returned as the final result
-4. If improvements are needed, feedback is incorporated into a new generation cycle
-5. The process repeats until a satisfactory solution is achieved
+1. 生成器 LLM 为给定任务生成初始解决方案
+2. 评估器 LLM 依据质量标准评估该解决方案
+3. 如果解决方案通过评估，则作为最终结果返回
+4. 如果需要改进，则将反馈纳入新的生成循环
+5. 重复该过程，直到获得令人满意的解决方案
 
 ```mermaid
 graph TD
@@ -28,24 +28,24 @@ graph TD
     F --> G
 ```
 
-## When to Use
+## 使用场景
 
-This pattern is particularly effective when:
+该模式在以下情况下特别有效：
 
-- Clear evaluation criteria exist for assessing response quality
-- Iterative refinement provides measurable value to the output
-- Tasks benefit from multiple rounds of critique and improvement
+- 存在用于评估响应质量的明确评估标准
+- 迭代精炼能为输出带来可衡量的价值
+- 任务受益于多轮评审与改进
 
-### Example Applications
+### 示例应用
 
-- Literary translation requiring capture of subtle nuances
-- Complex search tasks needing multiple rounds of searching and analysis
-- Code generation where quality can be improved through systematic review
-- Content creation requiring multiple drafts and specific improvements
+- 需要捕捉细微差别的文学翻译
+- 需要多轮搜索与分析的复杂搜索任务
+- 可通过系统性审查提升质量的代码生成
+- 需要多份草稿与针对性改进的内容创作
 
-## Implementation
+## 实现
 
-The implementation uses Spring AI's ChatClient for LLM interactions and consists of:
+本实现使用 Spring AI 的 ChatClient 进行 LLM 交互，包含：
 
 ```java
 public class EvaluatorOptimizer {
@@ -64,7 +64,7 @@ public class EvaluatorOptimizer {
 }
 ```
 
-### Usage Example
+### 用法示例
 
 ```java
 ChatClient chatClient = // ... initialize chat client
@@ -80,11 +80,11 @@ System.out.println("Final Solution: " + response.solution());
 System.out.println("Evolution: " + response.chainOfThought());
 ```
 
-## Customization
+## 自定义
 
-The pattern can be customized through:
+该模式可以通过以下方式进行自定义：
 
-1. **Custom Prompts**: Provide specialized prompts for generator and evaluator
+1. **自定义提示词**：为生成器和评估器提供专门的提示词
 ```java
 agent = new EvaluatorOptimizer(
     chatClient,
@@ -93,13 +93,13 @@ agent = new EvaluatorOptimizer(
 );
 ```
 
-2. **Default Templates**: Modify the default prompts for common use cases
-   - `DEFAULT_GENERATOR_PROMPT`: Template for solution generation
-   - `DEFAULT_EVALUATOR_PROMPT`: Template for solution evaluation
+2. **默认模板**：为常见用例修改默认提示词
+   - `DEFAULT_GENERATOR_PROMPT`：用于生成解决方案的模板
+   - `DEFAULT_EVALUATOR_PROMPT`：用于评估解决方案的模板
 
-## Response Formats
+## 响应格式
 
-### Generation Response
+### 生成响应
 ```json
 {
     "thoughts": "Brief description of approach",
@@ -107,7 +107,7 @@ agent = new EvaluatorOptimizer(
 }
 ```
 
-### Evaluation Response
+### 评估响应
 ```json
 {
     "evaluation": "PASS|NEEDS_IMPROVEMENT|FAIL",
@@ -115,12 +115,12 @@ agent = new EvaluatorOptimizer(
 }
 ```
 
-## Dependencies
+## 依赖
 
 - Spring AI
 - Spring Boot
-- Java 17 or later
+- Java 17 或更高版本
 
-## References
+## 参考资料
 
-- [Building Effective Agents (Anthropic Research)](https://www.anthropic.com/research/building-effective-agents)
+- [Building Effective Agents（Anthropic 研究）](https://www.anthropic.com/research/building-effective-agents)

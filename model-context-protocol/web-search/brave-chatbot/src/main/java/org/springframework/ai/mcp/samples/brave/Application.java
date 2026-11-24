@@ -39,14 +39,14 @@ public class Application {
 					"You are useful assistant and can perform web searches Brave's search API to reply to your questions.")
 				.defaultTools(SyncMcpToolCallbackProvider.builder().mcpClients(mcpSyncClients).build())
 				.defaultAdvisors(SessionAdvisors.builder(sessionService)
-					// Keep the last 10 turns once the conversation grows past 20 turns
+					// 对话超过 20 轮后，仅保留最近 10 轮
 					.compaction(new TurnCountTrigger(20), WindowCompactionStrategy.builder().lastTurns(10).build())
 					.build())
 				.build();
 
 			var conversationId = UUID.randomUUID().toString();
 
-			// Start the chat loop
+			// 启动聊天循环
 			System.out.println("\nI am your AI assistant.\n");
 			try (Scanner scanner = new Scanner(System.in)) {
 				while (true) {

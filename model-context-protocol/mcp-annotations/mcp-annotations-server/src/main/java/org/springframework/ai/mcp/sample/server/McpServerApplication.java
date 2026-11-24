@@ -14,8 +14,8 @@ public class McpServerApplication {
 		SpringApplication.run(McpServerApplication.class, args);
 	}
 
-	// Note: this is not MCP Annotations related, but demonstrates how to register a SpringAI tool 
-	// callback provider as MCP tools along with the @McpTool such
+	// 注意：这与 MCP Annotations 无关，但演示了如何将 Spring AI 的工具 
+	// 回调 provider 与 @McpTool 一起注册为 MCP 工具
 	@Bean
 	ToolCallbackProvider weatherTools(SpringAiToolProvider weatherService) {
 		return MethodToolCallbackProvider.builder().toolObjects(weatherService).build();

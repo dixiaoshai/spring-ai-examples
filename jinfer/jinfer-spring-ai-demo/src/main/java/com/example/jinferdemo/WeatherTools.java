@@ -3,7 +3,7 @@ package com.example.jinferdemo;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 
-/** A fake tool the model can call; Spring AI runs the call and feeds the result back. */
+/** 模型可以调用的模拟工具；Spring AI 负责执行调用并将结果回传给模型。 */
 class WeatherTools {
 
     @Tool(description = "Get the current weather for a city")

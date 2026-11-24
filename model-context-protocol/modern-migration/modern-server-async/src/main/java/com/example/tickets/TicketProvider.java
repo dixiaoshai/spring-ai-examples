@@ -15,16 +15,14 @@ import org.springframework.ai.mcp.annotation.McpToolParam;
 import org.springframework.stereotype.Component;
 
 /**
- * The tools, resources and prompt of the other servers, written for
- * {@code spring.ai.mcp.server.type=ASYNC}. An MCP request has one result, so a method
- * returns a single value: a {@code Mono}, a {@code CompletableFuture}, or a plain value.
- * A method that returns a {@code Flux} is rejected at startup; return a {@code Mono} of a
- * list instead.
+ * 其他服务器的工具、资源和提示词，为 {@code spring.ai.mcp.server.type=ASYNC} 编写。
+ * 一个 MCP 请求只有一个结果，因此方法返回单个值：{@code Mono}、{@code CompletableFuture}
+ * 或普通值。返回 {@code Flux} 的方法会在启动时被拒绝；请改为返回一个列表的 {@code Mono}。
  */
 @Component
 public class TicketProvider {
 
-	/** The people the daily summary is written for; tickets have no owner of their own. */
+	/** 每日摘要所面向的人员；工单本身没有所有者。 */
 	private static final List<String> OWNERS = List.of("Ana", "Andrei", "Ben", "Chloe");
 
 	private final TicketService tickets;
@@ -43,14 +41,14 @@ public class TicketProvider {
 		return Mono.fromSupplier(() -> this.tickets.open(title).id());
 	}
 
-	// A plain return type works too: the server runs the method on Reactor's boundedElastic
-	// scheduler, so it may block without stalling a WebFlux event loop.
+	// 普通返回类型也可以：服务器会在 Reactor 的 boundedElastic 调度器上运行该方法，
+	// 因此它可以阻塞而不会拖住 WebFlux 事件循环。
 	@McpTool(name = "resolve_ticket", description = "Marks a ticket as resolved")
 	public String resolveTicket(@McpToolParam(description = "Ticket id, e.g. t-1") String id) {
 		return this.tickets.resolve(id).map(ticket -> "Resolved " + ticket.id()).orElse("No such ticket: " + id);
 	}
 
-	// Any single-valued asynchronous type is resolved through Spring's ReactiveAdapterRegistry.
+	// 任何单值的异步类型都会通过 Spring 的 ReactiveAdapterRegistry 解析。
 	@McpTool(name = "count_open_tickets", description = "Counts the tickets that are not resolved")
 	public CompletableFuture<String> countOpenTickets() {
 		return CompletableFuture
@@ -68,8 +66,8 @@ public class TicketProvider {
 		return Mono.fromSupplier(() -> this.tickets.find(id).map(ticket -> this.tickets.toJson(List.of(ticket))).orElse("null"));
 	}
 
-	// Completes the {id} variable of tickets://{id}. The handler travels with that template, so
-	// it must name an @McpResource template of this application.
+	// 补全 tickets://{id} 的 {id} 变量。处理器随该模板一起提供，
+	// 因此它必须指定本应用的一个 @McpResource 模板。
 	@McpComplete(uri = "tickets://{id}")
 	public Mono<List<String>> completeTicketId(String prefix) {
 		return Mono.fromSupplier(() -> this.tickets.list().stream().map(ticket -> ticket.id()).filter(id -> id.startsWith(prefix)).toList());
@@ -80,7 +78,7 @@ public class TicketProvider {
 		return Mono.fromSupplier(() -> "Summarise the open tickets for " + owner + " in two sentences: " + this.tickets.toJson(this.tickets.list()));
 	}
 
-	// Completes the owner argument of daily-summary, which the server attaches to that prompt.
+	// 补全 daily-summary 的 owner 参数，服务器会将它附加到该提示词上。
 	@McpComplete(prompt = "daily-summary")
 	public Mono<List<String>> completeOwner(String prefix) {
 		return Mono.just(OWNERS.stream().filter(owner -> owner.toLowerCase().startsWith(prefix.toLowerCase())).toList());

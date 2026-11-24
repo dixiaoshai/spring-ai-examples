@@ -1,122 +1,122 @@
-# GitHub Actions Setup Documentation
+# GitHub Actions 配置文档
 
-## Overview
-This document describes the GitHub Actions CI/CD setup for Spring AI Examples integration testing.
+## 概览
+本文档介绍 Spring AI Examples 集成测试所用的 GitHub Actions CI/CD 配置。
 
-## Workflow Location
-- **File**: `.github/workflows/integration-tests-manual.yml`
-- **Type**: Manual trigger (workflow_dispatch)
-- **Purpose**: Test Spring AI examples with configurable versions
+## 工作流位置
+- **文件**：`.github/workflows/integration-tests-manual.yml`
+- **类型**：手动触发（workflow_dispatch）
+- **用途**：使用可配置的版本测试 Spring AI 示例
 
-## Setup Process
+## 配置过程
 
-### 1. Prerequisites
-- GitHub repository access with Actions enabled
-- Ability to add repository secrets
+### 1. 前置条件
+- 拥有启用了 Actions 的 GitHub 仓库访问权限
+- 能够添加仓库密钥
 
-### 2. Required Secrets
-Configure these in Settings → Secrets and variables → Actions:
-- **OPENAI_API_KEY**: Required for OpenAI API calls in examples
-- **ANTHROPIC_API_KEY**: Required for AI validation using Claude
+### 2. 必需的密钥
+在 Settings → Secrets and variables → Actions 中配置以下内容：
+- **OPENAI_API_KEY**：示例中调用 OpenAI API 时必需
+- **ANTHROPIC_API_KEY**：使用 Claude 进行 AI 校验时必需
 
-### 3. Workflow Components
+### 3. 工作流组件
 
-#### Environment Setup
-1. **JDK 17**: Via `actions/setup-java@v4` with Temurin distribution
-2. **JBang**: Via `jbangdev/setup-jbang@v0.119.0` 
-3. **Python 3.11**: Via `actions/setup-python@v5`
-4. **Claude Code CLI**: Via npm global install
-5. **Maven Cache**: Automatic via setup-java
-6. **JBang Cache**: Via `actions/cache@v4`
+#### 环境准备
+1. **JDK 17**：通过 `actions/setup-java@v4` 安装，使用 Temurin 发行版
+2. **JBang**：通过 `jbangdev/setup-jbang@v0.119.0` 安装
+3. **Python 3.11**：通过 `actions/setup-python@v5` 安装
+4. **Claude Code CLI**：通过 npm 全局安装
+5. **Maven 缓存**：由 setup-java 自动处理
+6. **JBang 缓存**：通过 `actions/cache@v4` 处理
 
-#### Version Management
-- Uses `scripts/update-spring-ai-version.sh` to update Spring AI version
-- Supports both release (e.g., 1.0.1) and SNAPSHOT versions
-- Updates 17 pom.xml files with spring-ai.version property
+#### 版本管理
+- 使用 `scripts/update-spring-ai-version.sh` 更新 Spring AI 版本
+- 同时支持发行版（例如 1.0.1）与 SNAPSHOT 版本
+- 更新 17 个带有 spring-ai.version 属性的 pom.xml 文件
 
-#### Test Execution
-- Runs 3 representative examples by default:
+#### 测试执行
+- 默认运行 3 个具有代表性的示例：
   - models/chat/helloworld
   - kotlin/kotlin-hello-world
   - misc/spring-ai-java-function-callback
-- Continues running all tests even if one fails
-- Collects results and fails at the end if any test failed
+- 即使某个测试失败，也会继续运行所有测试
+- 收集结果，并在最后若有测试失败时报告失败
 
-## CI-Specific Issues & Limitations
+## CI 特有的问题与限制
 
-### 1. AI Validation
-- **Issue**: Claude Code CLI requires npm installation
-- **Solution**: Installing via `npm install -g @anthropic-ai/claude-code`
-- **Limitation**: Not using official GitHub Action (yet)
-- **TODO**: Optimize with `anthropics/claude-code-action@beta`
+### 1. AI 校验
+- **问题**：Claude Code CLI 需要通过 npm 安装
+- **方案**：通过 `npm install -g @anthropic-ai/claude-code` 安装
+- **限制**：尚未使用官方 GitHub Action
+- **TODO**：借助 `anthropics/claude-code-action@beta` 进行优化
 
-### 2. Exit Codes
-- **Issue**: Script must properly propagate failures
-- **Solution**: Added exit code handling in run-integration-tests.sh
-- **Note**: Tests run sequentially to avoid port conflicts
+### 2. 退出码
+- **问题**：脚本必须正确传递失败状态
+- **方案**：在 run-integration-tests.sh 中增加退出码处理
+- **注意**：测试串行运行以避免端口冲突
 
-### 3. Dependencies
-- **JBang**: Must be installed for integration tests
-- **Claude CLI**: Required for AI validation
-- **Python**: Installed but not currently used (ready for future tools)
+### 3. 依赖
+- **JBang**：集成测试必须安装
+- **Claude CLI**：AI 校验所需
+- **Python**：已安装但目前未使用（为将来的工具预留）
 
-### 4. Performance
-- **Initial run**: ~5-10 minutes (downloads dependencies)
-- **Cached runs**: ~3-5 minutes (uses cached dependencies)
-- **Artifact storage**: Logs preserved for 7 days
+### 4. 性能
+- **首次运行**：约 5-10 分钟（需下载依赖）
+- **有缓存时**：约 3-5 分钟（使用缓存的依赖）
+- **产物存储**：日志保留 7 天
 
-## Version Management Integration
+## 版本管理集成
 
-### Success Points
-- ✅ Dynamic version switching works correctly
-- ✅ Both 1.0.1 and 1.1.0-SNAPSHOT versions supported
-- ✅ Version update script integrated seamlessly
-- ✅ Backup/restore capability available (locally)
+### 成功之处
+- ✅ 动态版本切换正常工作
+- ✅ 同时支持 1.0.1 与 1.1.0-SNAPSHOT 版本
+- ✅ 版本更新脚本无缝集成
+- ✅ 支持备份/恢复（本地）
 
-### How It Works
-1. User specifies version in workflow dispatch input
-2. Workflow runs update-spring-ai-version.sh
-3. All 17 relevant pom.xml files updated
-4. Tests run with specified version
-5. Version shown in logs and summaries
+### 工作原理
+1. 用户在 workflow dispatch 输入中指定版本
+2. 工作流运行 update-spring-ai-version.sh
+3. 更新所有 17 个相关 pom.xml 文件
+4. 使用指定版本运行测试
+5. 版本显示在日志与摘要中
 
-## Usage
+## 用法
 
-### Running the Workflow
-1. Go to Actions tab in GitHub
-2. Select "Integration Tests (Manual)"
-3. Click "Run workflow"
-4. Configure:
-   - **Spring AI Version**: e.g., 1.0.1 or 1.1.0-SNAPSHOT
-   - **Test filter**: Optional, leave empty for default 3 tests
-5. Click green "Run workflow" button
+### 运行工作流
+1. 进入 GitHub 的 Actions 标签页
+2. 选择 “Integration Tests (Manual)”
+3. 点击 “Run workflow”
+4. 进行配置：
+   - **Spring AI Version**：例如 1.0.1 或 1.1.0-SNAPSHOT
+   - **Test filter**：可选，留空则使用默认的 3 个测试
+5. 点击绿色的 “Run workflow” 按钮
 
-### Monitoring
-- Real-time logs available in Actions tab
-- Job summary shows test results
-- Artifacts contain detailed logs
-- Exit code indicates overall success/failure
+### 监控
+- 在 Actions 标签页可查看实时日志
+- 任务摘要显示测试结果
+- 产物中包含详细日志
+- 退出码表示整体成功/失败
 
-## Troubleshooting
+## 故障排查
 
-### Test Failures
-1. Check if ANTHROPIC_API_KEY is configured
-2. Verify OPENAI_API_KEY is valid
-3. Review logs in uploaded artifacts
-4. Check for version compatibility issues
+### 测试失败
+1. 检查是否配置了 ANTHROPIC_API_KEY
+2. 确认 OPENAI_API_KEY 有效
+3. 查看上传产物中的日志
+4. 检查是否存在版本兼容性问题
 
-### Claude CLI Issues
-- Verify npm install succeeded
-- Check PATH includes npm global bin
-- May need to use `--dangerously-skip-permissions` flag
+### Claude CLI 问题
+- 确认 npm install 执行成功
+- 检查 PATH 中是否包含 npm 全局 bin 目录
+- 可能需要使用 `--dangerously-skip-permissions` 标志
 
-### Port Conflicts
-- Tests run sequentially to avoid port 8080 conflicts
-- If issues persist, check for hanging processes
+### 端口冲突
+- 测试串行运行以避免 8080 端口冲突
+- 如果问题仍然存在，请检查是否有挂起的进程
 
-## Future Improvements
-- Migrate to `anthropics/claude-code-action@beta`
-- Add parallel test execution with dynamic ports
-- Implement cost tracking
-- Add more examples to default test set
-- Create separate workflows for different triggers
+## 未来改进
+- 迁移到 `anthropics/claude-code-action@beta`
+- 增加使用动态端口的并行测试执行
+- 实现成本跟踪
+- 向默认测试集添加更多示例
+- 为不同的触发方式创建独立的工作流

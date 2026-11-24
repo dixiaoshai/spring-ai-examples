@@ -1,17 +1,17 @@
-# Tickets server, MODERN (migrated from STREAMABLE)
+# 工单服务器，MODERN（从 STREAMABLE 迁移）
 
-`spring.ai.mcp.server.protocol=MODERN` with the session-bound tools rewritten as multi round-trip requests.
+`spring.ai.mcp.server.protocol=MODERN`，并把绑定会话的工具改写为多轮往返请求。
 
-`InteractiveTicketProvider.deleteTicket` returns an `InputRequiredResult` carrying an elicitation form and the ticket id as `requestState`; the client retries with `inputResponses`, and the second invocation reads the answer through `ctx.inputResponse("confirm", ElicitResponse.class)` and the ticket id through `ctx.requestState()`, which the server has verified; the seal covers the tool and the caller, not the arguments, so the `id` argument of the retry is not trusted.
-`summarizeTickets` does the same with `createMessage`.
-`deleteTicket` also declares the SDK `McpSyncNotifier` and reports progress through it, which makes its response a short `text/event-stream`; `summarizeTickets` declares only the context and answers with plain JSON.
-Both tools declare the capability they cannot work without, `requiredCapabilities = McpClientCapability.ELICITATION_FORM` and `SAMPLING`.
-A client that does not declare it in its request `_meta` gets JSON-RPC error `-32021` before the method runs, as a plain JSON response even for `deleteTicket`.
-Client logging has no equivalent and is replaced by server-side logging.
+`InteractiveTicketProvider.deleteTicket` 返回一个 `InputRequiredResult`，携带一个引导表单，以及作为 `requestState` 的工单 id；客户端携带 `inputResponses` 重试，第二次调用通过 `ctx.inputResponse("confirm", ElicitResponse.class)` 读取应答，并通过 `ctx.requestState()` 读取工单 id（服务器已校验过）；封存覆盖工具和调用者，但不覆盖参数，因此重试时的 `id` 参数不被信任。
+`summarizeTickets` 用 `createMessage` 做同样的事。
+`deleteTicket` 还声明 SDK 的 `McpSyncNotifier` 并通过它报告进度，这使其响应成为一段简短的 `text/event-stream`；`summarizeTickets` 只声明上下文，并用普通 JSON 应答。
+两个工具都声明了它们缺少就无法工作的能力：`requiredCapabilities = McpClientCapability.ELICITATION_FORM` 和 `SAMPLING`。
+如果客户端没有在请求 `_meta` 中声明该能力，就会在方法运行之前收到 JSON-RPC 错误 `-32021`，即便是 `deleteTicket` 也以普通 JSON 响应返回。
+客户端日志没有对应项，已由服务器端日志取代。
 
-`AdminController` adds an `McpSyncTool` at runtime through `InMemorySyncToolRepository.add`, which broadcasts `notifications/tools/list_changed` to `subscriptions/listen` streams.
-It resolves the repository through `ObjectProvider` wrapped in a `SingletonSupplier`: the lookup is deferred past the scan of the annotated tools, and happens once.
+`AdminController` 在运行时添加一个 `McpSyncTool`，通过 `InMemorySyncToolRepository.add`，它会向 `notifications/tools/list_changed` 广播到 `subscriptions/listen` 流。
+它通过 `ObjectProvider` 解析仓库，并用 `SingletonSupplier` 包装：查找被推迟到注解工具扫描之后，并且只发生一次。
 
-Drive it with [modern-client](../modern-client/). Compare with [streamable-server](../streamable-server/).
+用 [modern-client](../modern-client/) 驱动它。与 [streamable-server](../streamable-server/) 对比。
 
-Part of [modern-migration](../README.md). Run with `./mvnw spring-boot:run`; the server listens on `http://localhost:8080`.
+属于 [modern-migration](../README.md)。用 `./mvnw spring-boot:run` 运行；服务器监听 `http://localhost:8080`。

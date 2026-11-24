@@ -30,7 +30,7 @@ import org.springframework.ai.tool.annotation.Tool;
 
 public class DummyTools {
 
-	// ============== Records ==============
+	// ============== Record 定义 ==============
 
 	public record Product(Long id, String name, String description) {
 	}
@@ -47,7 +47,7 @@ public class DummyTools {
 	public record ShoesVariation(Long id, String color, int size) {
 	}
 
-	// ============== In-Memory Repositories ==============
+	// ============== 内存仓库 ==============
 
 	private final Map<Long, Product> productRepository = new ConcurrentHashMap<>();
 
@@ -59,7 +59,7 @@ public class DummyTools {
 
 	private final Map<Long, ShoesVariation> shoesVariationRepository = new ConcurrentHashMap<>();
 
-	// ID generators for each entity type
+	// 各实体类型的 ID 生成器
 	private final AtomicLong productIdGenerator = new AtomicLong(100);
 
 	private final AtomicLong perfumeIdGenerator = new AtomicLong(100);
@@ -70,14 +70,14 @@ public class DummyTools {
 
 	private final AtomicLong shoesVariationIdGenerator = new AtomicLong(100);
 
-	// ============== Constructor with Sample Data ==============
+	// ============== 带示例数据的构造函数 ==============
 
 	public DummyTools() {
 		initializeSampleData();
 	}
 
 	private void initializeSampleData() {
-		// Sample Products
+		// 示例商品
 		productRepository.put(1L,
 				new Product(1L, "Laptop Pro 15", "High-performance laptop with 16GB RAM and 512GB SSD"));
 		productRepository.put(2L, new Product(2L, "Wireless Mouse", "Ergonomic wireless mouse with long battery life"));
@@ -86,28 +86,28 @@ public class DummyTools {
 				new Product(4L, "Mechanical Keyboard", "RGB mechanical keyboard with Cherry MX switches"));
 		productRepository.put(5L, new Product(5L, "Monitor 27\"", "4K UHD monitor with HDR support"));
 
-		// Sample Perfumes
+		// 示例香水
 		perfumeRepository.put(1L, new Perfume(1L, "Eau de Cologne", "Chanel"));
 		perfumeRepository.put(2L, new Perfume(2L, "Floral Mist", "Dior"));
 		perfumeRepository.put(3L, new Perfume(3L, "Ocean Breeze", "Versace"));
 		perfumeRepository.put(4L, new Perfume(4L, "Night Essence", "Tom Ford"));
 		perfumeRepository.put(5L, new Perfume(5L, "Fresh Citrus", "Gucci"));
 
-		// Sample Perfume Variations
+		// 示例香水变体
 		perfumeVariationRepository.put(1L, new PerfumeVariation(1L, "Citrus", 100));
 		perfumeVariationRepository.put(2L, new PerfumeVariation(2L, "Woody", 50));
 		perfumeVariationRepository.put(3L, new PerfumeVariation(3L, "Floral", 75));
 		perfumeVariationRepository.put(4L, new PerfumeVariation(4L, "Musky", 100));
 		perfumeVariationRepository.put(5L, new PerfumeVariation(5L, "Fresh", 30));
 
-		// Sample Shoes
+		// 示例鞋子
 		shoesRepository.put(1L, new Shoes(1L, "Nike", "Air Max", "10"));
 		shoesRepository.put(2L, new Shoes(2L, "Adidas", "Ultraboost", "9"));
 		shoesRepository.put(3L, new Shoes(3L, "Puma", "RS-X", "11"));
 		shoesRepository.put(4L, new Shoes(4L, "New Balance", "574", "10"));
 		shoesRepository.put(5L, new Shoes(5L, "Reebok", "Classic Leather", "8"));
 
-		// Sample Shoes Variations
+		// 示例鞋子变体
 		shoesVariationRepository.put(1L, new ShoesVariation(1L, "Black", 10));
 		shoesVariationRepository.put(2L, new ShoesVariation(2L, "White", 9));
 		shoesVariationRepository.put(3L, new ShoesVariation(3L, "Red", 11));
@@ -115,7 +115,7 @@ public class DummyTools {
 		shoesVariationRepository.put(5L, new ShoesVariation(5L, "Gray", 8));
 	}
 
-	// ============== Product Operations ==============
+	// ============== 商品操作 ==============
 
 	@Tool(description = "Save a new product to the inventory catalog. Creates a new product entry with the provided name and description. If no ID is provided, a unique identifier will be automatically generated. Returns the saved product with its assigned ID. Use this when adding new merchandise, electronics, or general items to the product database.")
 	public Product saveProduct(Product product) {
@@ -168,7 +168,7 @@ public class DummyTools {
 		perfumeRepository.remove(id);
 	}
 
-	// ============== Perfume Variation Operations ==============
+	// ============== 香水变体操作 ==============
 
 	@Tool(description = "Save a new perfume variation to the fragrance options catalog. Creates a variation entry specifying different scent profiles and bottle volumes in milliliters. If no ID is provided, a unique identifier will be automatically generated. Returns the saved variation with its assigned ID. Use this when adding size options or scent variations for existing fragrances.")
 	public PerfumeVariation savePerfumeVariation(PerfumeVariation variation) {
@@ -198,7 +198,7 @@ public class DummyTools {
 		perfumeVariationRepository.remove(id);
 	}
 
-	// ============== Shoes Operations ==============
+	// ============== 鞋子操作 ==============
 
 	@Tool(description = "Save a new pair of shoes to the footwear inventory. Creates a shoes entry with brand, model, and size information. If no ID is provided, a unique identifier will be automatically generated. Returns the saved shoes item with its assigned ID. Use this when adding new athletic footwear, casual shoes, or formal footwear to the catalog.")
 	public Shoes saveShoes(Shoes shoes) {
@@ -223,7 +223,7 @@ public class DummyTools {
 		shoesRepository.remove(id);
 	}
 
-	// ============== Shoes Variation Operations ==============
+	// ============== 鞋子变体操作 ==============
 
 	@Tool(description = "Save a new shoes variation to the footwear options catalog. Creates a variation entry specifying different color options and numeric sizes. If no ID is provided, a unique identifier will be automatically generated. Returns the saved variation with its assigned ID. Use this when adding color variants or size options for existing shoe models.")
 	public ShoesVariation saveShoesVariation(ShoesVariation variation) {

@@ -37,7 +37,7 @@ public class UserProfileResourceProvider {
 	private final Map<String, Map<String, String>> userProfiles = new HashMap<>();
 
 	public UserProfileResourceProvider() {
-		// Initialize with some sample data
+		// 初始化一些示例数据
 		Map<String, String> johnProfile = new HashMap<>();
 		johnProfile.put("name", "John Smith");
 		johnProfile.put("email", "john.smith@example.com");
@@ -74,7 +74,7 @@ public class UserProfileResourceProvider {
 	}
 
 	/**
-	 * Resource method that takes a ReadResourceRequest parameter and URI variable.
+	 * 接收 ReadResourceRequest 参数和 URI 变量的资源方法。
 	 */
 	@McpResource(uri = "user-profile://{username}", name = "User Profile",
 			description = "Provides user profile information for a specific user")
@@ -87,8 +87,8 @@ public class UserProfileResourceProvider {
 	}
 
 	/**
-	 * Resource method that takes URI variables directly as parameters. The URI template
-	 * in the annotation defines the variables that will be extracted.
+	 * 直接将 URI 变量作为参数的资源方法。注解中的 URI 模板
+	 * 定义了将被提取的变量。
 	 */
 	@McpResource(uri = "user-profile://{username}", name = "User Details",
 			description = "Provides user details for a specific user using URI variables")
@@ -101,7 +101,7 @@ public class UserProfileResourceProvider {
 	}
 
 	/**
-	 * Resource method that takes multiple URI variables as parameters.
+	 * 接收多个 URI 变量作为参数的资源方法。
 	 */
 	@McpResource(uri = "user-attribute://{username}/{attribute}", name = "User Attribute",
 			description = "Provides a specific attribute from a user's profile")
@@ -120,7 +120,7 @@ public class UserProfileResourceProvider {
 	}
 
 	/**
-	 * Resource method that takes an exchange and URI variables.
+	 * 接收交换上下文和 URI 变量的资源方法。
 	 */
 	@McpResource(uri = "user-profile-exchange://{username}", name = "User Profile with Exchange",
 			description = "Provides user profile information with server exchange context")
@@ -138,62 +138,62 @@ public class UserProfileResourceProvider {
 	}
 
 	/**
-	 * Resource method that takes a String URI variable parameter.
+	 * 接收字符串形式的 URI 变量参数的资源方法。
 	 */
 	@McpResource(uri = "user-connections://{username}", name = "User Connections",
 			description = "Provides a list of connections for a specific user")
 	public List<String> getUserConnections(String username) {
-		// Generate a simple list of connections based on username
+		// 根据用户名生成一个简单的连接列表
 		return List.of(username + " is connected with Alice", username + " is connected with Bob",
 				username + " is connected with Charlie");
 	}
 
 	/**
-	 * Resource method that takes both McpSyncServerExchange, ReadResourceRequest and URI
-	 * variable parameters.
+	 * 同时接收 McpSyncServerExchange、ReadResourceRequest 和 URI
+	 * 变量参数的资源方法。
 	 */
 	@McpResource(uri = "user-notifications://{username}", name = "User Notifications",
 			description = "Provides notifications for a specific user")
 	public List<ResourceContents> getUserNotifications(ReadResourceRequest request, String username) {
-		// Generate notifications based on username
+		// 根据用户名生成通知
 		String notifications = generateNotifications(username);
 
 		return List.of(TextResourceContents.builder(request.uri(), notifications).mimeType("text/plain").build());
 	}
 
 	/**
-	 * Resource method that returns a single ResourceContents with TEXT content type.
+	 * 返回单个 TEXT 内容类型的 ResourceContents 的资源方法。
 	 */
 	@McpResource(uri = "user-status://{username}", name = "User Status",
 			description = "Provides the current status for a specific user")
 	public ResourceContents getUserStatus(ReadResourceRequest request, String username) {
-		// Generate a simple status based on username
+		// 根据用户名生成简单状态
 		String status = generateUserStatus(username);
 
 		return TextResourceContents.builder(request.uri(), status).mimeType("text/plain").build();
 	}
 
 	/**
-	 * Resource method that returns a single String with TEXT content type.
+	 * 返回单个 TEXT 内容类型的字符串的资源方法。
 	 */
 	@McpResource(uri = "user-location://{username}", name = "User Location",
 			description = "Provides the current location for a specific user")
 	public String getUserLocation(String username) {
 		Map<String, String> profile = userProfiles.getOrDefault(username.toLowerCase(), new HashMap<>());
 
-		// Extract location from profile data
+		// 从档案数据中提取位置
 		return profile.getOrDefault("location", "Location not available");
 	}
 
 	/**
-	 * Resource method that returns a single String with BLOB content type. This
-	 * demonstrates how a String can be treated as binary data.
+	 * 返回单个 BLOB 内容类型的字符串的资源方法。它演示了
+	 * 如何将字符串视为二进制数据。
 	 */
 	@McpResource(uri = "user-avatar://{username}", name = "User Avatar",
 			description = "Provides a base64-encoded avatar image for a specific user", mimeType = "image/png")
 	public String getUserAvatar(ReadResourceRequest request, String username) {
-		// In a real implementation, this would be a base64-encoded image
-		// For this example, we're just returning a placeholder string
+		// 在实际实现中，这里会是 base64 编码的图片
+		// 在本示例中，我们只返回一个占位字符串
 		return "base64-encoded-avatar-image-for-" + username;
 	}
 
@@ -210,12 +210,12 @@ public class UserProfileResourceProvider {
 	}
 
 	private String generateNotifications(String username) {
-		// Simple logic to generate notifications
+		// 生成通知的简单逻辑
 		return "You have 3 new messages\n" + "2 people viewed your profile\n" + "You have 1 new connection request";
 	}
 
 	private String generateUserStatus(String username) {
-		// Simple logic to generate a status
+		// 生成状态的简单逻辑
 		if (username.equals("john")) {
 			return "🟢 Online";
 		}

@@ -44,7 +44,7 @@ public class WeatherService {
 	private final RestClient restClient = RestClient.create();
 
 	/**
-	 * The response format from the Open-Meteo API
+	 * Open-Meteo API 的响应格式
 	 */
 	public record WeatherResponse(Current current) {
 		public record Current(LocalDateTime time, int interval, double temperature_2m) {

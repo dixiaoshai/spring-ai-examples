@@ -22,26 +22,24 @@ import org.springframework.ai.mcp.annotation.context.McpModernSyncRequestContext
 import org.springframework.stereotype.Component;
 
 /**
- * The same two interactive tools as the STREAMABLE server, rewritten for the modern
- * protocol. There is no session, so the handler cannot block on the client: it returns
- * {@link InputRequiredResult} describing what it needs, and the client retries the same
- * call with {@code inputResponses} and the server-sealed {@code requestState}.
+ * 与 STREAMABLE 服务器相同的两个交互式工具，但为 modern 协议重写。这里没有会话，
+ * 因此处理器不能阻塞等待客户端：它返回描述所需内容的 {@link InputRequiredResult}，
+ * 客户端携带 {@code inputResponses} 和服务器密封的 {@code requestState} 重试同一调用。
  * <p>
- * The response shape is the method's choice. {@code deleteTicket} declares the SDK
- * {@link McpSyncNotifier}, so it answers with a short {@code text/event-stream} that
- * carries its progress notifications before the result. {@code summarizeTickets} declares
- * only the context and answers with plain JSON.
+ * 响应形态由方法自己选择。{@code deleteTicket} 声明了 SDK 的 {@link McpSyncNotifier}，
+ * 因此以一段简短的 {@code text/event-stream} 应答，并在结果之前携带其进度通知。
+ * {@code summarizeTickets} 只声明上下文，并以普通 JSON 应答。
  * <p>
- * Neither tool can work without its client capability, so both declare it in
- * {@code requiredCapabilities}. A client whose request does not declare it gets JSON-RPC
- * error {@code -32021} before the method runs, and {@code deleteTicket} opens no stream.
+ * 两个工具缺少各自的客户端能力都无法工作，因此都在 {@code requiredCapabilities} 中声明了它。
+ * 请求未声明该能力的客户端会在方法运行之前收到 JSON-RPC 错误 {@code -32021}，
+ * 且 {@code deleteTicket} 不会打开任何流。
  */
 @Component
 public class InteractiveTicketProvider {
 
 	private static final Logger logger = LoggerFactory.getLogger(InteractiveTicketProvider.class);
 
-	/** Shape of an elicitation answer in {@code inputResponses}. */
+	/** {@code inputResponses} 中引导应答的结构。 */
 	public record ElicitResponse(String action, Map<String, Object> content) {
 	}
 
@@ -58,19 +56,19 @@ public class InteractiveTicketProvider {
 			requiredCapabilities = McpClientCapability.ELICITATION_FORM)
 	public CallToolOutcome deleteTicket(McpSyncNotifier notifier, McpModernSyncRequestContext ctx,
 			@McpToolParam(description = "Ticket id") String id) {
-		logger.info("delete_ticket called for {}", id); // logging to the client is gone; log server-side
+		logger.info("delete_ticket called for {}", id); // 向客户端发送日志的方式已移除；改为在服务器端记录
 		ElicitResponse answer = ctx.inputResponse("confirm", ElicitResponse.class);
 		if (answer == null) {
-			// First round trip: ask. The ticket id travels in the sealed request state.
+			// 第一轮往返：询问。工单 id 通过密封的请求状态传递。
 			notifier.progress(10, 100.0, "asking for confirmation");
 			return InputRequiredResult.builder()
 				.elicit("confirm", ElicitFormRequest.builder("Delete ticket " + id + "?", CONFIRM_SCHEMA).build())
 				.requestState(id)
 				.build();
 		}
-		// Second round trip: act on the answer, for the ticket that was sealed into the request
-		// state on the first round. The seal covers the tool and the caller, not the arguments,
-		// so the id argument of the retry is not trusted.
+		// 第二轮往返：根据应答执行操作，作用于第一轮往返中密封进请求状态的工单。
+		// 封存覆盖工具和调用者，但不覆盖参数，
+		// 因此不信任重试时的 id 参数。
 		String sealedId = ctx.requestState();
 		boolean confirmed = "accept".equals(answer.action()) && answer.content() != null
 				&& Boolean.TRUE.equals(answer.content().get("confirmed"));

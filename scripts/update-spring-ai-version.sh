@@ -1,17 +1,17 @@
 #!/bin/bash
 
-# Update Spring AI version across all pom.xml files
-# Usage: ./scripts/update-spring-ai-version.sh [VERSION]
-# Example: ./scripts/update-spring-ai-version.sh 1.0.1
-# Example: ./scripts/update-spring-ai-version.sh 1.1.0-SNAPSHOT
-# Example: ./scripts/update-spring-ai-version.sh 2.0.0-RC1
+# 更新所有 pom.xml 文件中的 Spring AI 版本
+# 用法：./scripts/update-spring-ai-version.sh [VERSION]
+# 示例：./scripts/update-spring-ai-version.sh 1.0.1
+# 示例：./scripts/update-spring-ai-version.sh 1.1.0-SNAPSHOT
+# 示例：./scripts/update-spring-ai-version.sh 2.0.0-RC1
 
 set -e
 
-# Get the version parameter or use default
+# 获取版本参数，或使用默认值
 VERSION="${1:-2.0.0-RC1}"
 
-# Validate version format
+# 校验版本格式
 if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-(SNAPSHOT|RC[0-9]+|M[0-9]+))?$ ]]; then
     echo "Error: Invalid version format. Expected: X.Y.Z, X.Y.Z-SNAPSHOT, X.Y.Z-RC1, or X.Y.Z-M1"
     echo "Example: 2.0.0 or 2.0.0-SNAPSHOT or 2.0.0-RC1 or 2.0.0-M1"
@@ -20,25 +20,25 @@ fi
 
 echo "Updating Spring AI version to: $VERSION"
 
-# Find script directory and project root
+# 查找脚本目录和项目根目录
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-# Change to project root
+# 切换到项目根目录
 cd "${PROJECT_ROOT}"
 
-# Create backup directory with timestamp
+# 创建带时间戳的备份目录
 BACKUP_DIR="${PROJECT_ROOT}/.version-backups/$(date +%Y%m%d_%H%M%S)"
 mkdir -p "${BACKUP_DIR}"
 
-# Counter for updated files
+# 已更新文件的计数器
 UPDATED_COUNT=0
 TOTAL_COUNT=0
 
-# Find and process all pom.xml files
+# 查找并处理所有 pom.xml 文件
 echo "Searching for pom.xml files..."
 while IFS= read -r pom_file; do
-    # Skip backup directories
+    # 跳过备份目录
     if [[ "$pom_file" == *".version-backups"* ]]; then
         continue
     fi
@@ -46,30 +46,30 @@ while IFS= read -r pom_file; do
     TOTAL_COUNT=$((TOTAL_COUNT + 1))
     updated_file=false
     
-    # Check if this pom file contains spring-ai.version property
+    # 检查该 pom 文件是否包含 spring-ai.version 属性
     if grep -q "<spring-ai.version>" "$pom_file"; then
-        # Create backup
+        # 创建备份
         relative_path="${pom_file#./}"
         backup_file="${BACKUP_DIR}/${relative_path}"
         mkdir -p "$(dirname "$backup_file")"
         cp "$pom_file" "$backup_file"
         
-        # Update the version property
+        # 更新版本属性
         sed -i '' "s|<spring-ai.version>.*</spring-ai.version>|<spring-ai.version>${VERSION}</spring-ai.version>|g" "$pom_file"
         updated_file=true
     fi
     
-    # Also check for direct spring-ai-bom version in dependencyManagement
+    # 同时检查 dependencyManagement 中直接指定的 spring-ai-bom 版本
     if grep -q "spring-ai-bom" "$pom_file"; then
         if ! $updated_file; then
-            # Create backup if not already done
+            # 如果尚未备份，则创建备份
             relative_path="${pom_file#./}"
             backup_file="${BACKUP_DIR}/${relative_path}"
             mkdir -p "$(dirname "$backup_file")"
             cp "$pom_file" "$backup_file"
         fi
         
-        # Update the BOM version using perl (cross-platform multiline replacement)
+        # 使用 perl 更新 BOM 版本（跨平台多行替换）
         perl -i -0pe 's|(<artifactId>spring-ai-bom</artifactId>\s*<version>)[^<]*(</version>)|${1}'"${VERSION}"'${2}|g' "$pom_file"
         
         updated_file=true
@@ -88,7 +88,7 @@ echo "  Files updated: $UPDATED_COUNT"
 echo "  Backup location: $BACKUP_DIR"
 echo ""
 
-# Verify the update
+# 校验更新结果
 echo "Verification - checking a sample file:"
 sample_file="./misc/openai-streaming-response/pom.xml"
 if [ -f "$sample_file" ]; then

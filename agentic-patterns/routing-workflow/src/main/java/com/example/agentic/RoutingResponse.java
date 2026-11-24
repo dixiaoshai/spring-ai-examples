@@ -16,16 +16,16 @@
 package com.example.agentic;
 
 /**
- * Record representing the response from the routing classification process.
+ * 表示路由分类过程响应的 record。
  * 
  * <p>
- * This record is used by the {@link RoutingWorkflow} to
- * capture and communicate routing decisions made by the LLM classifier.
+ * 该 record 被 {@link RoutingWorkflow} 用于
+ * 捕获并传达 LLM 分类器做出的路由决策。
  * 
- * @param reasoning A detailed explanation of why a particular route was chosen,
- *                  considering factors like key terms, user intent, and urgency
- *                  level
- * @param selection The name of the selected route that will handle the input
+ * @param reasoning 详细说明为何选择某条特定路由，
+ * 其中考虑关键词、用户意图和紧急程度
+ * 等因素
+ * @param selection 将处理该输入的所选路由名称
  * 
  * 
  * @author Christian Tzolov
@@ -33,14 +33,14 @@ package com.example.agentic;
  */
 public record RoutingResponse(
 		/**
-		 * The reasoning behind the route selection, explaining why this particular
-		 * route was chosen based on the input analysis.
+		 * 路由选择背后的推理，说明为何基于输入分析
+		 * 选择了该特定路由。
 		 */
 		String reasoning,
 
 		/**
-		 * The selected route name that will handle the input based on the
-		 * classification analysis.
+		 * 基于分类分析将处理该输入的
+		 * 所选路由名称。
 		 */
 		String selection) {
 }

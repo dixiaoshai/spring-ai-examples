@@ -29,14 +29,14 @@ class TranscriptionController {
 
     private final JinferTranscriptionModel jinferTranscriptionModel;
 
-    // Both parameters are the same auto-configured bean, seen through the portable Spring AI interface
-    // and through the jinfer type that adds word timings.
+    // 两个参数是同一个自动配置的 Bean，分别通过可移植的 Spring AI 接口
+    // 和增加了词级时间戳的 jinfer 类型来访问。
     TranscriptionController(TranscriptionModel transcriptionModel, JinferTranscriptionModel jinferTranscriptionModel) {
         this.transcriptionModel = transcriptionModel;
         this.jinferTranscriptionModel = jinferTranscriptionModel;
     }
 
-    /** Portable Spring AI API: works unchanged with any TranscriptionModel provider. */
+    /** 可移植的 Spring AI API：可与任何 TranscriptionModel 提供方配合使用，无需改动。 */
     @PostMapping("/transcribe")
     TranscriptResponse transcribe(@RequestParam("file") MultipartFile file) {
         long start = System.nanoTime();
@@ -44,7 +44,7 @@ class TranscriptionController {
         return new TranscriptResponse(text, millisSince(start));
     }
 
-    /** jinfer-specific API: the full Transcription, with per-word time spans and confidences. */
+    /** jinfer 专用 API：返回完整的 Transcription，包含逐词时间跨度和置信度。 */
     @PostMapping("/transcribe/words")
     DetailedTranscriptResponse transcribeWithWords(@RequestParam("file") MultipartFile file) throws IOException {
         long start = System.nanoTime();
@@ -55,7 +55,7 @@ class TranscriptionController {
             .stream()
             .map(w -> new WordTiming(w.text(), seconds(w.start()), seconds(w.end()), round(w.confidence())))
             .toList();
-        // the last token's end is the speech end, a lower bound of the audio length
+        // 最后一个 token 的结束时间即语音结束时间，是音频时长的下界
         double audioSeconds = transcription.tokens().isEmpty() ? 0
                 : seconds(transcription.tokens().getLast().end());
         double realTimeFactor = elapsed == 0 ? 0 : round(audioSeconds * 1000 / elapsed);

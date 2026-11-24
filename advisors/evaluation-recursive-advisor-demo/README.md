@@ -1,17 +1,17 @@
-# Spring AI LLM-as-a-Judge Demo
+# Spring AI LLM-as-a-Judge 演示
 
-Demonstrates the **LLM-as-a-Judge** pattern in Spring AI 2.0 using a custom `SelfRefineEvaluationAdvisor` — a recursive advisor that evaluates AI responses and retries with feedback until a quality threshold is met.
+演示 Spring AI 2.0 中的 **LLM-as-a-Judge** 模式，使用自定义的 `SelfRefineEvaluationAdvisor` —— 一个递归顾问，用于评估 AI 响应，并在未达标时带上反馈重试，直到满足质量阈值。
 
-## How It Works
+## 工作原理
 
-`SelfRefineEvaluationAdvisor` implements `CallAdvisor` and loops recursively via `callAdvisorChain.copy(this).nextCall()`:
+`SelfRefineEvaluationAdvisor` 实现了 `CallAdvisor`，并通过 `callAdvisorChain.copy(this).nextCall()` 进行递归循环：
 
-1. Generate a response with the primary model (Anthropic Claude)
-2. Evaluate it using a dedicated judge model (Ollama) on a 1–4 scale
-3. If rating < `successRating`, augment the prompt with feedback and retry
-4. Return when the rating passes or `maxRepeatAttempts` is exhausted
+1. 使用主模型（Anthropic Claude）生成响应
+2. 使用专用的评审模型（Ollama）按 1–4 分制对其进行评估
+3. 如果评分 < `successRating`，则用反馈增强提示词并重试
+4. 当评分通过或 `maxRepeatAttempts` 用尽时返回
 
-Tool-call responses are skipped automatically — only final text answers are evaluated.
+工具调用响应会被自动跳过 —— 只有最终文本答案会被评估。
 
 ```java
 ChatClient chatClient = ChatClient.builder(anthropicChatModel)
@@ -27,9 +27,9 @@ ChatClient chatClient = ChatClient.builder(anthropicChatModel)
     .build();
 ```
 
-The weather tool returns random temperatures (including physically impossible values like -255°C) to intentionally trigger evaluation failures and retries.
+天气工具会返回随机温度（包括像 -255°C 这样物理上不可能的值），以刻意触发评估失败与重试。
 
-## Sample Output
+## 示例输出
 
 ```
 >>> Tool Call responseTemp: -255
@@ -41,13 +41,13 @@ Evaluation passed on attempt 2: Excellent response with realistic weather data.
 The current weather in Paris is sunny with a temperature of 15°C.
 ```
 
-## Prerequisites
+## 前置条件
 
-- Java 17+, Maven 3.6+
-- Anthropic API key
-- [Ollama](https://ollama.com) running locally with a judge model
+- Java 17+、Maven 3.6+
+- Anthropic API 密钥
+- 本地运行的、带评审模型的 [Ollama](https://ollama.com)
 
-## Setup
+## 配置
 
 ```bash
 # Pull a judge model
@@ -57,15 +57,15 @@ export ANTHROPIC_API_KEY=your-key
 ./mvnw spring-boot:run
 ```
 
-`application.properties` (already configured):
+`application.properties`（已配置）：
 ```properties
 spring.ai.ollama.chat.model=avcodes/flowaicom-flow-judge:q4
 spring.ai.ollama.chat.temperature=0
 spring.ai.chat.client.enabled=false
 ```
 
-## Reference
+## 参考
 
-- [Recursive Advisor Demo](../recursive-advisor-demo) — basic recursive patterns
+- [Recursive Advisor Demo](../recursive-advisor-demo) —— 基础递归模式
 - [Spring AI Advisors](https://docs.spring.io/spring-ai/reference/api/advisors.html)
 - [Judge Arena Leaderboard](https://huggingface.co/spaces/AtlaAI/judge-arena)

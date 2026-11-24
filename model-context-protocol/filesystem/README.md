@@ -1,111 +1,111 @@
-# Spring AI Model Context Protocol - Filesystem Demo
+# Spring AI 模型上下文协议 - 文件系统演示
 
-A cross-platform demo application showcasing Spring AI integration with the Model Context Protocol (MCP) Filesystem server. This application enables natural language interactions with your local filesystem.
+一个跨平台演示应用，展示 Spring AI 与模型上下文协议（MCP）文件系统服务器的集成。该应用支持通过自然语言与本地文件系统交互。
 
-Connects to the [Filesystem MCP Server](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem) with access to the `target` directory.
+连接到 [Filesystem MCP Server](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem)，并可访问 `target` 目录。
 
-## Platform Support
+## 平台支持
 
-✅ **Windows** - Automatic `cmd.exe` wrapper for npx
-✅ **Linux** - Direct npx execution
-✅ **macOS** - Direct npx execution
+✅ **Windows** - 为 npx 自动加上 `cmd.exe` 包装器
+✅ **Linux** - 直接执行 npx
+✅ **macOS** - 直接执行 npx
 
-The application **automatically detects** your operating system and configures the MCP client appropriately.
+该应用会**自动检测**你的操作系统，并相应地配置 MCP 客户端。
 
-## Features
+## 功能特性
 
-- ✨ **Cross-platform** - Works on Windows, Linux, and macOS without modification
-- 🤖 Natural language querying and updating of local filesystem
-- 📝 Predefined question mode for automated analysis
-- 🔄 Two configuration approaches: programmatic (default) or JSON-based
-- 🚀 Built on Spring AI and Model Context Protocol
+- ✨ **跨平台** - 在 Windows、Linux 与 macOS 上无需修改即可运行
+- 🤖 以自然语言查询和更新本地文件系统
+- 📝 预定义问题模式，用于自动化分析
+- 🔄 两种配置方式：编程式（默认）或基于 JSON
+- 🚀 基于 Spring AI 与模型上下文协议构建
 
-## Prerequisites
+## 前置条件
 
-- Java 17 or higher
+- Java 17 或更高版本
 - Maven 3.6+
-- Node.js and npx (npm comes with Node.js)
-- OpenAI API key
+- Node.js 与 npx（npm 随 Node.js 一起安装）
+- OpenAI API 密钥
 
-### Installing Node.js/npx
+### 安装 Node.js/npx
 
-**Windows:**
+**Windows：**
 ```cmd
 # Download and install from https://nodejs.org
 # npx is included with npm
 npx --version
 ```
 
-**Linux (Ubuntu/Debian):**
+**Linux（Ubuntu/Debian）：**
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
 sudo apt-get install -y nodejs
 npx --version
 ```
 
-**macOS:**
+**macOS：**
 ```bash
 brew install node
 npx --version
 ```
 
-## Quick Start
+## 快速开始
 
-1. **Clone the repository:**
+1. **克隆仓库：**
    ```bash
    git clone https://github.com/spring-projects/spring-ai-examples.git
    cd spring-ai-examples/model-context-protocol/filesystem
    ```
 
-2. **Set your OpenAI API key:**
+2. **设置 OpenAI API 密钥：**
 
-   **Linux/macOS:**
+   **Linux/macOS：**
    ```bash
    export OPENAI_API_KEY='your-api-key-here'
    ```
 
-   **Windows (Command Prompt):**
+   **Windows（命令提示符）：**
    ```cmd
    set OPENAI_API_KEY=your-api-key-here
    ```
 
-   **Windows (PowerShell):**
+   **Windows（PowerShell）：**
    ```powershell
    $env:OPENAI_API_KEY="your-api-key-here"
    ```
 
-3. **Create a sample test file:**
+3. **创建示例测试文件：**
 
-   **Linux/macOS:**
+   **Linux/macOS：**
    ```bash
    ./create-text-file.sh
    ```
 
-   **Windows:**
+   **Windows：**
    ```cmd
    mkdir target
    echo Sample content > target\spring-ai-mcp-overview.txt
    ```
 
-4. **Run the application:**
+4. **运行应用：**
 
-   **Linux/macOS:**
+   **Linux/macOS：**
    ```bash
    ./mvnw spring-boot:run
    ```
 
-   **Windows:**
+   **Windows：**
    ```cmd
    .\mvnw.cmd spring-boot:run
    ```
 
-## Configuration Approaches
+## 配置方式
 
-The application supports two ways to configure the MCP client:
+该应用支持两种配置 MCP 客户端的方式：
 
-### Option 1: Programmatic Configuration (Default - Recommended)
+### 方式一：编程式配置（默认 - 推荐）
 
-The default approach uses automatic OS detection in `Application.java`:
+默认方式在 `Application.java` 中使用自动操作系统检测：
 
 ```java
 @Bean(destroyMethod = "close")
@@ -131,45 +131,45 @@ public McpSyncClient mcpClient() {
 }
 ```
 
-**Advantages:**
-- ✅ Works out-of-the-box on all platforms
-- ✅ No configuration files needed
-- ✅ Automatic OS detection
+**优点：**
+- ✅ 在所有平台上开箱即用
+- ✅ 无需配置文件
+- ✅ 自动检测操作系统
 
-**Disadvantages:**
-- ❌ Configuration is hardcoded in Java
-- ❌ Less flexible for different server configurations
+**缺点：**
+- ❌ 配置硬编码在 Java 中
+- ❌ 对不同服务器配置的灵活性较差
 
-### Option 2: JSON Configuration (Optional)
+### 方式二：JSON 配置（可选）
 
-For more flexibility, you can use JSON-based configuration. Edit `src/main/resources/application.properties`:
+如需更高灵活性，可以使用基于 JSON 的配置。编辑 `src/main/resources/application.properties`：
 
-**For Windows:**
+**Windows：**
 ```properties
 spring.ai.mcp.client.stdio.servers-configuration=classpath:/mcp-servers-config-windows.json
 ```
 
-**For Linux/macOS:**
+**Linux/macOS：**
 ```properties
 spring.ai.mcp.client.stdio.servers-configuration=classpath:/mcp-servers-config-linux.json
 ```
 
-**Advantages:**
-- ✅ Externalized configuration
-- ✅ Easy to modify without recompiling
-- ✅ Can configure multiple MCP servers
+**优点：**
+- ✅ 配置外置
+- ✅ 无需重新编译即可轻松修改
+- ✅ 可配置多个 MCP 服务器
 
-**Disadvantages:**
-- ❌ Must choose the correct OS-specific JSON file
-- ❌ Requires manual configuration
+**缺点：**
+- ❌ 必须选择与操作系统匹配的 JSON 文件
+- ❌ 需要手动配置
 
-**⚠️ Important:** When JSON configuration is enabled, the programmatic `@Bean` is automatically skipped via `@ConditionalOnMissingBean` to avoid conflicts.
+**⚠️ 重要：** 启用 JSON 配置后，编程式的 `@Bean` 会通过 `@ConditionalOnMissingBean` 自动跳过，以避免冲突。
 
-## Why Windows Requires Special Handling
+## 为什么 Windows 需要特殊处理
 
-On Windows, `npx` is implemented as a **batch file** (.cmd), not a native executable. Java's `ProcessBuilder` (used internally by `StdioClientTransport`) cannot execute batch files directly.
+在 Windows 上，`npx` 以**批处理文件**（.cmd）形式实现，而不是原生可执行文件。Java 的 `ProcessBuilder`（由 `StdioClientTransport` 内部使用）无法直接执行批处理文件。
 
-**Solution:** Wrap the command with `cmd.exe /c`:
+**解决方案：** 用 `cmd.exe /c` 包装命令：
 
 ```java
 // Windows
@@ -181,16 +181,16 @@ ServerParameters.builder("npx")
     .args("-y", "@modelcontextprotocol/server-filesystem", "target")
 ```
 
-This pattern applies to other Windows batch files: `npm.cmd`, `node.cmd`, etc.
+该模式同样适用于其他 Windows 批处理文件：`npm.cmd`、`node.cmd` 等。
 
-## Architecture Overview
+## 架构概览
 
-### Cross-Platform MCP Client Creation
+### 跨平台 MCP 客户端的创建
 
-The application uses Spring's `@ConditionalOnMissingBean` to support both configuration approaches:
+该应用使用 Spring 的 `@ConditionalOnMissingBean` 来同时支持两种配置方式：
 
-1. **Programmatic Bean** - Created when JSON config is NOT enabled
-2. **Auto-Configuration** - Created when JSON config IS enabled
+1. **编程式 Bean** - 在未启用 JSON 配置时创建
+2. **自动配置** - 在启用 JSON 配置时创建
 
 ```java
 @Bean(destroyMethod = "close")
@@ -200,9 +200,9 @@ public McpSyncClient mcpClient() {
 }
 ```
 
-### CommandLineRunner with Dual Support
+### 同时支持两种方式的 CommandLineRunner
 
-The `CommandLineRunner` accepts both approaches:
+`CommandLineRunner` 可接受两种方式提供的客户端：
 
 ```java
 @Bean
@@ -218,9 +218,9 @@ public CommandLineRunner predefinedQuestions(
 }
 ```
 
-### Tool Integration
+### 工具集成
 
-MCP tools are automatically discovered and integrated with Spring AI:
+MCP 工具会被自动发现并集成到 Spring AI 中：
 
 ```java
 var chatClient = chatClientBuilder
@@ -228,11 +228,11 @@ var chatClient = chatClientBuilder
     .build();
 ```
 
-The AI model can then call MCP filesystem tools (read_file, write_file, etc.) through natural language.
+随后 AI 模型可以通过自然语言调用 MCP 文件系统工具（read_file、write_file 等）。
 
-## JSON Configuration Files
+## JSON 配置文件
 
-### mcp-servers-config-windows.json
+### Windows 配置：mcp-servers-config-windows.json
 
 ```json
 {
@@ -246,7 +246,7 @@ The AI model can then call MCP filesystem tools (read_file, write_file, etc.) th
 }
 ```
 
-### mcp-servers-config-linux.json
+### Linux 配置：mcp-servers-config-linux.json
 
 ```json
 {
@@ -260,9 +260,9 @@ The AI model can then call MCP filesystem tools (read_file, write_file, etc.) th
 }
 ```
 
-## Path Handling
+## 路径处理
 
-The example uses a **relative path** (`"target"`) instead of absolute paths for cross-platform compatibility:
+为兼容跨平台，示例使用**相对路径**（`"target"`）而非绝对路径：
 
 ```java
 // ✅ Recommended: Relative path
@@ -272,29 +272,29 @@ The example uses a **relative path** (`"target"`) instead of absolute paths for 
 .args("-y", "@modelcontextprotocol/server-filesystem", "/home/user/project/target")
 ```
 
-The MCP server resolves relative paths based on the current working directory.
+MCP 服务器会基于当前工作目录解析相对路径。
 
-## Troubleshooting
+## 故障排查
 
-### Windows: "Cannot run program 'npx'"
+### Windows：无法运行程序“npx”
 
-**Cause:** npx is not in PATH or is a batch file that ProcessBuilder can't execute directly.
+**原因：** npx 不在 PATH 中，或者是 ProcessBuilder 无法直接执行的批处理文件。
 
-**Solution:** Ensure the application is using the `cmd.exe` wrapper (should be automatic with the default programmatic approach).
+**解决方案：** 确认应用使用的是 `cmd.exe` 包装器（默认的编程式方式应会自动使用）。
 
-### Bean Conflicts: "Sinks.many().unicast() sinks only allow a single Subscriber"
+### Bean 冲突：“Sinks.many().unicast() sinks only allow a single Subscriber”
 
-**Cause:** Both programmatic and JSON configuration are creating MCP clients simultaneously.
+**原因：** 编程式配置与 JSON 配置同时创建了 MCP 客户端。
 
-**Solution:** Choose ONE approach:
-- Comment out JSON config in `application.properties` (use programmatic)
-- OR enable JSON config (programmatic will be skipped automatically)
+**解决方案：** 只选择一种方式：
+- 在 `application.properties` 中注释掉 JSON 配置（使用编程式）
+- 或者启用 JSON 配置（编程式会自动跳过）
 
-### Linux/macOS: "npx: command not found"
+### Linux/macOS：找不到 npx 命令
 
-**Cause:** Node.js/npm is not installed or not in PATH.
+**原因：** 未安装 Node.js/npm，或不在 PATH 中。
 
-**Solution:** Install Node.js:
+**解决方案：** 安装 Node.js：
 ```bash
 # Linux
 curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
@@ -304,7 +304,7 @@ sudo apt-get install -y nodejs
 brew install node
 ```
 
-## Example Output
+## 示例输出
 
 ```
 Detected Unix-like OS - using npx directly
@@ -319,9 +319,9 @@ QUESTION: Please summarize the content... and store it in target/summary.md
 ASSISTANT: I've created a summary and saved it to target/summary.md...
 ```
 
-## Learn More
+## 进一步学习
 
-- [Model Context Protocol Specification](https://modelcontextprotocol.io)
+- [模型上下文协议规范](https://modelcontextprotocol.io)
 - [MCP Filesystem Server](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem)
-- [Spring AI Documentation](https://docs.spring.io/spring-ai/reference/)
-- [Spring AI MCP Client Documentation](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-client-boot-starter-docs.html)
+- [Spring AI 文档](https://docs.spring.io/spring-ai/reference/)
+- [Spring AI MCP 客户端文档](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-client-boot-starter-docs.html)

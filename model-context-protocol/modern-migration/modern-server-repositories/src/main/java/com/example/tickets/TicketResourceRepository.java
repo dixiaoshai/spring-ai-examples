@@ -23,17 +23,17 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 /**
- * Customises the resource repository by implementing the SDK interface. Every ticket is a
- * resource, {@code tickets://t-1}, {@code tickets://t-2} and so on, listed from {@link TicketService}
- * on each request: there is nothing to register, add or remove. The list is paged by ticket id.
+ * 通过实现 SDK 接口自定义资源仓库。每张工单都是一个资源：{@code tickets://t-1}、
+ * {@code tickets://t-2} 等等，每次请求都从 {@link TicketService} 列出：没有需要注册、
+ * 添加或移除的内容。列表按工单 id 分页。
  * <p>
- * Ticket changes arrive as Spring events and leave as MCP notifications on
- * {@code subscriptions/listen}: {@code resources/list_changed} when a ticket is opened or deleted,
- * {@code resources/updated} for the ticket's URI when it changes.
+ * 工单变更以 Spring 事件到达，并以 {@code subscriptions/listen} 上的 MCP 通知发出：
+ * 工单打开或删除时发送 {@code resources/list_changed}，工单变更时针对其 URI 发送
+ * {@code resources/updated}。
  * <p>
- * The {@code tickets://{id}} template completes its {@code id} variable: the repository
- * returns the template with a completion handler from {@code findTemplate} and opts in with
- * {@code supportsCompletion()}, both default methods of the SDK interface.
+ * {@code tickets://{id}} 模板补全其 {@code id} 变量：仓库从 {@code findTemplate} 返回带有
+ * 补全处理器的模板，并通过 {@code supportsCompletion()} 选择加入，两者都是 SDK 接口的
+ * 默认方法。
  */
 @Component
 public class TicketResourceRepository implements McpSyncResourceRepository {
@@ -45,7 +45,7 @@ public class TicketResourceRepository implements McpSyncResourceRepository {
 		.mimeType("application/json")
 		.build();
 
-	/** Small on purpose, so that the client sees a {@code nextCursor}. */
+	/** 刻意设置得很小，以便客户端能看到 {@code nextCursor}。 */
 	private static final int PAGE_SIZE = 2;
 
 	private final TicketService tickets;
@@ -59,8 +59,8 @@ public class TicketResourceRepository implements McpSyncResourceRepository {
 
 	@Override
 	public ResourcesPage list(McpRequestContext ctx, String cursor) {
-		// The cursor is the id of the last ticket on the previous page; ids are compared by
-		// their number, so t-10 follows t-9.
+		// 游标是上一页最后一张工单的 id；id 按其数字比较，
+		// 因此 t-10 排在 t-9 之后。
 		int afterNumber;
 		try {
 			afterNumber = cursor == null ? 0 : TicketService.number(cursor);
@@ -82,12 +82,12 @@ public class TicketResourceRepository implements McpSyncResourceRepository {
 		return ResourceTemplatesPage.of(List.of(TEMPLATE));
 	}
 
-	// completion/complete for ref/resource tickets://{id}: the SDK has checked that the
-	// argument is a variable of the template.
+	// 针对 ref/resource tickets://{id} 的 completion/complete：SDK 已检查该参数
+	// 是模板的变量。
 	@Override
 	public McpSyncResourceTemplate findTemplate(McpRequestContext ctx, String uriTemplate) {
 		if (!TEMPLATE.uriTemplate().equals(uriTemplate)) {
-			return null; // answered as an unknown template
+			return null; // 作为未知模板应答
 		}
 		return McpSyncResourceTemplate.of(TEMPLATE).withCompletionHandler((completeCtx, request) -> {
 			List<String> ids = this.tickets.list()
@@ -107,7 +107,7 @@ public class TicketResourceRepository implements McpSyncResourceRepository {
 	@Override
 	public McpSyncResource find(McpRequestContext ctx, String uri) {
 		if (!uri.startsWith(SCHEME) || this.tickets.find(uri.substring(SCHEME.length())).isEmpty()) {
-			return null; // answered as an unknown resource
+			return null; // 作为未知资源应答
 		}
 		return McpSyncResource.of((readCtx, request) -> {
 			String json = this.tickets.find(uri.substring(SCHEME.length()))
@@ -123,7 +123,7 @@ public class TicketResourceRepository implements McpSyncResourceRepository {
 
 	@Override
 	public boolean supportsSubscribe() {
-		return true; // advertises resources.subscribe, so clients may listen to single URIs
+		return true; // 声明 resources.subscribe，使客户端可以监听单个 URI
 	}
 
 	@EventListener
@@ -132,8 +132,8 @@ public class TicketResourceRepository implements McpSyncResourceRepository {
 			this.changes.broadcast(new ServerChange.ResourceUpdated(SCHEME + event.id()));
 		}
 		else {
-			// Opened or deleted: the list changed; a subscriber of a deleted URI gets nothing it
-			// could re-read.
+			// 打开或删除：列表发生了变化；
+			// 已删除 URI 的订阅者不会收到可供重新读取的内容。
 			this.changes.broadcast(new ServerChange.ResourcesListChanged());
 		}
 	}

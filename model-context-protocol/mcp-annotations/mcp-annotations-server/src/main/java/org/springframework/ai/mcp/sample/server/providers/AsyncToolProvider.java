@@ -30,27 +30,27 @@ import org.springframework.stereotype.Service;
 @Service
 public class AsyncToolProvider {
 
-	// Note: Elicitation suppports subset of JSON Schema types. Use Number instead of int/Integer!
+	// 注意：Elicitation 仅支持 JSON Schema 类型的一个子集。请使用 Number 而不是 int/Integer！
 	public record Person(String name, Number age) {}
 
 	@McpTool(description = "Test tool", name = "tool4", generateOutputSchema = true)
 	public Mono<String> toolLggingSamplingElicitationProgress(McpAsyncRequestContext mcpCtx, @McpToolParam String input) {
 
 		return Mono.defer(() -> Mono.just(input))
-			// Initial logging and progress
+			// 初始日志与进度
 			.doOnNext(i -> {
 				mcpCtx.info("Tool4 Invoked with input: " + i);
 				mcpCtx.progress(p -> p.progress(0.0).total(1.0).message("tool call start"));
 				mcpCtx.ping();
 			})
-			// Execute elicitation
+			// 执行 elicitation
 			.flatMap(i -> mcpCtx.elicit(Person.class)
 				.doOnSuccess(result -> 
 					mcpCtx.progress(p -> p.progress(0.50).total(1.0).message("elicitation completed"))
 				)
 				.map(elicitResult -> new Object[] { i, elicitResult })
 			)
-			// Execute sampling
+			// 执行 sampling
 			.flatMap(data -> {
 				String originalInput = (String) data[0];
 				StructuredElicitResult<Person> person = (StructuredElicitResult<Person>) data[1];
@@ -67,7 +67,7 @@ public class AsyncToolProvider {
 					)
 					.map(samplingResult -> new Object[] { originalInput, person, samplingResult });
 			})
-			// Build final response
+			// 构建最终响应
 			.map(results -> {
 				String originalInput = (String) results[0];
 				StructuredElicitResult<Person> person = (StructuredElicitResult<Person>) results[1];
@@ -78,7 +78,7 @@ public class AsyncToolProvider {
 				
 				return String.format("CALL RESPONSE: %s, %s", samplingResponse, elicitResponse);
 			})
-			// Final logging
+			// 最终日志
 			.doOnSuccess(response -> mcpCtx.info("Tool4 Done"))
 			.doOnError(error -> mcpCtx.info("Tool4 Error: " + error.getMessage()));
 	}

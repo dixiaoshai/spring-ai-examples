@@ -1,10 +1,10 @@
-# Spring AI 1.0.0 Baseline Test Results
+# Spring AI 1.0.0 基线测试结果
 
-## Test Date: 2025-08-06
-## Spring AI Version: 1.0.0
+## 测试日期：2025-08-06
+## Spring AI 版本：1.0.0
 
-### Test Results Summary
-- Total Tests: 24
-- Testing in progress...
+### 测试结果摘要
+- 测试总数：24
+- 测试进行中……
 
-### Individual Test Results
+### 各个测试结果

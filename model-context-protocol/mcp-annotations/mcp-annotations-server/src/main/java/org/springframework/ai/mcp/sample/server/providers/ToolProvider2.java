@@ -48,9 +48,9 @@ public class ToolProvider2 {
 		exchange.progressNotification(
 				ProgressNotification.builder(progressToken, 0.0).total(1.0).message("tool call start").build());
 
-		exchange.ping(); // call client ping
+		exchange.ping(); // 调用客户端 ping
 
-		// call elicitation
+		// 调用 elicitation
 		var elicitationRequest = McpSchema.ElicitFormRequest.builder("Test message", Map.of("type", "object",
 				"properties", Map.of("name", Map.of("type", "string"), "age", Map.of("type", "integer"))))
 			.build();
@@ -60,7 +60,7 @@ public class ToolProvider2 {
 		exchange.progressNotification(
 				ProgressNotification.builder(progressToken, 0.50).total(1.0).message("elicitation completed").build());
 
-		// call sampling
+		// 调用 sampling
 		var createMessageRequest = McpSchema.CreateMessageRequest
 			.builder(List.of(new McpSchema.SamplingMessage(McpSchema.Role.USER,
 					TextContent.builder("Test Sampling Message").build())), 2000)

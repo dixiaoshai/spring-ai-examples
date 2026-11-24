@@ -56,19 +56,19 @@ public class DemoApplication {
 				.toolObject(new MyTools())
 				.argumentType(AgentThinking.class)
 				.argumentConsumer(event -> {
-					// Access the extended arguments via event.arguments()
+					// 通过 event.arguments() 访问扩展参数
 					AgentThinking thinking = event.arguments();
 
-					// Log the LLM's reasoning - great for debugging and observability
+					// 记录 LLM 的推理——非常适合调试与可观测性
 					logger.info("LLM Reasoning: {}", thinking.innerThought());
 					logger.info("Confidence: {}", thinking.confidence());
 					logger.info("Thinking notest: {}", thinking.memoryNotes());
 
-					// Access additional context from the event
+					// 从事件中访问额外的上下文
 					logger.info("Tool: {}", event.toolDefinition().name());
 				})
-				.removeExtraArgumentsAfterProcessing(true) // Remove before calling actual
-															// tool
+				.removeExtraArgumentsAfterProcessing(true) // 调用实际
+															// 工具前移除
 				.build();
 
 			SessionService sessionService = DefaultSessionService.builder()
@@ -77,7 +77,7 @@ public class DemoApplication {
 
 			ChatClient chatClient = chatClientBuilder // @formatter:off
 					.defaultTools(provider)
-					// Session memory advisors (memory at HIGHEST_PRECEDENCE + 1000)
+					// 会话记忆顾问（记忆位于 HIGHEST_PRECEDENCE + 1000）
 					.defaultAdvisors(SessionAdvisors.builder(sessionService)
 						.memory(memory -> memory.eventFilter(EventFilter.lastN(100)))
 						.build())

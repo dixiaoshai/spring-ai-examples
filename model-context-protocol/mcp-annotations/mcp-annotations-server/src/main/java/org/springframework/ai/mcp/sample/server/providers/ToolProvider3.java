@@ -43,11 +43,11 @@ public class ToolProvider3 {
 	@McpTool(description = "Test tool", name = "tool1", generateOutputSchema = true)
 	public String toolLoggingSamplingElicitationProgress(McpSyncRequestContext ctx, @McpToolParam String input) {
 
-		ctx.info("Tool Invoked"); // call client logging (info level)
+		ctx.info("Tool Invoked"); // 调用客户端日志（info 级别）
 
-		ctx.progress(p -> p.percentage(25).message("tool call start")); // call client progress
+		ctx.progress(p -> p.percentage(25).message("tool call start")); // 调用客户端进度
 
-		ctx.ping(); // call client ping
+		ctx.ping(); // 调用客户端 ping
 
 		StructuredElicitResult<Person> elicitationResult = ctx.elicit(e -> e.message("Fill in"), Person.class);
 			

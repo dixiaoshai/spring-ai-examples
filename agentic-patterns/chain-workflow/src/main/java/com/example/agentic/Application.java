@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 // ------------------------------------------------------------
-// PROPMT CHAINING WORKFLOW
+// 提示词链式工作流
 // ------------------------------------------------------------
 
 @SpringBootApplication

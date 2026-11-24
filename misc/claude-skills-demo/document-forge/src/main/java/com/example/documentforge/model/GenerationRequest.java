@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * Request to generate a document.
+ * 生成文档的请求。
  */
 public record GenerationRequest(
 		@NotNull(message = "Document type is required")
@@ -16,7 +16,7 @@ public record GenerationRequest(
 		boolean useWatermark
 ) {
 	/**
-	 * Constructor without watermark option (defaults to false).
+	 * 不带水印选项的构造函数（默认为 false）。
 	 */
 	public GenerationRequest(DocumentType documentType, String prompt) {
 		this(documentType, prompt, false);

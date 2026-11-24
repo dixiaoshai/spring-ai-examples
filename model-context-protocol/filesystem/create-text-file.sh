@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# Get the directory where the script is located
+# 获取脚本所在目录
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
-# Define the file path in the script's directory
+# 定义脚本目录下的文件路径
 FILE_PATH="$SCRIPT_DIR/target/spring-ai-mcp-overview.txt"
 
 echo "Creating a text file in $FILE_PATH..."
 
-# Create the file
+# 创建文件
 cat << 'EOF' > "$FILE_PATH"
 
 Model Context Protocol (MCP) Java SDK

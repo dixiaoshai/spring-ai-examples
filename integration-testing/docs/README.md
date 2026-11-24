@@ -1,16 +1,16 @@
-# Integration Testing Guide for Spring AI Examples
+# Spring AI 示例集成测试指南
 
-This guide explains how to create, run, and maintain integration tests for Spring AI examples using our JBang-based testing framework.
+本指南介绍如何使用基于 JBang 的测试框架，为 Spring AI 示例创建、运行与维护集成测试。
 
-## Quick Start
+## 快速开始
 
-### Prerequisites
+### 前置条件
 - Java 17+
-- JBang (`curl -Ls https://sh.jbang.dev | bash -s - app setup`)
-- Required API keys (e.g., `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`)
-- Claude Code CLI (for AI validation): `npm install -g @anthropic-ai/claude-code`
+- JBang（`curl -Ls https://sh.jbang.dev | bash -s - app setup`）
+- 必需的 API 密钥（例如 `OPENAI_API_KEY`、`ANTHROPIC_API_KEY`）
+- Claude Code CLI（用于 AI 校验）：`npm install -g @anthropic-ai/claude-code`
 
-### Running Tests
+### 运行测试
 
 ```bash
 # Run all integration tests
@@ -29,17 +29,17 @@ cd kotlin/kotlin-hello-world
 jbang integration-tests/RunKotlinHelloWorld.java
 ```
 
-## Test Architecture
+## 测试架构
 
-### Overview
+### 概览
 
-The integration testing framework uses:
-- **Bash runner script** - Discovers and executes tests
-- **JBang test scripts** - Lightweight Java scripts that launch tests
-- **Centralized utilities** - Shared Java libraries for common test patterns
-- **AI validation** - Claude-powered intelligent output analysis
+集成测试框架使用：
+- **Bash 运行脚本** - 发现并执行测试
+- **JBang 测试脚本** - 用于启动测试的轻量级 Java 脚本
+- **集中式工具类** - 用于常见测试模式的共享 Java 库
+- **AI 校验** - 由 Claude 驱动的智能输出分析
 
-### Directory Structure
+### 目录结构
 
 ```
 spring-ai-examples/
@@ -63,15 +63,15 @@ spring-ai-examples/
         └── Run<Module>.java            # JBang test launcher
 ```
 
-## Creating Integration Tests
+## 创建集成测试
 
-### Step 1: Create Test Directory
+### 第 1 步：创建测试目录
 
 ```bash
 mkdir -p your-module/integration-tests
 ```
 
-### Step 2: Create ExampleInfo.json
+### 第 2 步：创建 ExampleInfo.json
 
 ```json
 {
@@ -90,9 +90,9 @@ mkdir -p your-module/integration-tests
 }
 ```
 
-### Step 3: Create JBang Launcher
+### 第 3 步：创建 JBang 启动器
 
-For **simple applications** (console output, then exit):
+对于**简单应用**（输出控制台内容后退出）：
 
 ```java
 ///usr/bin/env jbang "$0" "$@" ; exit $?
@@ -112,7 +112,7 @@ public class RunYourModule {
 }
 ```
 
-For **web server applications** (start server, test endpoints, shutdown):
+对于 **Web 服务器应用**（启动服务器、测试端点、关闭）：
 
 ```java
 ///usr/bin/env jbang "$0" "$@" ; exit $?
@@ -143,7 +143,7 @@ public class RunYourModuleWebServer {
 }
 ```
 
-For **MCP weather servers** (one-liner):
+对于 **MCP 天气服务器**（一行式）：
 
 ```java
 ///usr/bin/env jbang "$0" "$@" ; exit $?
@@ -165,31 +165,31 @@ public class RunWeatherServer {
 }
 ```
 
-### Path Resolution
+### 路径解析
 
-Adjust the `//SOURCES` path based on module depth:
+根据模块深度调整 `//SOURCES` 路径：
 
-| Module Depth | Example | SOURCES Path Prefix |
+| 模块深度 | 示例 | SOURCES 路径前缀 |
 |--------------|---------|---------------------|
-| 2 levels | `kotlin/kotlin-hello-world` | `../../../` |
-| 3 levels | `models/chat/helloworld` | `../../../../` |
-| 4 levels | `model-context-protocol/weather/starter-webmvc-server` | `../../../../` |
+| 2 层 | `kotlin/kotlin-hello-world` | `../../../` |
+| 3 层 | `models/chat/helloworld` | `../../../../` |
+| 4 层 | `model-context-protocol/weather/starter-webmvc-server` | `../../../../` |
 
-## Configuration Reference
+## 配置参考
 
-### ExampleInfo.json Fields
+### ExampleInfo.json 字段
 
-| Field | Type | Required | Description |
+| 字段 | 类型 | 是否必需 | 描述 |
 |-------|------|----------|-------------|
-| `complexity` | string | No | `"simple"`, `"complex"`, `"web-server"`, `"mcp"` |
-| `timeoutSec` | number | No | Maximum execution time (default: 120) |
-| `successRegex` | string[] | No | Patterns that must appear in output |
-| `requiredEnv` | string[] | No | Required environment variables |
-| `aiValidation` | object | No | AI validation configuration |
-| `setupCommands` | string[] | No | Commands to run before test |
-| `cleanupCommands` | string[] | No | Commands to run after test |
+| `complexity` | string | 否 | `"simple"`、`"complex"`、`"web-server"`、`"mcp"` |
+| `timeoutSec` | number | 否 | 最长执行时间（默认：120） |
+| `successRegex` | string[] | 否 | 必须出现在输出中的模式 |
+| `requiredEnv` | string[] | 否 | 必需的环境变量 |
+| `aiValidation` | object | 否 | AI 校验配置 |
+| `setupCommands` | string[] | 否 | 测试前运行的命令 |
+| `cleanupCommands` | string[] | 否 | 测试后运行的命令 |
 
-### AI Validation Configuration
+### AI 校验配置
 
 ```json
 {
@@ -202,57 +202,57 @@ Adjust the `//SOURCES` path based on module depth:
 }
 ```
 
-**Validation Modes:**
-- `primary` - AI validation only (for unpredictable AI outputs)
-- `hybrid` - Both regex AND AI must pass (recommended)
-- `fallback` - AI validates only if regex fails
+**校验模式：**
+- `primary` - 仅 AI 校验（用于不可预测的 AI 输出）
+- `hybrid` - 正则与 AI 都必须通过（推荐）
+- `fallback` - 仅在正则失败时使用 AI 校验
 
-See [AI_VALIDATION.md](AI_VALIDATION.md) for detailed documentation.
+详细文档见 [AI_VALIDATION.md](AI_VALIDATION.md)。
 
-## Centralized Utilities
+## 集中式工具类
 
 ### IntegrationTestUtils
 
-Core utilities for all tests:
-- `runIntegrationTest(moduleName)` - Run a complete integration test
-- `loadConfig()` - Load ExampleInfo.json configuration
-- `verifyEnvironment(config)` - Check required environment variables
-- `buildApplication(moduleName)` - Build with Maven
-- `performAIValidation(output, logFile, config, moduleName)` - Run AI validation
+所有测试的核心工具类：
+- `runIntegrationTest(moduleName)` - 运行完整的集成测试
+- `loadConfig()` - 加载 ExampleInfo.json 配置
+- `verifyEnvironment(config)` - 检查必需的环境变量
+- `buildApplication(moduleName)` - 使用 Maven 构建
+- `performAIValidation(output, logFile, config, moduleName)` - 运行 AI 校验
 
 ### WebServerTestUtils
 
-Utilities for web server tests:
-- `runSimpleWebServerTest(config)` - Build, start, validate, shutdown
-- `waitForHealthCheck(url, timeout)` - Wait for server readiness
-- `httpGet(url)` - Simple HTTP GET request
-- `readServerLog()` - Read the server log file
-- `shutdownServer(handle)` - Gracefully stop the server
+Web 服务器测试的工具类：
+- `runSimpleWebServerTest(config)` - 构建、启动、校验、关闭
+- `waitForHealthCheck(url, timeout)` - 等待服务器就绪
+- `httpGet(url)` - 简单的 HTTP GET 请求
+- `readServerLog()` - 读取服务器日志文件
+- `shutdownServer(handle)` - 优雅停止服务器
 
 ### McpTestUtils
 
-Utilities for MCP protocol tests:
-- `runMcpWeatherServerTest(name, timeout, endpoint)` - One-liner for weather servers
-- `testMcpSseServer(url, toolTests)` - Test MCP SSE server
-- `createWeatherTests()` - Standard weather tool test cases
-- `createSqliteTests()` - Standard SQLite tool test cases
+MCP 协议测试的工具类：
+- `runMcpWeatherServerTest(name, timeout, endpoint)` - 天气服务器的一行式工具
+- `testMcpSseServer(url, toolTests)` - 测试 MCP SSE 服务器
+- `createWeatherTests()` - 标准的天气工具测试用例
+- `createSqliteTests()` - 标准的 SQLite 工具测试用例
 
-## CI/CD Integration
+## CI/CD 集成
 
-### GitHub Actions Workflow
+### GitHub Actions 工作流
 
-Tests run in GitHub Actions with grouped execution:
+测试在 GitHub Actions 中按分组执行：
 
-| Group | Tests | API Keys Required |
+| 分组 | 测试 | 需要的 API 密钥 |
 |-------|-------|-------------------|
-| `mcp-servers` | Weather servers (webmvc, webflux, oauth2, stdio) | Anthropic (AI validation) |
-| `agentic` | Chain, evaluator, orchestrator, parallelization, routing, reflection | OpenAI, Anthropic |
-| `openai-2` | Kotlin examples, misc examples, chat/helloworld | OpenAI, Anthropic |
-| `openai-3` | MCP clients, filesystem, sqlite, dynamic-tool-update | OpenAI, Anthropic, Brave |
-| `anthropic-multi` | Recursive advisor, document-forge, brave, sampling | OpenAI, Anthropic, Brave |
-| `docker-tests` | rag-with-kotlin, evaluation-recursive-advisor-demo | OpenAI, Anthropic + Docker |
+| `mcp-servers` | 天气服务器（webmvc、webflux、oauth2、stdio） | Anthropic（AI 校验） |
+| `agentic` | 链式、评估器、编排器、并行化、路由、反思 | OpenAI、Anthropic |
+| `openai-2` | Kotlin 示例、misc 示例、chat/helloworld | OpenAI、Anthropic |
+| `openai-3` | MCP 客户端、filesystem、sqlite、dynamic-tool-update | OpenAI、Anthropic、Brave |
+| `anthropic-multi` | 递归顾问、document-forge、brave、sampling | OpenAI、Anthropic、Brave |
+| `docker-tests` | rag-with-kotlin、evaluation-recursive-advisor-demo | OpenAI、Anthropic + Docker |
 
-### Triggering CI
+### 触发 CI
 
 ```bash
 # Run all tests
@@ -265,40 +265,40 @@ gh workflow run integration-tests.yml -f test_group=mcp-servers
 gh workflow run integration-tests.yml -f test_filter=kotlin-hello-world
 ```
 
-### Required Secrets
+### 必需的密钥
 
-Configure these in GitHub repository settings:
-- `OPENAI_API_KEY` - OpenAI API access
-- `ANTHROPIC_API_KEY` - Anthropic API (for AI validation and Anthropic examples)
-- `BRAVE_API_KEY` - Brave Search API (for web search examples)
+在 GitHub 仓库设置中配置以下内容：
+- `OPENAI_API_KEY` - OpenAI API 访问
+- `ANTHROPIC_API_KEY` - Anthropic API（用于 AI 校验与 Anthropic 示例）
+- `BRAVE_API_KEY` - Brave Search API（用于 Web 搜索示例）
 
-## Troubleshooting
+## 故障排查
 
-### Common Issues
+### 常见问题
 
-#### "JBang not found"
+#### “未找到 JBang”
 ```bash
 curl -Ls https://sh.jbang.dev | bash -s - app setup
 export PATH="$HOME/.jbang/bin:$PATH"
 ```
 
-#### "Missing environment variable"
+#### “缺少环境变量”
 ```bash
 export OPENAI_API_KEY="your-key"
 export ANTHROPIC_API_KEY="your-key"
 ```
 
-#### "Test timeout"
-- Increase `timeoutSec` in ExampleInfo.json
-- Check if external services are accessible
-- Review logs in `integration-testing/logs/background-runs/`
+#### “测试超时”
+- 增大 ExampleInfo.json 中的 `timeoutSec`
+- 检查外部服务是否可访问
+- 查看 `integration-testing/logs/background-runs/` 中的日志
 
-#### "Pattern verification failed"
-- Check actual output in log files
-- Update `successRegex` patterns
-- Consider using AI validation for unpredictable outputs
+#### “模式校验失败”
+- 检查日志文件中的实际输出
+- 更新 `successRegex` 模式
+- 考虑对不可预测的输出使用 AI 校验
 
-### Viewing Logs
+### 查看日志
 
 ```bash
 # List recent test logs
@@ -311,41 +311,41 @@ cat integration-testing/logs/background-runs/test_kotlin_kotlin-hello-world_*.lo
 grep -r "ERROR\|Exception\|FAILED" integration-testing/logs/background-runs/
 ```
 
-## Best Practices
+## 最佳实践
 
-### Test Scripts
-- Keep JBang scripts minimal (17-20 lines)
-- Use centralized utilities for all logic
-- Verify SOURCES path matches module depth
+### 测试脚本
+- 保持 JBang 脚本精简（17-20 行）
+- 所有逻辑都使用集中式工具类
+- 核实 SOURCES 路径与模块深度匹配
 
-### Configuration
-- Start with `hybrid` validation mode
-- Use specific success patterns over generic ones
-- Set realistic timeout values
+### 配置
+- 从 `hybrid` 校验模式开始
+- 使用具体的成功模式而不是通用模式
+- 设置合理的超时值
 
-### Maintenance
-- Fix bugs in centralized utilities, not individual scripts
-- Keep success patterns current with application changes
-- Monitor CI for flaky tests
+### 维护
+- 在集中式工具类中修复缺陷，而不是在单个脚本中
+- 让成功模式与应用改动保持同步
+- 监控 CI 中的不稳定测试
 
-## Examples by Pattern
+## 按模式分类的示例
 
-### Simple Console Apps
-- `kotlin/kotlin-hello-world` - 18 lines
-- `models/chat/helloworld` - 17 lines
-- `agentic-patterns/chain-workflow` - 18 lines
+### 简单控制台应用
+- `kotlin/kotlin-hello-world` - 18 行
+- `models/chat/helloworld` - 17 行
+- `agentic-patterns/chain-workflow` - 18 行
 
-### Web Server Apps
-- `weather/starter-webmvc-server` - 17 lines (uses McpTestUtils)
-- `kotlin/rag-with-kotlin` - 83 lines (custom validation)
+### Web 服务器应用
+- `weather/starter-webmvc-server` - 17 行（使用 McpTestUtils）
+- `kotlin/rag-with-kotlin` - 83 行（自定义校验）
 
-### Composite Apps (Server + Client)
-- `model-context-protocol/sampling` - 173 lines
-- `model-context-protocol/dynamic-tool-update` - 122 lines
+### 复合应用（服务器 + 客户端）
+- `model-context-protocol/sampling` - 173 行
+- `model-context-protocol/dynamic-tool-update` - 122 行
 
-## Getting Help
+## 获取帮助
 
-- Check existing tests for patterns
-- Review [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
-- Check [AI_VALIDATION.md](AI_VALIDATION.md) for AI validation issues
-- View test logs for detailed error information
+- 查看现有测试以了解可用模式
+- 参阅 [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+- 遇到 AI 校验问题请参阅 [AI_VALIDATION.md](AI_VALIDATION.md)
+- 查看测试日志以获取详细错误信息

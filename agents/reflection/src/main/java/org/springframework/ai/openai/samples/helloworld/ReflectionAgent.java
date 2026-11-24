@@ -59,7 +59,7 @@ public class ReflectionAgent {
 
     public String run(String userQuestion, int maxIterations) {
 
-        // Each agent keeps its own conversation in a separate session.
+        // 每个智能体在各自的会话中保存自己的对话。
         String generateSessionId = "generate-" + UUID.randomUUID();
         String critiqueSessionId = "critique-" + UUID.randomUUID();
 

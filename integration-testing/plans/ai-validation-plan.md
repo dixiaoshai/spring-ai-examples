@@ -1,34 +1,34 @@
-# AI-Based Validation Plan for Spring AI Examples
+# Spring AI 示例的 AI 驱动校验计划
 
-## Overview and Objectives
+## 概述与目标
 
-This plan outlines the integration of AI-powered validation into the Spring AI integration testing framework. The validation will use Claude Code (via the battle-tested `claude_code_wrapper.py`) to intelligently analyze application logs and determine if example applications successfully demonstrated their intended functionality.
+本计划阐述如何把 AI 驱动的校验引入 Spring AI 集成测试框架。校验将使用 Claude Code（通过久经检验的 `claude_code_wrapper.py`）智能分析应用日志，判断示例应用是否成功展示了其预期功能。
 
-### Key Insights
+### 关键认识
 
-- **These are example applications, not tests** - They demonstrate Spring AI functionality
-- **Success means**:
-  1. The application ran without exceptions
-  2. It demonstrated the functionality described in its README
-  3. For multi-component examples, all parts worked together correctly
-- **AI validation excels at**:
-  - Understanding context from logs and documentation
-  - Validating unpredictable AI-generated responses
-  - Determining if complex workflows completed successfully
-  - Analyzing multi-component interactions
+- **这些是示例应用，而不是测试** —— 它们用于演示 Spring AI 功能
+- **成功的含义**：
+  1. 应用运行过程中没有抛出异常
+  2. 它展示了其 README 中描述的功能
+  3. 对于多组件示例，所有部分都能正确协同工作
+- **AI 校验擅长**：
+  - 从日志和文档中理解上下文
+  - 校验不可预测的 AI 生成响应
+  - 判断复杂工作流是否成功完成
+  - 分析多组件之间的交互
 
-### Benefits
+### 优势
 
-1. **Intelligent Assessment**: Understands if examples achieved their purpose beyond pattern matching
-2. **Handles AI Outputs**: Validates unpredictable AI-generated content (jokes, conversations, etc.)
-3. **Context-Aware**: Uses README documentation to understand intended behavior
-4. **Multi-Component Support**: Validates distributed examples (client/server) holistically
-5. **Clear Reasoning**: Provides detailed explanations for pass/fail decisions
-6. **Flexible Adoption**: Can be enabled selectively per example
+1. **智能评估**：能够理解示例是否达成了其目的，而不只是模式匹配
+2. **处理 AI 输出**：可校验不可预测的 AI 生成内容（笑话、对话等）
+3. **上下文感知**：利用 README 文档理解预期行为
+4. **多组件支持**：对分布式示例（客户端/服务器）进行整体校验
+5. **推理清晰**：为通过/失败决策提供详细说明
+6. **灵活采用**：可以按示例选择性地启用
 
-## Design Approach
+## 设计方案
 
-### Architecture Overview
+### 架构总览
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -62,9 +62,9 @@ This plan outlines the integration of AI-powered validation into the Spring AI i
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Configuration Schema
+### 配置模式
 
-The `ExampleInfo.json` will be extended with an optional `aiValidation` section:
+`ExampleInfo.json` 将扩展一个可选的 `aiValidation` 段：
 
 ```json
 {
@@ -86,18 +86,18 @@ The `ExampleInfo.json` will be extended with an optional `aiValidation` section:
 }
 ```
 
-### Validation Modes
+### 校验模式
 
-1. **primary**: Use only AI validation (recommended for AI-response examples)
-2. **hybrid**: Both regex and AI must pass (for examples with deterministic + AI components)
-3. **fallback**: Use AI validation if regex patterns fail
+1. **primary**：仅使用 AI 校验（推荐用于 AI 响应类示例）
+2. **hybrid**：正则表达式与 AI 校验都必须通过（适用于同时包含确定性组件与 AI 组件的示例）
+3. **fallback**：当正则模式校验失败时改用 AI 校验
 
-## Implementation Plan - ✅ COMPLETED PHASES 1-3
+## 实施计划 —— ✅ 阶段 1-3 已完成
 
-### Phase 1: Infrastructure Setup ✅ COMPLETED
-- ✅ Create directory structure: `integration-testing/ai-validator/`
-- ✅ Copy `claude_code_wrapper.py` to `integration-testing/ai-validator/lib/`
-- ✅ Create `requirements.txt` with dependencies:
+### 阶段 1：基础设施搭建 ✅ 已完成
+- ✅ 创建目录结构：`integration-testing/ai-validator/`
+- ✅ 将 `claude_code_wrapper.py` 复制到 `integration-testing/ai-validator/lib/`
+- ✅ 创建 `requirements.txt` 并列出依赖：
   ```
   pathlib
   subprocess
@@ -105,8 +105,8 @@ The `ExampleInfo.json` will be extended with an optional `aiValidation` section:
   typing
   dataclasses
   ```
-- ✅ Create `animated_progress.py` (copy from pr-review or create minimal version)
-- ✅ Set up basic directory structure:
+- ✅ 创建 `animated_progress.py`（从 pr-review 复制，或创建最小版本）
+- ✅ 建立基本目录结构：
   ```
   integration-testing/
   └── ai-validator/
@@ -122,8 +122,8 @@ The `ExampleInfo.json` will be extended with an optional `aiValidation` section:
       └── requirements.txt
   ```
 
-### Phase 2: Core Validation Logic ✅ COMPLETED
-- ✅ Implement `validate_example.py` with main validation function:
+### 阶段 2：核心校验逻辑 ✅ 已完成
+- ✅ 在 `validate_example.py` 中实现主要的校验函数：
   ```python
   def validate_example(
       log_path: str,
@@ -134,11 +134,11 @@ The `ExampleInfo.json` will be extended with an optional `aiValidation` section:
       prompt_template: str = "example_validation"
   ) -> Dict[str, Any]
   ```
-- ✅ Implement log reading and preprocessing
-- ✅ Implement README parsing for context extraction
-- ✅ Create prompt building logic using templates
-- ✅ Integrate with `claude_code_wrapper.py` with **quiet mode** for clean JSON
-- ✅ Implement response parsing and structured output:
+- ✅ 实现日志读取与预处理
+- ✅ 实现 README 解析以提取上下文
+- ✅ 使用模板创建提示词构建逻辑
+- ✅ 与 `claude_code_wrapper.py` 集成，使用 **静默模式** 以获取干净的 JSON
+- ✅ 实现响应解析与结构化输出：
   ```json
   {
     "success": true,
@@ -154,11 +154,11 @@ The `ExampleInfo.json` will be extended with an optional `aiValidation` section:
     "recommendations": []
   }
   ```
-- ✅ Add error handling and timeout management
-- ✅ Implement multi-component log combination logic
+- ✅ 添加错误处理与超时管理
+- ✅ 实现多组件日志的合并逻辑
 
-### Phase 3: Java Integration ✅ COMPLETED
-- ✅ Extend `ExampleInfo` record to include `AIValidationConfig`:
+### 阶段 3：Java 集成 ✅ 已完成
+- ✅ 扩展 `ExampleInfo` record，加入 `AIValidationConfig`：
   ```java
   public record AIValidationConfig(
       boolean enabled,
@@ -170,8 +170,8 @@ The `ExampleInfo.json` will be extended with an optional `aiValidation` section:
       Map<String, Object> successCriteria
   ) {}
   ```
-- ✅ Add `AIValidationConfig aiValidation` field to `ExampleInfo` record
-- ✅ Implement `performAIValidation()` method in `IntegrationTestUtils.java`:
+- ✅ 添加 `AIValidationConfig aiValidation` 字段到 `ExampleInfo` record
+- ✅ 实现 `performAIValidation()` 方法（位于 `IntegrationTestUtils.java`）：
   ```java
   public static boolean performAIValidation(
       String output, 
@@ -179,129 +179,129 @@ The `ExampleInfo.json` will be extended with an optional `aiValidation` section:
       ExampleInfo cfg
   ) throws Exception
   ```
-- ✅ Add Python script invocation using ProcessExecutor
-- ✅ Parse JSON response from Python script (simplified with quiet mode)
-- ✅ Integrate validation results into test flow
-- ✅ Add appropriate logging and error messages
-- ✅ Handle validation mode logic (primary/hybrid/fallback)
-- ✅ **Path resolution fixed** - Works from different module depths
-- ✅ **End-to-end testing** - Successfully validated helloworld example
+- ✅ 使用 ProcessExecutor 调用 Python 脚本
+- ✅ 解析 Python 脚本返回的 JSON 响应（借助静默模式得以简化）
+- ✅ 将校验结果集成到测试流程中
+- ✅ 添加适当的日志记录与错误消息
+- ✅ 处理校验模式逻辑（primary/hybrid/fallback）
+- ✅ **路径解析修复** —— 可在不同模块深度下正常工作
+- ✅ **端到端测试** —— 成功校验了 helloworld 示例
 
-### ⚡ **Key Innovation: Quiet Mode**
-- ✅ Added `quiet` parameter to `claude_code_wrapper.py` methods
-- ✅ Eliminates brittle JSON extraction logic in Java
-- ✅ Direct JSON parsing instead of complex text filtering  
-- ✅ Much more reliable and maintainable integration
+### ⚡ **关键创新：静默模式**
+- ✅ 添加 `quiet` 参数到 `claude_code_wrapper.py` 的方法
+- ✅ 消除了 Java 中脆弱的 JSON 提取逻辑
+- ✅ 直接解析 JSON，而无需复杂的文本过滤
+- ✅ 集成方式更可靠、更易维护
 
-### Phase 4: Prompt Templates ✅ COMPLETED (Basic Set)
-- ✅ Create `example_validation.md` base template
-- ✅ Create `chat_example_validation.md` for conversational examples
-- ✅ Create `workflow_validation.md` for multi-step processes  
-- ✅ Create `client_server_validation.md` for distributed examples
-- ✅ Add template variable substitution logic with proper JSON escaping
-- ✅ Include specific validation criteria per template type
+### 阶段 4：提示词模板 ✅ 已完成（基础集）
+- ✅ 创建 `example_validation.md` 基础模板
+- ✅ 创建面向对话类示例的 `chat_example_validation.md`
+- ✅ 创建面向多步流程的 `workflow_validation.md`
+- ✅ 创建面向分布式示例的 `client_server_validation.md`
+- ✅ 添加模板变量替换逻辑，并正确处理 JSON 转义
+- ✅ 为每种模板类型加入特定的校验标准
 
-### Phase 5: Cost Reporting & Analysis ✅ COMPLETED
-- ✅ **Implement cost reporting in AI validation results**
-  - ✅ Extract cost information from claude_code_wrapper JSON output
-  - ✅ Add cost summary to validation output logs with detailed token breakdown
-  - ✅ Enhanced Java integration to display formatted cost information
-  - ✅ Added cost_info to ValidationResult and JSON output
-- ✅ **Port Kotlin test to AI validation**
-  - ✅ Update `kotlin/kotlin-hello-world` ExampleInfo.json with AI validation config
-  - ✅ Test AI validation with Kotlin structured joke output (setup/punchline)
-  - ✅ Verify cost tracking works correctly (439 tokens, 15.14s duration)
-  - ✅ Specialized validation for structured AI output with field validation
-- ✅ **Validate `rit-direct.sh` integration**
-  - ✅ Run full integration test suite with AI validation enabled
-  - ✅ Verify AI costs are properly reported across all tests in individual and summary logs
-  - ✅ Document cost patterns: ~400 tokens/validation, 12-15s duration, high cache efficiency
+### 阶段 5：成本报告与分析 ✅ 已完成
+- ✅ **在 AI 校验结果中实现成本报告**
+  - ✅ 从 claude_code_wrapper 的 JSON 输出中提取成本信息
+  - ✅ 在校验输出日志中加入成本摘要，并给出详细的 token 明细
+  - ✅ 增强 Java 集成，展示格式化后的成本信息
+  - ✅ 向 ValidationResult 与 JSON 输出中加入 cost_info
+- ✅ **将 Kotlin 测试迁移到 AI 校验**
+  - ✅ 为 `kotlin/kotlin-hello-world` 的 ExampleInfo.json 添加 AI 校验配置
+  - ✅ 用 Kotlin 结构化笑话输出（setup/punchline）测试 AI 校验
+  - ✅ 确认成本跟踪正常工作（439 个 token，耗时 15.14 秒）
+  - ✅ 针对结构化 AI 输出进行字段校验的专项校验
+- ✅ **校验 `rit-direct.sh` 集成**
+  - ✅ 启用 AI 校验后运行完整的集成测试套件
+  - ✅ 确认在单项日志与汇总日志中都正确报告了所有测试的 AI 成本
+  - ✅ 记录成本规律：每次校验约 400 个 token，耗时 12-15 秒，缓存效率高
 
-### 💰 **Cost Analysis Results**
-From comprehensive testing, AI validation shows excellent cost efficiency:
+### 💰 **成本分析结果**
+根据全面测试，AI 校验展现出极佳的成本效率：
 
-| Metric | Typical Range | Notes |
+| 指标 | 典型范围 | 说明 |
 |--------|-------------|-------|
-| **Input Tokens** | ~11 | Minimal prompt tokens due to template efficiency |
-| **Output Tokens** | 380-430 | Comprehensive validation analysis |
-| **Total Tokens** | 390-440 | Very reasonable per validation |
-| **Duration** | 12-15 seconds | Acceptable for integration testing |
-| **Cache Read** | 25-28K | High cache utilization = cost effective |
-| **Cache Creation** | 2-5K | Low creation cost due to template reuse |
-| **Confidence** | 0.85-1.00 | High validation accuracy |
+| **输入 Token** | ~11 | 模板高效，提示词 token 极少 |
+| **输出 Token** | 380-430 | 全面的校验分析 |
+| **总 Token** | 390-440 | 每次校验的成本非常合理 |
+| **耗时** | 12-15 秒 | 对集成测试而言可以接受 |
+| **缓存读取** | 25-28K | 缓存利用率高 = 成本更低 |
+| **缓存创建** | 2-5K | 模板复用使创建成本较低 |
+| **置信度** | 0.85-1.00 | 校验准确率高 |
 
-**Key Insights:**
-- **Template efficiency**: Minimal input tokens through optimized prompts
-- **Cache effectiveness**: 10-25x cache read ratio = substantial cost savings
-- **Predictable costs**: Consistent token usage across different example types
-- **High accuracy**: 85-100% confidence with detailed reasoning
+**关键认识：**
+- **模板效率**：通过优化的提示词实现极少的输入 token
+- **缓存效果**：10-25 倍的缓存读取比 = 显著节省成本
+- **成本可预测**：不同类型示例的 token 用量保持一致
+- **准确率高**：置信度达 85-100%，并附详细推理
 
-### Phase 6: Testing & Rollout 🚧 IN PROGRESS
-- ✅ Test with `models/chat/helloworld` (simple chat example) - **SUCCESS with 1.00 confidence**
-- ✅ Test with `kotlin/kotlin-hello-world` (structured output) - **SUCCESS with 0.90 confidence** 
-- ✅ **Comprehensive cost tracking verified** - All tests show detailed token usage and duration
-- ✅ Test with `agentic-patterns/chain-workflow` (complex workflow) - **SUCCESS with 0.95 confidence**
-- ✅ Test with `agentic-patterns/evaluator-optimizer` (dual-LLM iterative refinement) - **SUCCESS with 0.95 confidence**
-- [ ] Test with `model-context-protocol/weather/starter-webmvc-server` (client/server)
-- [ ] Test error scenarios (exceptions, timeouts, missing functionality)
-- [ ] Update `scaffold_integration_test.py` to support AI validation config
-- [ ] Create documentation:
-  - [ ] Add AI validation section to `integration-testing/docs/README.md`
-  - [ ] Create `integration-testing/docs/AI_VALIDATION.md` guide
-  - [ ] Update `CLAUDE.md` with AI validation information
-- [ ] Create example configurations for different scenarios
-- [ ] Performance testing and optimization
-- [ ] Create migration guide for existing tests
+### 阶段 6：测试与推广 🚧 进行中
+- ✅ 用 `models/chat/helloworld`（简单聊天示例）测试 —— **成功，置信度 1.00**
+- ✅ 用 `kotlin/kotlin-hello-world`（结构化输出）测试 —— **成功，置信度 0.90**
+- ✅ **全面成本跟踪已验证** —— 所有测试都显示出详细的 token 用量与耗时
+- ✅ 用 `agentic-patterns/chain-workflow`（复杂工作流）测试 —— **成功，置信度 0.95**
+- ✅ 用 `agentic-patterns/evaluator-optimizer`（双 LLM 迭代优化）测试 —— **成功，置信度 0.95**
+- [ ] 用 `model-context-protocol/weather/starter-webmvc-server`（客户端/服务器）测试
+- [ ] 测试错误场景（异常、超时、功能缺失）
+- [ ] 更新 `scaffold_integration_test.py` 以支持 AI 校验配置
+- [ ] 编写文档：
+  - [ ] 在 `integration-testing/docs/README.md` 中添加 AI 校验章节
+  - [ ] 创建 `integration-testing/docs/AI_VALIDATION.md` 指南
+  - [ ] 更新 `CLAUDE.md`，补充 AI 校验相关信息
+- [ ] 为不同场景创建示例配置
+- [ ] 性能测试与优化
+- [ ] 为现有测试编写迁移指南
 
-### 🎯 **Complex Workflow Validation Proven**
-AI validation has successfully demonstrated superiority over regex patterns for complex workflows:
+### 🎯 **复杂工作流校验得到验证**
+AI 校验已成功证明，对于复杂工作流，它优于正则模式：
 
-#### **Chain-Workflow Results (0.95 confidence)**
-- ✅ **Sequential Processing**: Verified 4-step data transformation pipeline
-- ✅ **Data Flow Integrity**: Confirmed each step built on previous output  
-- ✅ **Format Validation**: Validated final markdown table structure
-- ✅ **Logical Consistency**: Verified transformations were coherent
-- ✅ **Cost**: 431 tokens, 13.30 seconds
+#### **Chain-Workflow 结果（置信度 0.95）**
+- ✅ **顺序处理**：验证了 4 步数据转换流水线
+- ✅ **数据流完整性**：确认每一步都基于前一步的输出
+- ✅ **格式校验**：校验了最终 Markdown 表格的结构
+- ✅ **逻辑一致性**：确认各次转换彼此连贯
+- ✅ **成本**：431 个 token，13.30 秒
 
-#### **Evaluator-Optimizer Results (0.95 confidence)**  
-- ✅ **Dual-LLM Process**: Validated generator/evaluator interaction
-- ✅ **Iterative Refinement**: Confirmed feedback loop and improvement cycle
-- ✅ **Quality Assessment**: Verified evaluator provided meaningful feedback
-- ✅ **Solution Quality**: Confirmed final output met all criteria
-- ✅ **Cost**: 484 tokens, 13.63 seconds
+#### **Evaluator-Optimizer 结果（置信度 0.95）**
+- ✅ **双 LLM 流程**：验证了生成器/评估器之间的交互
+- ✅ **迭代优化**：确认了反馈回路与改进循环
+- ✅ **质量评估**：验证评估器给出了有意义的反馈
+- ✅ **方案质量**：确认最终输出满足所有标准
+- ✅ **成本**：484 个 token，13.63 秒
 
-**Key Insight**: Complex AI workflows require AI validation - regex patterns cannot assess:
-- Sequential step execution and data flow
-- Iterative refinement processes  
-- Quality improvement verification
-- Multi-component AI system interactions
+**关键认识**：复杂的 AI 工作流需要 AI 校验 —— 正则模式无法评估：
+- 顺序步骤的执行与数据流动
+- 迭代优化过程
+- 质量提升的验证
+- 多组件 AI 系统之间的交互
 
-### Phase 7: Test Migration Strategy  
-Based on analysis of current 18 tests, prioritize migration for:
+### 阶段 7：测试迁移策略
+基于对当前 18 个测试的分析，优先迁移以下测试：
 
-#### **High Priority (AI-Generated Content):**
-- ✅ `kotlin/kotlin-hello-world` - Kotlin chat example - **MIGRATED & TESTED (0.90 confidence)**
-- ✅ `agentic-patterns/chain-workflow` - Multi-step AI workflow - **MIGRATED & TESTED (0.95 confidence)**
-- ✅ `agentic-patterns/evaluator-optimizer` - AI evaluates and optimizes content - **MIGRATED & TESTED (0.95 confidence)**
-- [ ] `model-context-protocol/client-starter/starter-default-client` - MCP chat with tools
-- [ ] `agentic-patterns/orchestrator-workers` - Complex AI coordination
-- [ ] `agentic-patterns/routing-workflow` - AI decision making
-- [ ] `misc/spring-ai-java-function-callback` - Weather function calls
-- [ ] `kotlin/kotlin-function-callback` - Kotlin function calling
+#### **高优先级（AI 生成内容）：**
+- ✅ `kotlin/kotlin-hello-world` —— Kotlin 聊天示例 —— **已迁移并测试（置信度 0.90）**
+- ✅ `agentic-patterns/chain-workflow` —— 多步 AI 工作流 —— **已迁移并测试（置信度 0.95）**
+- ✅ `agentic-patterns/evaluator-optimizer` —— AI 评估并优化内容 —— **已迁移并测试（置信度 0.95）**
+- [ ] `model-context-protocol/client-starter/starter-default-client` —— 带工具的 MCP 聊天
+- [ ] `agentic-patterns/orchestrator-workers` —— 复杂的 AI 协调
+- [ ] `agentic-patterns/routing-workflow` —— AI 决策
+- [ ] `misc/spring-ai-java-function-callback` —— 天气函数调用
+- [ ] `kotlin/kotlin-function-callback` —— Kotlin 函数调用
 
-#### **Medium Priority (Structured Output):**
-- [ ] `prompt-engineering/prompt-engineering-patterns` - Various AI output patterns
-- [ ] `misc/openai-streaming-response` - Streaming AI responses
+#### **中优先级（结构化输出）：**
+- [ ] `prompt-engineering/prompt-engineering-patterns` —— 各种 AI 输出模式
+- [ ] `misc/openai-streaming-response` —— 流式 AI 响应
 
-#### **Migration Benefits:**
-- **Unpredictable AI responses** - Chat examples generate different jokes/conversations
-- **Complex workflows** - Agentic patterns have multi-step AI reasoning hard to validate with regex  
-- **Function calling** - Need to verify proper tool usage and realistic responses
-- **Context understanding** - MCP examples need to show proper tool integration
+#### **迁移收益：**
+- **不可预测的 AI 响应** —— 聊天示例会生成不同的笑话/对话
+- **复杂工作流** —— 智能体模式包含多步 AI 推理，难以用正则校验
+- **函数调用** —— 需要确认工具使用是否正确、响应是否合理
+- **上下文理解** —— MCP 示例需要展示正确的工具集成
 
-## Technical Implementation Details
+## 技术实现细节
 
-### File Structure
+### 文件结构
 ```
 integration-testing/
 ├── ai-validator/
@@ -325,9 +325,9 @@ integration-testing/
     └── AI_VALIDATION.md  # New comprehensive guide
 ```
 
-### Example Configurations
+### 示例配置
 
-#### Simple Chat Example (helloworld)
+#### 简单聊天示例（helloworld）
 ```json
 {
   "timeoutSec": 120,
@@ -342,7 +342,7 @@ integration-testing/
 }
 ```
 
-#### Complex Workflow Example (chain-workflow)
+#### 复杂工作流示例（chain-workflow）
 ```json
 {
   "timeoutSec": 300,
@@ -362,7 +362,7 @@ integration-testing/
 }
 ```
 
-#### Client-Server Example (MCP weather)
+#### 客户端-服务器示例（MCP weather）
 ```json
 {
   "timeoutSec": 300,
@@ -381,57 +381,57 @@ integration-testing/
 }
 ```
 
-## Success Criteria and Metrics
+## 成功标准与指标
 
-### Implementation Success Metrics
-- ✅ **Chat examples validated** - Both Java and Kotlin chat examples working with high confidence
-- ✅ **AI validation correctly identifies successful runs** - 100% accuracy on tested examples
-- ✅ **Structured output validation** - Kotlin joke example validates setup/punchline structure
-- ✅ **Validation provides clear, actionable reasoning** - Detailed explanations for all decisions
-- ✅ **Performance: AI validation completes within 15 seconds** - Better than 30s target
-- ✅ **Zero false positives** - All successful runs correctly identified
-- ✅ **Cost tracking comprehensive** - Full token usage and duration monitoring
-- [ ] Test workflow and client/server example types
-- [ ] Test failure scenarios (exceptions, missing functionality)  
-- [ ] Validate minimal false negatives (< 5%)
+### 实施成功指标
+- ✅ **聊天示例已通过校验** —— Java 与 Kotlin 聊天示例均以较高置信度运行
+- ✅ **AI 校验能正确识别成功的运行** —— 在测试过的示例上准确率 100%
+- ✅ **结构化输出校验** —— Kotlin 笑话示例可校验 setup/punchline 结构
+- ✅ **校验提供清晰、可执行的推理** —— 所有决策都有详细说明
+- ✅ **性能：AI 校验在 15 秒内完成** —— 优于 30 秒的目标
+- ✅ **零误报** —— 所有成功的运行都被正确识别
+- ✅ **成本跟踪全面** —— 完整监控 token 用量与耗时
+- [ ] 测试工作流与客户端/服务器示例类型
+- [ ] 测试失败场景（异常、功能缺失）
+- [ ] 验证误报率极低（< 5%）
 
-### Expected Outcomes ✅ ACHIEVED
-1. ✅ **Improved Validation Quality**: AI validates joke quality, conversation flow, and structured output beyond regex patterns
-2. ✅ **Reduced Maintenance**: No need to craft complex regex for unpredictable AI responses  
-3. ✅ **Better Developer Experience**: Detailed reasoning explains validation decisions with confidence scores
-4. ✅ **Broader Coverage**: Now validates chat interactions and structured AI outputs previously impossible with regex
-5. ✅ **Future-Proof**: Template-based system easily extends to new example types
-6. ✅ **Cost Transparency**: Complete visibility into AI validation costs with token-level granularity
+### 预期成果 ✅ 已达成
+1. ✅ **校验质量提升**：AI 能校验笑话质量、对话流程与结构化输出，超越正则模式
+2. ✅ **维护量减少**：无需为不可预测的 AI 响应编写复杂正则
+3. ✅ **开发者体验更好**：详细推理结合置信度分数，解释每次校验决策
+4. ✅ **覆盖面更广**：现在可以校验此前用正则无法处理的聊天交互与结构化 AI 输出
+5. ✅ **面向未来**：基于模板的系统可轻松扩展到新的示例类型
+6. ✅ **成本透明**：可精确到 token 级别地掌握 AI 校验成本
 
-## Current Status & Next Steps
+## 当前状态与后续步骤
 
-### 🎉 **Phase 5 Complete - Production Ready System**
+### 🎉 **阶段 5 完成 —— 系统已达生产就绪**
 
-The AI validation system is now **production-ready** with:
-- ✅ **Full cost reporting and tracking**
-- ✅ **Comprehensive testing across Java and Kotlin examples**  
-- ✅ **Integration with rit-direct.sh test runner**
-- ✅ **High accuracy validation with detailed reasoning**
-- ✅ **Excellent cost efficiency** (~400 tokens/validation, high cache utilization)
+AI 校验系统现已**达到生产就绪**，具备：
+- ✅ **完整的成本报告与跟踪**
+- ✅ **跨 Java 与 Kotlin 示例的全面测试**
+- ✅ **与 rit-direct.sh 测试运行器集成**
+- ✅ **高准确率校验与详细推理**
+- ✅ **出色的成本效率**（每次校验约 400 个 token，缓存利用率高）
 
-### **Current Status: Phase 6 In Progress**
+### **当前状态：阶段 6 进行中**
 
-#### ✅ **Completed in Phase 6:**
-1. ✅ **Complex workflow validation proven** - Successfully tested 2 agentic patterns
-2. ✅ **Multi-step AI reasoning validated** - Chain-workflow and evaluator-optimizer working
-3. ✅ **High accuracy maintained** - 95% confidence on complex workflows
-4. ✅ **Cost efficiency confirmed** - ~430-480 tokens for complex workflows
+#### ✅ **阶段 6 已完成部分：**
+1. ✅ **复杂工作流校验得到验证** —— 成功测试了 2 个智能体模式
+2. ✅ **多步 AI 推理得到验证** —— chain-workflow 与 evaluator-optimizer 均正常工作
+3. ✅ **保持高准确率** —— 复杂工作流的置信度达 95%
+4. ✅ **成本效率得到确认** —— 复杂工作流约需 430-480 个 token
 
-#### **Remaining Phase 6 Tasks:**
-1. **Test client-server examples** - Validate MCP and distributed example types
-2. **Test failure scenarios** - Ensure AI correctly identifies broken examples  
-3. **Update scaffolding** - Generate AI validation configs by default for new tests
-4. **Create documentation** - AI validation user guide and migration instructions
-5. **Performance optimization** - Fine-tune based on complex workflow learnings
+#### **阶段 6 剩余任务：**
+1. **测试客户端-服务器示例** —— 校验 MCP 与分布式示例类型
+2. **测试失败场景** —— 确保 AI 能正确识别损坏的示例
+3. **更新脚手架** —— 为新测试默认生成 AI 校验配置
+4. **编写文档** —— AI 校验用户指南与迁移说明
+5. **性能优化** —— 根据复杂工作流的经验进行微调
 
-### **Future Enhancements**
-1. Monitor validation accuracy and gather feedback from broader test suite
-2. Fine-tune prompt templates based on complex workflow results  
-3. Consider caching validation results for identical outputs to reduce costs
-4. Explore batch validation for multiple examples
-5. Add support for custom validation plugins and domain-specific templates
+### **未来增强**
+1. 监控校验准确率，并从更广泛的测试套件中收集反馈
+2. 根据复杂工作流的结果微调提示词模板
+3. 考虑对相同输出缓存校验结果以降低成本
+4. 探索多个示例的批量校验
+5. 增加对自定义校验插件与领域专用模板的支持

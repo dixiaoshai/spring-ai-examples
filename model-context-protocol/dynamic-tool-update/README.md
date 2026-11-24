@@ -1,48 +1,48 @@
-# Dynamic Tool Update Example
+# 动态工具更新示例
 
-This example demonstrates how a Model Context Protocol (MCP) server can dynamically update its available tools at runtime, and how a client can detect and use these updated tools.
+本示例演示模型上下文协议（MCP）服务器如何在运行时动态更新其可用工具，以及客户端如何检测并使用更新后的工具。
 
-## Overview
+## 概述
 
-The MCP protocol allows AI models to access external tools and resources through a standardized interface. This example showcases a key feature of MCP: the ability to dynamically update the available tools on the server side, with the client detecting and utilizing these changes.
+MCP 协议允许 AI 模型通过标准化接口访问外部工具与资源。本示例展示了 MCP 的一个关键特性：能够在服务器端动态更新可用工具，并由客户端检测和利用这些变化。
 
-## Key Components
+## 关键组件
 
-### Server
+### 服务器
 
-The server application consists of:
+服务器应用由以下部分组成：
 
-1. **WeatherService**: Initially provides a weather forecast tool that retrieves temperature data for a specific location.
-2. **MathTools**: Contains mathematical operations (sum, multiply, divide) that are added dynamically to the server.
-3. **ServerApplication**: Manages the server lifecycle and handles the dynamic tool update process.
+1. **WeatherService**：初始提供一个天气预报工具，用于获取指定地点的温度数据。
+2. **MathTools**：包含数学运算（求和、乘法、除法），会被动态添加到服务器中。
+3. **ServerApplication**：管理服务器生命周期，并处理动态工具更新流程。
 
-### Client
+### 客户端
 
-The client application:
+客户端应用会：
 
-1. Connects to the MCP server
-2. Retrieves the initial list of available tools
-3. Triggers the server to update its tools
-4. Detects the tool changes
-5. Retrieves the updated list of tools
+1. 连接到 MCP 服务器
+2. 获取初始可用工具列表
+3. 触发服务器更新其工具
+4. 检测工具变化
+5. 获取更新后的工具列表
 
-## How It Works
+## 工作原理
 
-1. **Initial Setup**: When the server starts, it only exposes the weather forecast tool.
+1. **初始设置**：服务器启动时仅暴露天气预报工具。
 
-2. **Dynamic Update Process**:
-   - The client sends a request to the server's `/updateTools` endpoint
-   - The server receives this signal and adds the math tools to its available tools
-   - The server notifies connected clients about the tool changes
-   - The client receives the notification and can now use the new tools
+2. **动态更新过程**：
+   - 客户端向服务器的 `/updateTools` 端点发送请求
+   - 服务器收到该信号后，将数学工具加入其可用工具
+   - 服务器向已连接的客户端通知工具变化
+   - 客户端收到通知，此后即可使用新工具
 
-3. **Tool Discovery**: The client can query the available tools at any time, demonstrating that the tool list has been updated.
+3. **工具发现**：客户端可随时查询可用工具，以验证工具列表已更新。
 
-## Implementation Details
+## 实现细节
 
-### Server-Side Implementation
+### 服务器端实现
 
-The server uses Spring AI's MCP server implementation:
+服务器使用 Spring AI 的 MCP 服务器实现：
 
 ```java
 @Bean
@@ -68,9 +68,9 @@ public CommandLineRunner predefinedQuestions(McpSyncServer mcpSyncServer) {
 }
 ```
 
-### Client-Side Implementation
+### 客户端实现
 
-The client connects to the server and registers a callback to be notified when tools change:
+客户端连接服务器并注册回调，以便在工具变化时收到通知：
 
 ```java
 @Bean
@@ -84,7 +84,7 @@ McpSyncClientCustomizer customizeMcpClient() {
 }
 ```
 
-The client retrieves the available tools before and after the update:
+客户端在更新前后分别获取可用工具列表：
 
 ```java
 // Get initial tools
@@ -109,34 +109,34 @@ toolDescriptions = chatClientBuilder.build()
         .entity(new ParameterizedTypeReference<List<ToolDescription>>() {});
 ```
 
-## Key Insight
+## 关键洞见
 
-The example demonstrates a crucial aspect of the MCP implementation in Spring AI:
+本示例展示了 Spring AI 中 MCP 实现的一个关键方面：
 
-> The client implementation relies on the fact that the `ToolCallbackProvider#getToolCallbacks` implementation for MCP will always get the current list of MCP tools from the server.
+> 客户端实现依赖于这样一个事实：MCP 的 `ToolCallbackProvider#getToolCallbacks` 实现始终会从服务器获取当前的 MCP 工具列表。
 
-This means that whenever a client requests the available tools, it will always get the most up-to-date list from the server, without needing to restart or reinitialize the client.
+这意味着客户端每次请求可用工具时，都会从服务器获得最新列表，无需重启或重新初始化客户端。
 
-## Running the Example
+## 运行示例
 
-1. Start the server application:
+1. 启动服务器应用：
    ```
    cd server
    ./mvnw spring-boot:run
    ```
 
-2. In a separate terminal, start the client application:
+2. 在另一个终端中启动客户端应用：
    ```
    cd client
    ./mvnw spring-boot:run
    ```
 
-3. Observe the console output to see:
-   - The initial list of tools (only weather forecast)
-   - The tool update notification
-   - The updated list of tools (weather forecast + math operations)
+3. 观察控制台输出，可以看到：
+   - 初始工具列表（仅天气预报）
+   - 工具更新通知
+   - 更新后的工具列表（天气预报 + 数学运算）
 
-## MCP Protocol Specification
+## MCP 协议规范
 
-For more information about the MCP protocol, refer to the official specification:
+有关 MCP 协议的更多信息，请参阅官方规范：
 [https://modelcontextprotocol.io/specification/2024-11-05/server/tools](https://modelcontextprotocol.io/specification/2024-11-05/server/tools)

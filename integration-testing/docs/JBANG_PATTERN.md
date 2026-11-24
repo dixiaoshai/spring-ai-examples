@@ -1,12 +1,12 @@
-# JBang Integration Test Pattern - Standard Guidelines
+# JBang 集成测试模式 - 标准指南
 
-## Overview
+## 概览
 
-This document establishes the standard pattern for creating JBang integration test scripts in the Spring AI Examples repository. As of Phase 3a.6, all JBang scripts must use centralized utilities to eliminate code duplication.
+本文档确立了在 Spring AI Examples 仓库中创建 JBang 集成测试脚本的标准模式。自第 3a.6 阶段起，所有 JBang 脚本都必须使用集中式工具类，以消除代码重复。
 
-## The Standard Pattern
+## 标准模式
 
-### Template for New JBang Scripts
+### 新 JBang 脚本的模板
 
 ```java
 ///usr/bin/env jbang "$0" "$@" ; exit $?
@@ -29,15 +29,15 @@ public class Run[ModuleName] {
 }
 ```
 
-## Key Components
+## 关键组成部分
 
-### 1. JBang Header
-- Must include exact dependencies (zt-exec and jackson-databind)
-- Java 17 is the standard version
-- Always include `ExampleInfo.json` as a file dependency
+### 1. JBang 头
+- 必须包含准确的依赖（zt-exec 与 jackson-databind）
+- Java 17 是标准版本
+- 始终将 `ExampleInfo.json` 作为文件依赖包含进来
 
-### 2. SOURCES Directive
-The path to `IntegrationTestUtils.java` varies by module depth:
+### 2. SOURCES 指令
+`IntegrationTestUtils.java` 的路径因模块深度而异：
 
 ```
 Module at: kotlin/kotlin-hello-world (2 levels deep)
@@ -50,26 +50,26 @@ Module at: model-context-protocol/client/starter/example (4 levels deep)
 Use: //SOURCES ../../../../../integration-testing/jbang-lib/IntegrationTestUtils.java
 ```
 
-### 3. Class Naming Convention
-- Class name: `Run[ModuleName]` (PascalCase)
-- File name: `Run[ModuleName].java`
-- Examples:
+### 3. 类命名约定
+- 类名：`Run[ModuleName]`（PascalCase）
+- 文件名：`Run[ModuleName].java`
+- 示例：
   - `RunHelloworld.java`
   - `RunKotlinHelloWorld.java`
   - `RunStarterDefaultClient.java`
 
-### 4. Module Name Parameter
-Pass the module name to `runIntegrationTest()`:
-- Use the directory name or a descriptive identifier
-- This is used for logging and progress reporting
-- Examples:
+### 4. 模块名参数
+将模块名传给 `runIntegrationTest()`：
+- 使用目录名或描述性标识符
+- 用于日志记录与进度报告
+- 示例：
   - `"helloworld"`
   - `"kotlin-hello-world"`
   - `"starter-default-client"`
 
-## What NOT to Do
+## 不应做的事项
 
-### ❌ Don't Copy Old Patterns
+### ❌ 不要复制旧模式
 ```java
 // DON'T DO THIS - Old pattern with inline logic
 public class RunExample {
@@ -80,12 +80,12 @@ public class RunExample {
 }
 ```
 
-### ❌ Don't Modify Individual Scripts
-- Don't add custom logic to individual test scripts
-- Don't override behavior for specific tests
-- All customization should be in `ExampleInfo.json`
+### ❌ 不要修改单个脚本
+- 不要向单个测试脚本添加自定义逻辑
+- 不要为特定测试覆盖行为
+- 所有定制都应放在 `ExampleInfo.json` 中
 
-### ❌ Don't Use Wrong Paths
+### ❌ 不要使用错误路径
 ```java
 // WRONG - Missing '../' levels
 //SOURCES integration-testing/jbang-lib/IntegrationTestUtils.java
@@ -94,22 +94,22 @@ public class RunExample {
 //SOURCES /home/user/projects/spring-ai-examples/integration-testing/jbang-lib/IntegrationTestUtils.java
 ```
 
-## Benefits of This Pattern
+## 该模式的优势
 
-1. **Consistency**: All tests behave identically
-2. **Maintainability**: Fix bugs in one place
-3. **Simplicity**: New tests are trivial to create
-4. **Reliability**: Proven test execution logic
-5. **Debugging**: Standardized logging and error reporting
+1. **一致性**：所有测试行为完全一致
+2. **可维护性**：只需在一处修复缺陷
+3. **简单性**：创建新测试非常容易
+4. **可靠性**：经过验证的测试执行逻辑
+5. **可调试性**：标准化的日志与错误报告
 
-## Creating a New Integration Test
+## 创建新的集成测试
 
-### Step 1: Create Directory
+### 第 1 步：创建目录
 ```bash
 mkdir -p your-module/integration-tests
 ```
 
-### Step 2: Create Configuration
+### 第 2 步：创建配置
 ```bash
 cat > your-module/integration-tests/ExampleInfo.json << 'EOF'
 {
@@ -123,56 +123,56 @@ cat > your-module/integration-tests/ExampleInfo.json << 'EOF'
 EOF
 ```
 
-### Step 3: Create JBang Script
-1. Count the directory depth of your module
-2. Use the template above
-3. Replace `[RELATIVE_PATH]` with correct `../` count
-4. Replace `[MODULE_NAME]` and `[ModuleName]` appropriately
-5. Save as `RunYourModule.java`
+### 第 3 步：创建 JBang 脚本
+1. 计算模块的目录深度
+2. 使用上面的模板
+3. 将 `[RELATIVE_PATH]` 替换为正确数量的 `../`
+4. 适当替换 `[MODULE_NAME]` 与 `[ModuleName]`
+5. 保存为 `RunYourModule.java`
 
-### Step 4: Test Locally
+### 第 4 步：本地测试
 ```bash
 cd your-module/integration-tests
 jbang RunYourModule.java
 ```
 
-## Troubleshooting
+## 故障排查
 
-### "Could not find: IntegrationTestUtils.java"
-- Count your module's directory depth
-- Add the correct number of `../` to reach repository root
-- Then append `integration-testing/jbang-lib/`
+### 找不到 “IntegrationTestUtils.java”
+- 计算模块的目录深度
+- 添加正确数量的 `../` 以到达仓库根目录
+- 然后追加 `integration-testing/jbang-lib/`
 
-### "Cannot find symbol: IntegrationTestUtils"
-- Verify the SOURCES directive is present
-- Check the path is correct
-- Ensure no typos in the class name
+### 找不到符号 “IntegrationTestUtils”
+- 确认 SOURCES 指令存在
+- 检查路径是否正确
+- 确保类名中没有拼写错误
 
-### Different Behavior Than Expected
-- Check `ExampleInfo.json` configuration
-- All behavior customization happens through configuration
-- Don't modify the JBang script itself
+### 行为与预期不符
+- 检查 `ExampleInfo.json` 配置
+- 所有行为定制都通过配置完成
+- 不要修改 JBang 脚本本身
 
-## Migration Guide
+## 迁移指南
 
-When updating an old script:
+更新旧脚本时：
 
-1. **Backup** the old script (for reference)
-2. **Create** new script using the template
-3. **Verify** the configuration in `ExampleInfo.json`
-4. **Test** locally to ensure it works
-5. **Delete** the backup once confirmed working
+1. **备份**旧脚本（供参考）
+2. 使用模板**创建**新脚本
+3. **核实** `ExampleInfo.json` 中的配置
+4. 在本地**测试**以确保其可用
+5. 确认可用后**删除**备份
 
-## Future Enhancements
+## 未来增强
 
-All enhancements to integration testing should be made in `IntegrationTestUtils.java`:
-- New features
-- Bug fixes
-- Performance improvements
-- Additional validation
+所有对集成测试的增强都应在 `IntegrationTestUtils.java` 中进行：
+- 新功能
+- 缺陷修复
+- 性能改进
+- 额外的校验
 
-Individual JBang scripts should remain minimal and unchanged.
+各个 JBang 脚本应保持精简且不做改动。
 
-## Summary
+## 总结
 
-The centralized JBang pattern is mandatory for all new integration tests. This ensures consistency, maintainability, and reliability across the entire test suite. When in doubt, look at existing examples like `RunHelloworld.java` for reference.
+集中式 JBang 模式对所有新的集成测试都是强制要求。这可确保整个测试套件的一致性、可维护性与可靠性。如有疑问，可参考 `RunHelloworld.java` 等现有示例。

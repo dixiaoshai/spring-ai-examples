@@ -1,19 +1,19 @@
 # ============================================================================
-# Spring AI Examples - Integration Tests
+# Spring AI Examples - 集成测试
 # ============================================================================
 #
-# This workflow runs integration tests for Spring AI examples in parallel groups.
+# 此工作流按并行分组运行 Spring AI 示例的集成测试。
 #
-# SCHEDULE: Weekly on Sundays at 6 AM UTC
+# 调度：每周日 UTC 6:00
 #
-# MANUAL TRIGGER OPTIONS:
-#   - test_filter: Run a specific test by name pattern
-#     Examples: "kotlin-hello-world", "chain-workflow", "weather"
+# 手动触发选项：
+#   - test_filter：按名称模式运行指定测试
+#     示例："kotlin-hello-world"、"chain-workflow"、"weather"
 #
-#   - test_group: Run only tests in a specific group
-#     Options: all, mcp-servers, agentic, openai-2, openai-3, anthropic-multi, docker-tests
+#   - test_group：仅运行指定分组中的测试
+#     可选值：all、mcp-servers、agentic、openai-2、openai-3、anthropic-multi、docker-tests
 #
-# TEST GROUPS:
+# 测试分组：
 #   ┌─────────────────────┬────────────────────────────────────────────────────┐
 #   │ Group               │ Tests                                              │
 #   ├─────────────────────┼────────────────────────────────────────────────────┤
@@ -55,11 +55,11 @@
 #   │                     │ advisors/evaluation-recursive-advisor-demo (Ollama)│
 #   └─────────────────────┴────────────────────────────────────────────────────┘
 #
-# SKIPPED TESTS (not in any group):
-#   - mcp-annotations-server: Orphaned directory
-#   - sampling/mcp-weather-webmvc-server: Orphaned directory
+# 跳过的测试（不属于任何分组）：
+#   - mcp-annotations-server：孤立目录
+#   - sampling/mcp-weather-webmvc-server：孤立目录
 #
-# REQUIRED SECRETS:
+# 必需的密钥：
 #   - OPENAI_API_KEY
 #   - ANTHROPIC_API_KEY
 #   - BRAVE_API_KEY
@@ -70,7 +70,7 @@ name: Integration Tests
 
 on:
   schedule:
-    - cron: '0 6 * * 0'  # Weekly on Sunday at 6 AM UTC
+    - cron: '0 6 * * 0'  # 每周日 UTC 6:00
   workflow_dispatch:
     inputs:
       test_filter:
@@ -94,7 +94,7 @@ on:
 
 jobs:
   # ============================================================================
-  # Standard Integration Tests (no Docker services required)
+  # 标准集成测试（不需要 Docker 服务）
   # ============================================================================
   integration-tests:
     name: ${{ matrix.group_name }}
@@ -105,7 +105,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Group 1: MCP Servers (no API keys for app, but needs Anthropic for AI validation)
+          # 分组 1：MCP 服务器（应用本身不需要 API 密钥，但 AI 校验需要 Anthropic）
           - group: mcp-servers
             group_name: "MCP Servers"
             tests: |
@@ -117,7 +117,7 @@ jobs:
             needs_anthropic: true
             needs_brave: false
 
-          # Group 2: Agentic Patterns (OpenAI + Anthropic)
+          # 分组 2：智能体模式（OpenAI + Anthropic）
           - group: agentic
             group_name: "Agentic Patterns"
             tests: |
@@ -131,7 +131,7 @@ jobs:
             needs_anthropic: true
             needs_brave: false
 
-          # Group 3: OpenAI - Kotlin & Misc (needs Anthropic for AI validation)
+          # 分组 3：OpenAI - Kotlin 及其他（AI 校验需要 Anthropic）
           - group: openai-2
             group_name: "OpenAI - Kotlin & Misc"
             tests: |
@@ -144,7 +144,7 @@ jobs:
             needs_anthropic: true
             needs_brave: false
 
-          # Group 4: OpenAI - MCP Clients & SQLite (needs Anthropic for AI validation)
+          # 分组 4：OpenAI - MCP 客户端与 SQLite（AI 校验需要 Anthropic）
           - group: openai-3
             group_name: "OpenAI - MCP Clients"
             tests: |
@@ -157,7 +157,7 @@ jobs:
             needs_anthropic: true
             needs_brave: false
 
-          # Group 5: Anthropic & Multi-API tests
+          # 分组 5：Anthropic 与多 API 测试
           - group: anthropic-multi
             group_name: "Anthropic & Multi-API"
             tests: |
@@ -178,7 +178,7 @@ jobs:
       - name: Check if group should run
         id: check
         run: |
-          # If test_filter is specified, only run if this group contains the filtered test
+          # 如果指定了 test_filter，则仅当该分组包含所过滤的测试时才运行
           if [ -n "${{ inputs.test_filter }}" ]; then
             if echo "${{ matrix.tests }}" | grep -q "${{ inputs.test_filter }}"; then
               echo "should_run=true" >> $GITHUB_OUTPUT
@@ -249,17 +249,17 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y sqlite3
 
-          # Pre-install MCP server packages to avoid download delays during tests
+          # 预装 MCP 服务器包，避免测试期间下载延迟
           echo "📦 Pre-installing MCP server packages..."
 
-          # Install npm-based MCP servers globally
+          # 全局安装基于 npm 的 MCP 服务器
           npm install -g @modelcontextprotocol/server-brave-search @modelcontextprotocol/server-filesystem
 
-          # Install uv for Python package management (provides uvx)
+          # 安装 uv 以管理 Python 包（提供 uvx）
           curl -LsSf https://astral.sh/uv/install.sh | sh
           export PATH="$HOME/.local/bin:$PATH"
 
-          # Pre-install Python-based MCP server (used by sqlite tests)
+          # 预装基于 Python 的 MCP 服务器（供 sqlite 测试使用）
           uvx --version || echo "uvx not available"
           uvx mcp-server-sqlite --help 2>/dev/null || echo "Pre-warming mcp-server-sqlite..."
 
@@ -284,14 +284,14 @@ jobs:
         run: |
           export PATH="$HOME/.jbang/bin:$PATH"
 
-          # If specific test filter provided, use that
+          # 如果提供了具体的测试过滤器，则使用它
           if [ -n "${{ inputs.test_filter }}" ]; then
             echo "Running filtered test: ${{ inputs.test_filter }}"
             ./integration-testing/scripts/run-integration-tests.sh "${{ inputs.test_filter }}"
             exit $?
           fi
 
-          # Otherwise run tests for this group
+          # 否则运行该分组的所有测试
           echo "Running tests for group: ${{ matrix.group_name }}"
           echo "Tests:"
           echo "${{ matrix.tests }}"
@@ -302,7 +302,7 @@ jobs:
           failed_tests=""
 
           while IFS= read -r test; do
-            # Skip empty lines
+            # 跳过空行
             [ -z "$test" ] && continue
 
             echo ""
@@ -319,7 +319,7 @@ jobs:
               failed_tests="$failed_tests\n  - $test"
             fi
 
-            # Clean up any hanging processes
+            # 清理所有挂起的进程
             pkill -f "spring-boot:run" 2>/dev/null || true
             sleep 2
           done <<< "${{ matrix.tests }}"
@@ -344,7 +344,7 @@ jobs:
           retention-days: 7
 
   # ============================================================================
-  # Docker-based Tests (pgvector, Ollama)
+  # 基于 Docker 的测试（pgvector、Ollama）
   # ============================================================================
   docker-tests:
     name: "Docker Tests"
@@ -371,8 +371,8 @@ jobs:
         image: ghcr.io/${{ github.repository }}/ollama-flow-judge:latest
         ports:
           - 11434:11434
-        # Note: Ollama can take several minutes to initialize models
-        # Using simple process check here, then manual wait step below
+        # 注意：Ollama 初始化模型可能需要几分钟
+        # 这里使用简单的进程检查，稍后还有手动等待步骤
         options: >-
           --health-cmd="pgrep ollama || exit 1"
           --health-interval=5s
@@ -432,8 +432,8 @@ jobs:
           echo "✅ pgvector is ready"
 
           echo "Waiting for Ollama API to be ready..."
-          # Ollama can take several minutes to initialize models
-          # Poll with exponential backoff up to 5 minutes
+          # Ollama 初始化模型可能需要几分钟
+          # 以指数退避轮询，最多 5 分钟
           max_attempts=30
           attempt=0
           while [ $attempt -lt $max_attempts ]; do
@@ -455,8 +455,8 @@ jobs:
           curl -s http://localhost:11434/api/tags | jq . || curl -s http://localhost:11434/api/tags
 
           echo "Warming up Ollama model (this may take a moment)..."
-          # Make a small inference request to ensure the model is fully loaded
-          # Model name must match what was pulled in the Docker image
+          # 发起一次小的推理请求，确保模型已完全加载
+          # 模型名称必须与 Docker 镜像中拉取的模型一致
           curl -s http://localhost:11434/api/generate \
             -d '{"model": "avcodes/flowaicom-flow-judge:q4", "prompt": "Hello", "stream": false}' \
             --max-time 180 | head -c 200
@@ -467,7 +467,7 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           SPRING_AI_OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          # pgvector connection - override Docker Compose
+          # pgvector 连接 - 覆盖 Docker Compose 配置
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/postgres
           SPRING_DATASOURCE_USERNAME: postgres
           SPRING_DATASOURCE_PASSWORD: postgres
@@ -497,7 +497,7 @@ jobs:
           retention-days: 7
 
   # ============================================================================
-  # Summary
+  # 汇总
   # ============================================================================
   summary:
     name: Test Summary

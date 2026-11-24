@@ -1,177 +1,177 @@
-# JUnit5 Implementation Roadmap
+# JUnit5 实施路线图
 
-## Executive Summary
+## 执行摘要
 
-This roadmap outlines the implementation plan for transforming the Spring AI Examples integration testing framework from JBang-based scripts to a modern JUnit5 annotation-driven system with AI validation. The implementation spans 12 weeks with clear milestones, deliverables, and success criteria.
+本路线图规划了将 Spring AI Examples 集成测试框架从基于 JBang 的脚本改造为带 AI 校验的现代化 JUnit5 注解驱动系统的实施方案。实施周期为 12 周，包含清晰的里程碑、交付物与成功标准。
 
-## Vision and Goals
+## 愿景与目标
 
-### Vision Statement
-Create a world-class integration testing framework that leverages AI to validate complex, non-deterministic outputs while providing developers with familiar JUnit5 tooling and excellent IDE support.
+### 愿景陈述
+打造世界一流的集成测试框架，借助 AI 校验复杂的非确定性输出，同时为开发者提供熟悉的 JUnit5 工具链与出色的 IDE 支持。
 
-### Strategic Goals
-1. **Developer Experience**: Reduce test debugging time by 40% through IDE integration
-2. **Reliability**: Achieve 99% test reliability with intelligent validation
-3. **Performance**: Maintain or improve current test execution times
-4. **Cost Efficiency**: Optimize AI validation costs through caching and batching
-5. **Maintainability**: Reduce test maintenance effort by 50%
+### 战略目标
+1. **开发者体验**：通过 IDE 集成将测试调试时间减少 40%
+2. **可靠性**：借助智能校验实现 99% 的测试可靠性
+3. **性能**：保持或改善当前的测试执行耗时
+4. **成本效率**：通过缓存与批处理优化 AI 校验成本
+5. **可维护性**：将测试维护工作量减少 50%
 
-## Implementation Phases
+## 实施阶段
 
-### Phase 0: Planning and Setup (Week 0 - Pre-Implementation)
-**Status**: ✅ Complete
+### 阶段 0：规划与准备（第 0 周 —— 实施前）
+**状态**：✅ 已完成
 
-#### Completed Deliverables
-- ✅ Architecture design document
-- ✅ Migration strategy document
-- ✅ AI validator integration design
-- ✅ API design specifications
-- ✅ Implementation roadmap (this document)
+#### 已完成的交付物
+- ✅ 架构设计文档
+- ✅ 迁移策略文档
+- ✅ AI 校验器集成设计
+- ✅ API 设计规范
+- ✅ 实施路线图（本文档）
 
-### Phase 1: Foundation Development (Weeks 1-2)
+### 阶段 1：基础开发（第 1-2 周）
 
-#### Week 1: Core Infrastructure
-**Objective**: Establish base JUnit5 extension framework
+#### 第 1 周：核心基础设施
+**目标**：建立 JUnit5 扩展框架的基础
 
-**Tasks**:
-- [ ] Create Maven module: `spring-ai-test-framework`
-- [ ] Implement core annotations
+**任务**：
+- [ ] 创建 Maven 模块：`spring-ai-test-framework`
+- [ ] 实现核心注解
   - [ ] `@SpringAIIntegrationTest`
   - [ ] `@AIValidation`
-  - [ ] `@ExpectedBehavior` with README inference support
+  - [ ] `@ExpectedBehavior`，支持从 README 推断
   - [ ] `@SuccessPatterns`
-  - [ ] `@ContextResources` for multi-source context
-- [ ] Develop `SpringAITestExtension` skeleton
-- [ ] Set up project structure and dependencies
+  - [ ] `@ContextResources`，用于多来源上下文
+- [ ] 开发 `SpringAITestExtension` 骨架
+- [ ] 搭建项目结构与依赖
 
-**Deliverables**:
-- Compilable framework module
-- Basic annotation processors
-- Unit tests for annotations
+**交付物**：
+- 可编译的框架模块
+- 基础注解处理器
+- 注解的单元测试
 
-**Success Criteria**:
-- Framework compiles without errors
-- Annotations can be applied to test classes
-- Extension loads in JUnit5 runtime
+**成功标准**：
+- 框架编译无错误
+- 注解可应用于测试类
+- 扩展能在 JUnit5 运行时中加载
 
-#### Week 2: Integration Components
-**Objective**: Build validation engine integration
+#### 第 2 周：集成组件
+**目标**：构建校验引擎的集成
 
-**Tasks**:
-- [ ] Implement `AIValidationController`
-- [ ] Create `ProcessBasedValidatorExecutor`
-- [ ] Develop `ValidationRequestBuilder` with README inference
-- [ ] Build `ValidationResponseParser`
-- [ ] Create `ContextInferenceEngine` for README parsing
-- [ ] Implement `ReadmeParser` for markdown processing
-- [ ] Create compatibility bridge for `IntegrationTestUtils`
+**任务**：
+- [ ] 实现 `AIValidationController`
+- [ ] 创建 `ProcessBasedValidatorExecutor`
+- [ ] 开发带 README 推断能力的 `ValidationRequestBuilder`
+- [ ] 构建 `ValidationResponseParser`
+- [ ] 创建用于 README 解析的 `ContextInferenceEngine`
+- [ ] 实现用于 Markdown 处理的 `ReadmeParser`
+- [ ] 为 `IntegrationTestUtils` 创建兼容桥接层
 
-**Deliverables**:
-- Working validation pipeline
-- JSON-to-annotation converter tool
-- Integration test for validation flow
+**交付物**：
+- 可运行的校验流水线
+- JSON 转注解的转换工具
+- 校验流程的集成测试
 
-**Success Criteria**:
-- Can execute Python validator from Java
-- Successful round-trip validation test
-- Converter generates valid Java code
+**成功标准**：
+- 可从 Java 调用 Python 校验器
+- 往返校验测试成功
+- 转换器可生成合法的 Java 代码
 
-### Phase 2: Pilot Implementation (Weeks 3-4)
+### 阶段 2：试点实施（第 3-4 周）
 
-#### Week 3: Simple Example Migration
-**Objective**: Migrate and validate simple example
+#### 第 3 周：简单示例迁移
+**目标**：迁移并验证简单示例
 
-**Target Module**: `kotlin/kotlin-hello-world`
+**目标模块**：`kotlin/kotlin-hello-world`
 
-**Tasks**:
-- [ ] Convert `ExampleInfo.json` to annotations
-- [ ] Create `KotlinHelloWorldIntegrationTest.java`
-- [ ] Implement output capture mechanism
-- [ ] Add regex pattern validation
-- [ ] Integrate AI validation
+**任务**：
+- [ ] 将 `ExampleInfo.json` 转换为注解
+- [ ] 创建 `KotlinHelloWorldIntegrationTest.java`
+- [ ] 实现输出捕获机制
+- [ ] 添加正则模式校验
+- [ ] 集成 AI 校验
 
-**Deliverables**:
-- First working JUnit5 integration test
-- Side-by-side comparison report
-- Performance benchmarks
+**交付物**：
+- 首个可运行的 JUnit5 集成测试
+- 并排对比报告
+- 性能基准
 
-**Success Criteria**:
-- Test passes with JUnit5
-- Results match JBang execution
-- Performance within 10% of original
+**成功标准**：
+- 测试可通过 JUnit5 运行
+- 结果与 JBang 执行一致
+- 性能与原始实现相差不超过 10%
 
-#### Week 4: Complex Example Migration
-**Objective**: Validate complex workflow handling
+#### 第 4 周：复杂示例迁移
+**目标**：验证复杂工作流的处理
 
-**Target Modules**:
-1. `agentic-patterns/chain-workflow` (complex workflow)
-2. `model-context-protocol/sqlite/simple` (MCP protocol)
+**目标模块**：
+1. `agentic-patterns/chain-workflow`（复杂工作流）
+2. `model-context-protocol/sqlite/simple`（MCP 协议）
 
-**Tasks**:
-- [ ] Migrate chain-workflow example
-- [ ] Implement setup/teardown command support
-- [ ] Migrate MCP example
-- [ ] Add component validation support
-- [ ] Create comparison test suite
+**任务**：
+- [ ] 迁移 chain-workflow 示例
+- [ ] 实现 setup/teardown 命令支持
+- [ ] 迁移 MCP 示例
+- [ ] 添加组件校验支持
+- [ ] 创建对比测试套件
 
-**Deliverables**:
-- Two complex migrations complete
-- Validation comparison report
-- Edge case documentation
+**交付物**：
+- 两个复杂迁移完成
+- 校验对比报告
+- 边界情况文档
 
-**Success Criteria**:
-- Both tests pass reliably
-- AI validation provides accurate results
-- Setup/teardown commands execute properly
+**成功标准**：
+- 两个测试都能稳定通过
+- AI 校验给出准确结果
+- setup/teardown 命令正确执行
 
-### Phase 3: Feature Development (Weeks 5-6)
+### 阶段 3：功能开发（第 5-6 周）
 
-#### Week 5: Advanced Features
-**Objective**: Implement performance and cost optimizations
+#### 第 5 周：高级功能
+**目标**：实现性能与成本优化
 
-**Tasks**:
-- [ ] Implement validation caching system
-- [ ] Add batch validation support
-- [ ] Create cost tracking module
-- [ ] Develop parallel execution support
-- [ ] Build retry mechanism
+**任务**：
+- [ ] 实现校验缓存系统
+- [ ] 添加批量校验支持
+- [ ] 创建成本跟踪模块
+- [ ] 开发并行执行支持
+- [ ] 构建重试机制
 
-**Deliverables**:
-- Caching layer with Caffeine
-- Cost tracking dashboard
-- Parallel execution configuration
+**交付物**：
+- 基于 Caffeine 的缓存层
+- 成本跟踪看板
+- 并行执行配置
 
-**Success Criteria**:
-- 50% cache hit rate in testing
-- Cost tracking accurate to 5%
-- Parallel execution reduces time by 30%
+**成功标准**：
+- 测试中缓存命中率达到 50%
+- 成本跟踪误差在 5% 以内
+- 并行执行将耗时缩短 30%
 
-#### Week 6: Reporting and Monitoring
-**Objective**: Build comprehensive reporting system
+#### 第 6 周：报告与监控
+**目标**：构建完整的报告体系
 
-**Tasks**:
-- [ ] Create HTML report generator
-- [ ] Implement metrics collection (Micrometer)
-- [ ] Add logging aspects
-- [ ] Build test trend analyzer
-- [ ] Create CI/CD integration adapters
+**任务**：
+- [ ] 创建 HTML 报告生成器
+- [ ] 实现指标采集（Micrometer）
+- [ ] 添加日志切面
+- [ ] 构建测试趋势分析器
+- [ ] 创建 CI/CD 集成适配器
 
-**Deliverables**:
-- Rich HTML test reports
-- Grafana dashboard configuration
-- CI/CD plugin for Jenkins/GitHub Actions
+**交付物**：
+- 丰富的 HTML 测试报告
+- Grafana 看板配置
+- Jenkins/GitHub Actions 的 CI/CD 插件
 
-**Success Criteria**:
-- Reports generated automatically
-- Metrics visible in monitoring system
-- CI/CD integration functional
+**成功标准**：
+- 报告可自动生成
+- 指标可在监控系统中查看
+- CI/CD 集成可用
 
-### Phase 4: Mass Migration (Weeks 7-9)
+### 阶段 4：批量迁移（第 7-9 周）
 
-#### Week 7: Batch 1 - Simple Examples
-**Objective**: Migrate all simple examples
+#### 第 7 周：批次 1 —— 简单示例
+**目标**：迁移所有简单示例
 
-**Target Modules** (8 modules):
+**目标模块**（8 个模块）：
 - `kotlin/kotlin-function-callback`
 - `models/chat/helloworld`
 - `misc/openai-streaming-response`
@@ -180,111 +180,111 @@ Create a world-class integration testing framework that leverages AI to validate
 - `prompt-engineering/prompt-advance-techniques`
 - `prompt-engineering/prompt-to-object`
 
-**Automation**:
+**自动化**：
 ```bash
 ./scripts/batch-migrate.sh --batch simple
 ```
 
-**Success Criteria**:
-- All 8 modules migrated
-- 100% test pass rate
-- Automated migration tool working
+**成功标准**：
+- 全部 8 个模块迁移完成
+- 测试通过率 100%
+- 自动化迁移工具可正常工作
 
-#### Week 8: Batch 2 - Agentic Patterns
-**Objective**: Migrate agentic pattern examples
+#### 第 8 周：批次 2 —— 智能体模式
+**目标**：迁移智能体模式示例
 
-**Target Modules** (5 modules):
+**目标模块**（5 个模块）：
 - `agentic-patterns/orchestrator-workers`
 - `agentic-patterns/parallelization`
 - `agentic-patterns/routing`
 - `agentic-patterns/evaluator-optimizer`
 
-**Success Criteria**:
-- Complex workflows validated correctly
-- AI validation confidence > 0.85
-- No performance degradation
+**成功标准**：
+- 复杂工作流校验正确
+- AI 校验置信度 > 0.85
+- 性能无下降
 
-#### Week 9: Batch 3 - MCP and Complex
-**Objective**: Complete remaining migrations
+#### 第 9 周：批次 3 —— MCP 与复杂示例
+**目标**：完成剩余迁移
 
-**Target Modules** (11 modules):
-- All remaining MCP examples
+**目标模块**（11 个模块）：
+- 所有剩余 MCP 示例
 - `agents/reflection`
 - `rag/query-based-rag`
-- Other complex examples
+- 其他复杂示例
 
-**Success Criteria**:
-- All 24 modules migrated
-- Regression test suite passes
-- Documentation updated
+**成功标准**：
+- 全部 24 个模块迁移完成
+- 回归测试套件通过
+- 文档已更新
 
-### Phase 5: Validation and Optimization (Weeks 10-11)
+### 阶段 5：验证与优化（第 10-11 周）
 
-#### Week 10: Parallel Validation
-**Objective**: Run both systems in parallel
+#### 第 10 周：并行验证
+**目标**：并行运行两套系统
 
-**Tasks**:
-- [ ] Set up dual execution pipeline
-- [ ] Create comparison dashboard
-- [ ] Run full regression suite
-- [ ] Analyze discrepancies
-- [ ] Performance optimization
+**任务**：
+- [ ] 搭建双执行流水线
+- [ ] 创建对比看板
+- [ ] 运行完整回归套件
+- [ ] 分析差异
+- [ ] 性能优化
 
-**Deliverables**:
-- Comparison report
-- Performance analysis
-- Optimization recommendations
+**交付物**：
+- 对比报告
+- 性能分析
+- 优化建议
 
-**Success Criteria**:
-- Less than 1% discrepancy rate
-- Performance meets targets
-- No critical issues found
+**成功标准**：
+- 差异率低于 1%
+- 性能达到目标
+- 未发现关键问题
 
-#### Week 11: Production Readiness
-**Objective**: Prepare for production cutover
+#### 第 11 周：生产就绪
+**目标**：为生产切换做好准备
 
-**Tasks**:
-- [ ] Final bug fixes
-- [ ] Documentation updates
-- [ ] Training materials creation
-- [ ] Rollback procedure testing
-- [ ] Stakeholder sign-off
+**任务**：
+- [ ] 最终缺陷修复
+- [ ] 更新文档
+- [ ] 制作培训材料
+- [ ] 测试回滚流程
+- [ ] 干系人签署确认
 
-**Deliverables**:
-- Production deployment plan
-- Training documentation
-- Video tutorials
-- Rollback scripts
+**交付物**：
+- 生产部署计划
+- 培训文档
+- 视频教程
+- 回滚脚本
 
-**Success Criteria**:
-- All stakeholders approve
-- Training completed
-- Rollback tested successfully
+**成功标准**：
+- 所有干系人认可
+- 培训完成
+- 回滚测试成功
 
-### Phase 6: Deployment and Transition (Week 12)
+### 阶段 6：部署与过渡（第 12 周）
 
-#### Week 12: Production Cutover
-**Objective**: Switch to JUnit5 as primary system
+#### 第 12 周：生产切换
+**目标**：切换为以 JUnit5 为主系统
 
-**Tasks**:
-- [ ] Update CI/CD pipelines
-- [ ] Deploy to production
-- [ ] Monitor for issues
-- [ ] Archive JBang scripts
-- [ ] Post-implementation review
+**任务**：
+- [ ] 更新 CI/CD 流水线
+- [ ] 部署到生产环境
+- [ ] 监控问题
+- [ ] 归档 JBang 脚本
+- [ ] 实施后复盘
 
-**Deliverables**:
-- Updated CI/CD configuration
-- Archived legacy system
-- Lessons learned document
-- Success metrics report
+**交付物**：
+- 更新后的 CI/CD 配置
+- 已归档的旧系统
+- 经验教训文档
+- 成功指标报告
 
-**Success Criteria**:
-- Zero production incidents
-- All tests passing
-- Positive developer feedback
+**成功标准**：
+- 生产环境零事故
+- 所有测试通过
+- 开发者反馈积极
 
-## Detailed Timeline
+## 详细时间表
 
 ```mermaid
 gantt
@@ -310,254 +310,254 @@ gantt
     Production Cutover       :2024-03-19, 7d
 ```
 
-## Resource Allocation
+## 资源分配
 
-### Team Structure
+### 团队结构
 
-#### Core Team
-- **Tech Lead** (100% allocation)
-  - Architecture decisions
-  - Code reviews
-  - Stakeholder communication
+#### 核心团队
+- **技术负责人**（投入 100%）
+  - 架构决策
+  - 代码评审
+  - 干系人沟通
 
-- **Senior Developer** (100% allocation)
-  - Framework development
-  - Complex migrations
-  - Performance optimization
+- **高级开发工程师**（投入 100%）
+  - 框架开发
+  - 复杂迁移
+  - 性能优化
 
-- **Developer** (75% allocation)
-  - Module migrations
-  - Testing and validation
-  - Documentation
+- **开发工程师**（投入 75%）
+  - 模块迁移
+  - 测试与验证
+  - 文档编写
 
-- **QA Engineer** (50% allocation)
-  - Test validation
-  - Regression testing
-  - Quality metrics
+- **QA 工程师**（投入 50%）
+  - 测试验证
+  - 回归测试
+  - 质量指标
 
-- **DevOps Engineer** (25% allocation)
-  - CI/CD updates
-  - Infrastructure setup
-  - Monitoring configuration
+- **DevOps 工程师**（投入 25%）
+  - CI/CD 更新
+  - 基础设施搭建
+  - 监控配置
 
-### Effort Estimation
+### 工作量估算
 
-| Phase | Person-Days | Key Resources |
+| 阶段 | 人日 | 关键资源 |
 |-------|------------|---------------|
-| Foundation | 20 | Tech Lead, Senior Dev |
-| Pilot | 15 | Senior Dev, Developer |
-| Features | 20 | Senior Dev, Developer |
-| Migration | 30 | Developer, QA |
-| Validation | 15 | QA, DevOps |
-| Deployment | 10 | DevOps, Tech Lead |
-| **Total** | **110** | |
+| 基础开发 | 20 | 技术负责人、高级开发 |
+| 试点 | 15 | 高级开发、开发工程师 |
+| 功能开发 | 20 | 高级开发、开发工程师 |
+| 批量迁移 | 30 | 开发工程师、QA |
+| 验证 | 15 | QA、DevOps |
+| 部署 | 10 | DevOps、技术负责人 |
+| **合计** | **110** | |
 
-## Risk Management
+## 风险管理
 
-### Risk Matrix
+### 风险矩阵
 
-| Risk | Probability | Impact | Mitigation |
+| 风险 | 概率 | 影响 | 缓解措施 |
 |------|------------|--------|------------|
-| AI validation discrepancies | Medium | High | Extensive comparison testing |
-| Performance degradation | Low | High | Continuous benchmarking |
-| Migration tool failures | Medium | Medium | Manual fallback procedures |
-| Developer resistance | Low | Medium | Training and documentation |
-| Cost overruns | Low | Low | Budget monitoring |
-| Schedule delays | Medium | Medium | Buffer time included |
+| AI 校验结果存在差异 | 中 | 高 | 大量对比测试 |
+| 性能下降 | 低 | 高 | 持续基准测试 |
+| 迁移工具故障 | 中 | 中 | 手工兜底流程 |
+| 开发者抵触 | 低 | 中 | 培训与文档 |
+| 成本超支 | 低 | 低 | 预算监控 |
+| 进度延迟 | 中 | 中 | 预留缓冲时间 |
 
-### Contingency Plans
+### 应急方案
 
-#### Plan A: Full Migration
-- Complete all 24 modules
-- Full feature parity
-- Enhanced capabilities
+#### 方案 A：完整迁移
+- 完成全部 24 个模块
+- 功能完全对等
+- 能力增强
 
-#### Plan B: Hybrid Approach
-- Keep complex examples in JBang
-- Migrate simple/medium complexity
-- Gradual transition over 6 months
+#### 方案 B：混合方式
+- 复杂示例继续留在 JBang
+- 迁移简单/中等复杂度的示例
+- 用 6 个月逐步过渡
 
-#### Plan C: Minimal Migration
-- Framework available for new tests
-- Existing tests remain in JBang
-- Optional migration path
+#### 方案 C：最小迁移
+- 框架用于新测试
+- 现有测试保留在 JBang
+- 提供可选的迁移路径
 
-## Success Metrics
+## 成功指标
 
-### Technical Metrics
+### 技术指标
 
-| Metric | Current | Target | Measurement |
+| 指标 | 当前 | 目标 | 测量方式 |
 |--------|---------|--------|-------------|
-| Test Execution Time | 15 min | 12 min | CI/CD pipeline |
-| Test Reliability | 95% | 99% | Pass rate over 30 days |
-| Debugging Time | 30 min avg | 18 min avg | Developer survey |
-| Code Coverage | 75% | 85% | Coverage tools |
-| AI Validation Accuracy | 90% | 95% | Comparison analysis |
+| 测试执行耗时 | 15 分钟 | 12 分钟 | CI/CD 流水线 |
+| 测试可靠性 | 95% | 99% | 30 天内的通过率 |
+| 调试耗时 | 平均 30 分钟 | 平均 18 分钟 | 开发者问卷 |
+| 代码覆盖率 | 75% | 85% | 覆盖率工具 |
+| AI 校验准确率 | 90% | 95% | 对比分析 |
 
-### Business Metrics
+### 业务指标
 
-| Metric | Target | Measurement |
+| 指标 | 目标 | 测量方式 |
 |--------|--------|-------------|
-| Developer Satisfaction | 4.5/5 | Survey |
-| Maintenance Hours/Month | -40% | Time tracking |
-| Test Creation Time | -30% | Story points |
-| Production Incidents | -25% | Incident reports |
+| 开发者满意度 | 4.5/5 | 问卷 |
+| 每月维护工时 | -40% | 时间跟踪 |
+| 测试创建耗时 | -30% | 故事点 |
+| 生产事故 | -25% | 事故报告 |
 
-### Cost Metrics
+### 成本指标
 
-| Metric | Budget | Tracking |
+| 指标 | 预算 | 跟踪方式 |
 |--------|--------|----------|
-| Development Cost | $150,000 | Time tracking |
-| AI Validation Cost/Month | $500 | API usage |
-| Infrastructure Cost | $1,000 | Cloud billing |
-| Training Cost | $5,000 | Training budget |
+| 开发成本 | $150,000 | 时间跟踪 |
+| 每月 AI 校验成本 | $500 | API 用量 |
+| 基础设施成本 | $1,000 | 云服务账单 |
+| 培训成本 | $5,000 | 培训预算 |
 
-## Stakeholder Communication
+## 干系人沟通
 
-### Communication Plan
+### 沟通计划
 
-#### Weekly Updates
-- Progress against milestones
-- Blockers and risks
-- Metrics dashboard
+#### 每周更新
+- 里程碑进展
+- 阻塞项与风险
+- 指标看板
 
-#### Bi-weekly Demos
-- Completed features
-- Migration progress
-- Performance comparisons
+#### 双周演示
+- 已完成的功能
+- 迁移进展
+- 性能对比
 
-#### Monthly Reviews
-- Executive summary
-- Budget status
-- Risk assessment
+#### 月度评审
+- 执行摘要
+- 预算状况
+- 风险评估
 
-### Stakeholder Matrix
+### 干系人矩阵
 
-| Stakeholder | Interest | Influence | Communication |
+| 干系人 | 关注度 | 影响力 | 沟通方式 |
 |-------------|----------|-----------|---------------|
-| Development Team | High | High | Daily standups |
-| Engineering Manager | High | High | Weekly 1:1 |
-| Product Owner | Medium | High | Bi-weekly demos |
-| QA Team | High | Medium | Weekly sync |
-| DevOps Team | Medium | Medium | As needed |
-| CTO | Low | High | Monthly report |
+| 开发团队 | 高 | 高 | 每日站会 |
+| 工程经理 | 高 | 高 | 每周一对一 |
+| 产品负责人 | 中 | 高 | 双周演示 |
+| QA 团队 | 高 | 中 | 每周同步 |
+| DevOps 团队 | 中 | 中 | 按需 |
+| CTO | 低 | 高 | 月度报告 |
 
-## Training Plan
+## 培训计划
 
-### Developer Training
+### 开发者培训
 
-#### Week 10: Introduction Workshop (2 hours)
-- JUnit5 basics
-- Annotation system
-- IDE integration
+#### 第 10 周：入门工作坊（2 小时）
+- JUnit5 基础
+- 注解系统
+- IDE 集成
 
-#### Week 11: Advanced Workshop (4 hours)
-- AI validation configuration
-- Cost optimization
-- Troubleshooting
+#### 第 11 周：进阶工作坊（4 小时）
+- AI 校验配置
+- 成本优化
+- 故障排查
 
-#### Week 12: Hands-on Lab (4 hours)
-- Migrate a test together
-- Debug common issues
-- Best practices
+#### 第 12 周：动手实验（4 小时）
+- 共同迁移一个测试
+- 调试常见问题
+- 最佳实践
 
-### Documentation
+### 文档
 
-#### User Guide
-- Getting started
-- Annotation reference
-- Configuration guide
-- Troubleshooting
+#### 用户指南
+- 快速上手
+- 注解参考
+- 配置指南
+- 故障排查
 
-#### Migration Guide
-- Step-by-step instructions
-- Converter tool usage
-- Common patterns
+#### 迁移指南
+- 分步操作说明
+- 转换工具用法
+- 常见模式
 
-#### API Documentation
-- JavaDoc for all public APIs
-- Architecture diagrams
-- Extension points
+#### API 文档
+- 所有公共 API 的 JavaDoc
+- 架构图
+- 扩展点
 
-## Post-Implementation
+## 实施后
 
-### Week 13-14: Stabilization
-- Monitor production usage
-- Address feedback
-- Performance tuning
-- Bug fixes
+### 第 13-14 周：稳定期
+- 监控生产使用情况
+- 处理反馈
+- 性能调优
+- 缺陷修复
 
-### Week 15-16: Enhancement Planning
-- Gather feature requests
-- Plan Phase 2 features
-- Update roadmap
+### 第 15-16 周：增强规划
+- 收集功能需求
+- 规划第二阶段的特性
+- 更新路线图
 
-### Month 2-3: Continuous Improvement
-- Implement minor enhancements
-- Optimize based on usage patterns
-- Expand documentation
+### 第 2-3 个月：持续改进
+- 实施小幅增强
+- 依据使用模式进行优化
+- 扩充文档
 
-## Future Roadmap (Beyond 12 Weeks)
+## 未来路线图（12 周之后）
 
-### Quarter 2: Enhanced Features
-- Multi-model AI support (GPT-4, Gemini)
-- Advanced template system
-- Intelligent test generation
+### 第二季度：增强功能
+- 多模型 AI 支持（GPT-4、Gemini）
+- 高级模板系统
+- 智能测试生成
 
-### Quarter 3: Platform Features
-- Test result analytics
-- Predictive failure analysis
-- Self-healing tests
+### 第三季度：平台功能
+- 测试结果分析
+- 预测性失败分析
+- 自愈测试
 
-### Quarter 4: Enterprise Features
-- Multi-tenant support
-- Role-based access control
-- Audit logging
+### 第四季度：企业级功能
+- 多租户支持
+- 基于角色的访问控制
+- 审计日志
 
-## Budget Summary
+## 预算摘要
 
-### Development Costs
-- Personnel: $120,000 (110 person-days)
-- Infrastructure: $3,000 (3 months)
-- Tools/Licenses: $2,000
-- Training: $5,000
-- **Subtotal**: $130,000
+### 开发成本
+- 人力：$120,000（110 人日）
+- 基础设施：$3,000（3 个月）
+- 工具/许可证：$2,000
+- 培训：$5,000
+- **小计**：$130,000
 
-### Contingency
-- 15% contingency: $19,500
-- **Total Budget**: $149,500
+### 应急储备
+- 15% 应急储备：$19,500
+- **总预算**：$149,500
 
-## Decision Gates
+## 决策关卡
 
-### Gate 1: After Pilot (Week 4)
-**Decision**: Proceed with full migration?
-- Criteria: Pilot success, performance acceptable
-- Approver: Engineering Manager
+### 关卡 1：试点之后（第 4 周）
+**决策**：是否推进完整迁移？
+- 标准：试点成功、性能可接受
+- 批准人：工程经理
 
-### Gate 2: After Batch 1 (Week 7)
-**Decision**: Continue with complex migrations?
-- Criteria: Simple migrations successful
-- Approver: Tech Lead
+### 关卡 2：批次 1 之后（第 7 周）
+**决策**：是否继续复杂迁移？
+- 标准：简单迁移成功
+- 批准人：技术负责人
 
-### Gate 3: Before Cutover (Week 11)
-**Decision**: Switch to production?
-- Criteria: All tests passing, stakeholder approval
-- Approver: CTO
+### 关卡 3：切换之前（第 11 周）
+**决策**：是否切换到生产环境？
+- 标准：所有测试通过、干系人批准
+- 批准人：CTO
 
-## Conclusion
+## 结论
 
-This implementation roadmap provides a structured, low-risk approach to modernizing the Spring AI Examples integration testing framework. The phased approach ensures continuous validation while maintaining system stability. With clear milestones, comprehensive risk management, and detailed success criteria, this plan sets the foundation for a successful transformation that will benefit the development team for years to come.
+本实施路线图为 Spring AI Examples 集成测试框架的现代化提供了结构化、低风险的方法。分阶段的方式在保持系统稳定性的同时确保持续验证。凭借清晰的里程碑、全面的风险管理与详尽的成功标准，本计划为一次成功的转型奠定了基础，其成果将使开发团队长期受益。
 
-## Appendices
+## 附录
 
-### Appendix A: Tool Requirements
+### 附录 A：工具要求
 - JDK 17+
 - Maven 3.8+
 - Python 3.8+
-- Docker (for containerized validator)
-- IDE with JUnit5 support
+- Docker（用于容器化校验器）
+- 支持 JUnit5 的 IDE
 
-### Appendix B: Dependencies
+### 附录 B：依赖
 ```xml
 <dependencies>
     <dependency>
@@ -583,12 +583,12 @@ This implementation roadmap provides a structured, low-risk approach to moderniz
 </dependencies>
 ```
 
-### Appendix C: Migration Checklist
-- [ ] Read current ExampleInfo.json
-- [ ] Run converter tool
-- [ ] Review generated code
-- [ ] Add custom configurations
-- [ ] Run side-by-side validation
-- [ ] Update documentation
-- [ ] Commit changes
-- [ ] Update CI/CD configuration
+### 附录 C：迁移检查清单
+- [ ] 读取当前的 ExampleInfo.json
+- [ ] 运行转换工具
+- [ ] 审阅生成的代码
+- [ ] 添加自定义配置
+- [ ] 运行并排验证
+- [ ] 更新文档
+- [ ] 提交变更
+- [ ] 更新 CI/CD 配置

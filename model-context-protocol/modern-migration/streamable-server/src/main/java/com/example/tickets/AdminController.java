@@ -15,17 +15,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Adds a tool at runtime. On the session-based server this goes through
- * {@link McpSyncServer#addTool}, which also sends {@code notifications/tools/list_changed}
- * to every connected session.
+ * 在运行时添加工具。在基于会话的服务器上，这会通过 {@link McpSyncServer#addTool} 完成，
+ * 该方法还会向每个已连接的会话发送 {@code notifications/tools/list_changed}。
  */
 @RestController
 public class AdminController {
 
-	// Resolved lazily, once: injecting McpSyncServer directly would create it while this
-	// controller is being wired, before the @McpTool beans have been scanned, and the server
-	// would start with an empty tool list. The ObjectProvider defers the lookup; the
-	// SingletonSupplier caches its result.
+	// 延迟解析且只解析一次：直接注入 McpSyncServer 会在装配该控制器时、在 @McpTool Bean
+	// 被扫描之前就创建它，服务器会以空工具列表启动。
+	// ObjectProvider 推迟查找；
+	// SingletonSupplier 缓存其结果。
 	private final Supplier<McpSyncServer> server;
 
 	public AdminController(ObjectProvider<McpSyncServer> server) {

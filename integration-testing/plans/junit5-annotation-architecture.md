@@ -1,15 +1,15 @@
-# JUnit5 Annotation Architecture for AI-Driven Integration Testing
+# 面向 AI 驱动集成测试的 JUnit5 注解架构
 
-## Executive Summary
+## 执行摘要
 
-This document outlines the architecture for transforming the current JBang-based integration testing framework into a JUnit5 annotation-driven system. The new system will leverage JUnit5's extension model to provide a declarative, type-safe approach to AI-powered test validation while maintaining backward compatibility with existing test infrastructure.
+本文档阐述了将当前基于 JBang 的集成测试框架改造为 JUnit5 注解驱动系统的架构。新系统将利用 JUnit5 的扩展模型，为 AI 驱动的测试校验提供声明式、类型安全的方式，同时保持与现有测试基础设施的向后兼容。
 
-## Core Architecture Components
+## 核心架构组件
 
-### 1. Custom Annotations
+### 1. 自定义注解
 
 #### @SpringAIIntegrationTest
-Primary test annotation that combines Spring Boot test capabilities with AI validation.
+主测试注解，将 Spring Boot 测试能力与 AI 校验结合起来。
 
 ```java
 @Target(ElementType.TYPE)
@@ -25,7 +25,7 @@ public @interface SpringAIIntegrationTest {
 ```
 
 #### @AIValidation
-Configures AI-powered validation for test methods or classes.
+为测试方法或测试类配置 AI 驱动的校验。
 
 ```java
 @Target({ElementType.METHOD, ElementType.TYPE})
@@ -46,7 +46,7 @@ public @interface AIValidation {
 ```
 
 #### @ExpectedBehavior
-Describes expected application behavior for AI validation, with automatic inference from README documentation.
+描述 AI 校验所需的预期应用行为，并可从 README 文档自动推断。
 
 ```java
 @Target({ElementType.METHOD, ElementType.TYPE})
@@ -93,7 +93,7 @@ public @interface ExpectedBehavior {
 ```
 
 #### @SuccessPatterns
-Defines regex patterns for traditional validation.
+定义用于传统校验的正则表达式模式。
 
 ```java
 @Target({ElementType.METHOD, ElementType.TYPE})
@@ -112,7 +112,7 @@ public @interface SuccessPatterns {
 ```
 
 #### @SetupAndTeardown
-Configures pre/post test execution commands.
+配置测试执行前后的命令。
 
 ```java
 @Target({ElementType.METHOD, ElementType.TYPE})
@@ -127,7 +127,7 @@ public @interface SetupAndTeardown {
 ```
 
 #### @ContextResources
-Aggregates multiple resources for comprehensive test context.
+聚合多个资源，为测试提供完整的上下文。
 
 ```java
 @Target({ElementType.METHOD, ElementType.TYPE})
@@ -215,10 +215,10 @@ public class SpringAITestExtension implements
 }
 ```
 
-### 3. Validation Engine Architecture
+### 3. 校验引擎架构
 
 #### AIValidationEngine
-Manages the AI validation lifecycle and integrates with Claude, including README inference.
+管理 AI 校验的生命周期，并与 Claude 集成，包括 README 推断。
 
 ```java
 public class AIValidationEngine {
@@ -244,7 +244,7 @@ public class AIValidationEngine {
 ```
 
 #### ContextInferenceEngine
-Automatically infers test expectations from documentation and resources.
+从文档与资源中自动推断测试的预期结果。
 
 ```java
 public class ContextInferenceEngine {
@@ -307,10 +307,10 @@ public class TestContext {
 }
 ```
 
-### 4. Output Capture System
+### 4. 输出捕获系统
 
 #### TestOutputCapture
-Captures and manages application output during test execution.
+在测试执行期间捕获并管理应用输出。
 
 ```java
 public class TestOutputCapture {
@@ -333,10 +333,10 @@ public class TestOutputCapture {
 }
 ```
 
-### 5. Configuration Management
+### 5. 配置管理
 
 #### TestConfiguration
-Base configuration interface for test customization.
+用于自定义测试的基础配置接口。
 
 ```java
 public interface TestConfiguration {
@@ -356,9 +356,9 @@ public interface TestConfiguration {
 }
 ```
 
-## Integration Patterns
+## 集成模式
 
-### 1. Simple Test Example with README Inference
+### 1. 带 README 推断的简单测试示例
 
 ```java
 @SpringAIIntegrationTest(timeout = 120)
@@ -377,7 +377,7 @@ public class KotlinHelloWorldIntegrationTest {
 }
 ```
 
-### 1a. Simple Test with Explicit Behavior (Override)
+### 1a. 带显式行为描述的简单测试（覆盖）
 
 ```java
 @SpringAIIntegrationTest(timeout = 120)
@@ -396,7 +396,7 @@ public class ExplicitBehaviorTest {
 }
 ```
 
-### 1b. Hybrid Approach (README + Explicit)
+### 1b. 混合方式（README + 显式）
 
 ```java
 @SpringAIIntegrationTest(timeout = 120)
@@ -415,7 +415,7 @@ public class HybridContextTest {
 }
 ```
 
-### 2. Complex Workflow Example
+### 2. 复杂工作流示例
 
 ```java
 @SpringAIIntegrationTest(timeout = 300)
@@ -447,7 +447,7 @@ public class ChainWorkflowIntegrationTest {
 }
 ```
 
-### 3. MCP Protocol Example with Context Resources
+### 3. 带上下文资源的 MCP 协议示例
 
 ```java
 @SpringAIIntegrationTest(
@@ -480,9 +480,9 @@ public class MCPClientIntegrationTest {
 }
 ```
 
-## Extension Points
+## 扩展点
 
-### 1. Custom Validators
+### 1. 自定义校验器
 
 ```java
 public interface CustomValidator {
@@ -497,7 +497,7 @@ public class GraphQLResponseValidator implements CustomValidator {
 }
 ```
 
-### 2. Template Providers
+### 2. 模板提供者
 
 ```java
 public interface TemplateProvider {
@@ -507,7 +507,7 @@ public interface TemplateProvider {
 }
 ```
 
-### 3. README Parsers
+### 3. README 解析器
 
 ```java
 public interface ReadmeParser {
@@ -525,7 +525,7 @@ public class MarkdownReadmeParser implements ReadmeParser {
 }
 ```
 
-### 4. Context Enrichers
+### 4. 上下文富化器
 
 ```java
 public interface ContextEnricher {
@@ -546,7 +546,7 @@ public class ExampleOutputEnricher implements ContextEnricher {
 
 ```
 
-### 5. Cost Optimization Strategies
+### 5. 成本优化策略
 
 ```java
 public interface CostOptimizationStrategy {
@@ -610,7 +610,7 @@ public class ParallelTestSuite {
 }
 ```
 
-### 2. Conditional Test Execution
+### 2. 条件化测试执行
 
 ```java
 @Test
@@ -621,7 +621,7 @@ public void expensiveAIValidationTest() {
 }
 ```
 
-### 3. Parameterized AI Validation
+### 3. 参数化 AI 校验
 
 ```java
 @ParameterizedTest
@@ -631,7 +631,7 @@ public void testMultipleScenarios(String scenario) {
 }
 ```
 
-### 4. Test Composition
+### 4. 测试组合
 
 ```java
 @Nested
@@ -648,63 +648,63 @@ class ChatTests {
 }
 ```
 
-## Performance Optimizations
+## 性能优化
 
-### 1. Caching Strategy
-- Template caching for repeated validations
-- Result caching for deterministic tests
-- Claude prompt caching for cost reduction
+### 1. 缓存策略
+- 对重复校验的模板进行缓存
+- 对确定性测试的结果进行缓存
+- 通过 Claude 提示词缓存降低成本
 
-### 2. Batch Processing
-- Group similar validations for batch processing
-- Parallel AI validation for independent tests
-- Lazy loading of resources
+### 2. 批处理
+- 将相似的校验归组进行批处理
+- 对相互独立的测试并行执行 AI 校验
+- 延迟加载资源
 
-### 3. Smart Retries
-- Automatic retry for transient failures
-- Exponential backoff for API rate limits
-- Fallback strategies for validation failures
+### 3. 智能重试
+- 对瞬时故障自动重试
+- 对 API 速率限制采用指数退避
+- 校验失败时的兜底策略
 
-## Migration Support
+## 迁移支持
 
-### Backward Compatibility
-- Support for existing ExampleInfo.json files
-- JBang script wrapper for gradual migration
-- Configuration converter utilities
-- **Automatic README.md discovery for existing modules**
+### 向后兼容
+- 支持现有的 ExampleInfo.json 文件
+- 用于渐进迁移的 JBang 脚本封装
+- 配置转换工具
+- **为现有模块自动发现 README.md**
 
-### Migration Tools
-- Automated annotation generator from JSON
-- Test scaffold generator
-- Migration validation suite
-- **README inference validator to ensure correct behavior extraction**
+### 迁移工具
+- 从 JSON 自动生成注解的工具
+- 测试脚手架生成器
+- 迁移校验套件
+- **README 推断校验器，确保正确提取行为**
 
-### Migration Strategy for README Inference
-1. **Phase 1**: Enable README inference by default for new tests
-2. **Phase 2**: Gradually migrate existing tests to use README inference
-3. **Phase 3**: Validate inference accuracy against explicit descriptions
-4. **Phase 4**: Deprecate explicit descriptions where README is sufficient
+### README 推断的迁移策略
+1. **阶段 1**：为新测试默认启用 README 推断
+2. **阶段 2**：逐步将现有测试迁移为使用 README 推断
+3. **阶段 3**：对照显式描述验证推断的准确率
+4. **阶段 4**：在 README 足够充分的地方弃用显式描述
 
-## Security Considerations
+## 安全考量
 
-### 1. API Key Management
-- Secure storage of API keys
-- Environment variable validation
-- Key rotation support
+### 1. API 密钥管理
+- API 密钥的安全存储
+- 环境变量校验
+- 支持密钥轮换
 
-### 2. Output Sanitization
-- Removal of sensitive information from logs
-- PII detection and masking
-- Secure log storage
+### 2. 输出脱敏
+- 从日志中移除敏感信息
+- PII 检测与掩码
+- 安全的日志存储
 
-### 3. Rate Limiting
-- Built-in rate limiting for AI validations
-- Cost controls and alerts
-- Resource usage monitoring
+### 3. 速率限制
+- 内置的 AI 校验速率限制
+- 成本控制与告警
+- 资源使用监控
 
-## Extensibility Model
+## 可扩展性模型
 
-### Plugin Architecture
+### 插件架构
 ```java
 public interface SpringAITestPlugin {
     void initialize(TestContext context);
@@ -714,7 +714,7 @@ public interface SpringAITestPlugin {
 }
 ```
 
-### Custom Reporters
+### 自定义报告器
 ```java
 public interface TestReporter {
     void report(TestResult result);
@@ -723,32 +723,32 @@ public interface TestReporter {
 }
 ```
 
-## Future Enhancements
+## 未来增强
 
-### Phase 1 (Initial Release)
-- Core annotation support
-- Basic AI validation
-- IDE integration
+### 阶段 1（初始版本）
+- 核心注解支持
+- 基础 AI 校验
+- IDE 集成
 
-### Phase 2 (Enhanced Features)
-- Advanced templating
-- Cost optimization
-- Parallel execution
+### 阶段 2（增强功能）
+- 高级模板
+- 成本优化
+- 并行执行
 
-### Phase 3 (Enterprise Features)
-- Multi-model support (GPT-4, Claude, Gemini)
-- Custom validation providers
-- Enterprise reporting
+### 阶段 3（企业级功能）
+- 多模型支持（GPT-4、Claude、Gemini）
+- 自定义校验提供者
+- 企业级报告
 
-### Phase 4 (Platform Integration)
-- CI/CD native integration
-- Cloud platform support
-- Distributed testing
+### 阶段 4（平台集成）
+- CI/CD 原生集成
+- 云平台支持
+- 分布式测试
 
-## README Inference Best Practices
+## README 推断最佳实践
 
-### 1. README Structure Guidelines
-To maximize the effectiveness of automatic inference, README files should follow these conventions:
+### 1. README 结构指南
+为最大化自动推断的效果，README 文件应遵循以下约定：
 
 ```markdown
 # Module Name
@@ -761,45 +761,45 @@ Step-by-step explanation of the application flow.
 
 ## Example Output
 ```
-Sample output showing expected behavior
+展示预期行为的示例输出
 ```
 
 ## Configuration
 Required settings and environment variables.
 ```
 
-### 2. Inference Strategies
-- **Intelligent Section Detection**: Framework automatically identifies common sections
-- **Code Block Analysis**: Extracts expected patterns from example code
-- **Keyword Extraction**: Identifies key functionality from description
-- **Fallback Mechanisms**: Uses explicit annotations when README is insufficient
+### 2. 推断策略
+- **智能章节检测**：框架会自动识别常见章节
+- **代码块分析**：从示例代码中提取预期模式
+- **关键词提取**：从描述中识别关键功能
+- **兜底机制**：当 README 信息不足时使用显式注解
 
-### 3. Performance Considerations
-- **README Caching**: Parse once, reuse across test runs
-- **Selective Loading**: Only load sections needed for validation
-- **Token Optimization**: Truncate large READMEs intelligently
-- **Batch Processing**: Process multiple READMEs in parallel
+### 3. 性能考量
+- **README 缓存**：解析一次，在多次测试运行中复用
+- **选择性加载**：只加载校验所需的章节
+- **Token 优化**：智能截断过长的 README
+- **批处理**：并行处理多个 README
 
-## Benefits of README-Based Context Inference
+## 基于 README 的上下文推断的优势
 
-### For Contributors
-1. **Single Source of Truth**: Documentation drives test expectations
-2. **Natural Workflow**: Write README → Tests automatically understand
-3. **Reduced Duplication**: No need to repeat behavior in test annotations
-4. **Better Documentation**: Encourages comprehensive README files
+### 对贡献者
+1. **单一事实来源**：文档驱动测试的预期
+2. **自然的工作流**：写好 README → 测试即可自动理解
+3. **减少重复**：无需在测试注解中重复行为描述
+4. **更完善的文档**：鼓励编写全面的 README 文件
 
-### For Maintainers
-1. **Consistency**: All tests use same documentation source
-2. **Easier Updates**: Change README → Tests automatically adapt
-3. **Lower Barrier**: New contributors don't need to learn test DSL
-4. **Validation Alignment**: Tests validate what's documented
+### 对维护者
+1. **一致性**：所有测试都使用同一份文档来源
+2. **更易更新**：修改 README → 测试自动适配
+3. **门槛更低**：新贡献者无需学习测试 DSL
+4. **校验对齐**：测试校验的正是文档所描述的内容
 
-### For AI Validation
-1. **Richer Context**: Full documentation provides better understanding
-2. **Example-Driven**: Code examples in README guide validation
-3. **Natural Language**: AI understands human-readable descriptions
-4. **Comprehensive Coverage**: Multiple perspectives from different sections
+### 对 AI 校验
+1. **更丰富的上下文**：完整文档提供更好的理解
+2. **示例驱动**：README 中的代码示例可指导校验
+3. **自然语言**：AI 能理解人类可读的描述
+4. **全面覆盖**：来自不同章节的多重视角
 
-## Conclusion
+## 结论
 
-This enhanced annotation-based architecture with README inference provides a modern, maintainable, and natural approach to AI-driven integration testing. By automatically inferring test expectations from existing documentation, it aligns perfectly with how developers already work - documenting their examples in README files. The system leverages JUnit5's powerful extension model while reducing the burden on test writers and ensuring tests stay synchronized with documentation. This approach supports gradual migration and provides the flexibility to override with explicit behavior when needed, making it suitable for both simple examples and complex enterprise applications.
+这种增强的、带 README 推断的注解架构，为 AI 驱动的集成测试提供了一种现代、可维护且自然的方式。通过从现有文档中自动推断测试的预期，它与开发者原本的工作方式（在 README 文件中记录示例）完美契合。系统利用 JUnit5 强大的扩展模型，同时减轻测试编写者的负担，并确保测试与文档保持同步。该方案支持渐进迁移，并在需要时可以用显式行为覆盖，因而既适用于简单示例，也适用于复杂的企业级应用。

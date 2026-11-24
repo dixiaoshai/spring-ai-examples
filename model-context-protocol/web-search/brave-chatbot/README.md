@@ -1,18 +1,18 @@
-# Spring AI - MCP Brave Search Chatbot
+# Spring AI - MCP Brave 搜索聊天机器人
 
-Interactive chatbot combining Spring AI's Model Context Protocol (MCP) with the [Brave Search MCP Server](https://github.com/modelcontextprotocol/servers/tree/main/src/brave-search). Maintains conversation history via [session memory](https://docs.spring.io/spring-ai/reference/api/session.html) (`SessionAdvisors`) with an explicit session ID, and performs real-time web searches through Brave Search.
+交互式聊天机器人，将 Spring AI 的模型上下文协议（MCP）与 [Brave Search MCP Server](https://github.com/modelcontextprotocol/servers/tree/main/src/brave-search) 结合。它通过 [会话记忆](https://docs.spring.io/spring-ai/reference/api/session.html)（`SessionAdvisors`）并配合显式会话 ID 维护对话历史，同时借助 Brave Search 执行实时 Web 搜索。
 
 <img src="spring-ai-mcp-brave.jpg" width="600"/>
 
-## Prerequisites
+## 前置条件
 
 - Java 17+
 - Maven 3.6+
-- npx (via [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm))
-- Anthropic API key — [get one here](https://docs.anthropic.com/en/docs/initial-setup)
-- Brave Search API key — [get one here](https://brave.com/search/api/)
+- npx（通过 [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)）
+- Anthropic API 密钥 —— [在此获取](https://docs.anthropic.com/en/docs/initial-setup)
+- Brave Search API 密钥 —— [在此获取](https://brave.com/search/api/)
 
-## Setup
+## 安装配置
 
 ```bash
 npm install -g npx
@@ -26,17 +26,17 @@ export BRAVE_API_KEY='your-brave-api-key'
 ./mvnw clean install
 ```
 
-## Running
+## 运行
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-An interactive chat session starts. Ask anything — the bot uses Brave Search for real-time web data and remembers prior turns in the session.
+启动一个交互式聊天会话。你可以询问任何内容 —— 机器人使用 Brave Search 获取实时 Web 数据，并在会话中记住之前的对话轮次。
 
-## How It Works
+## 工作原理
 
-**Dependencies** (`pom.xml`):
+**依赖**（`pom.xml`）：
 ```xml
 <dependency>
     <groupId>org.springframework.ai</groupId>
@@ -48,7 +48,7 @@ An interactive chat session starts. Ask anything — the bot uses Brave Search f
 </dependency>
 ```
 
-**MCP server config** (`mcp-servers-config.json`):
+**MCP 服务器配置**（`mcp-servers-config.json`）：
 ```json
 {
   "mcpServers": {
@@ -61,7 +61,7 @@ An interactive chat session starts. Ask anything — the bot uses Brave Search f
 }
 ```
 
-**Chat client setup**:
+**聊天客户端设置**：
 ```java
 var chatClient = chatClientBuilder
     .defaultSystem("You are a useful assistant that can perform web searches via Brave's search API.")
@@ -79,15 +79,15 @@ chatClient.prompt(userInput)
     .content();
 ```
 
-Key points:
-- Uses `SyncMcpToolCallbackProvider.builder()` (Spring AI 2.0.0 API)
-- A stable `conversationId` keeps memory scoped to the current session
-- The session is compacted to the last 10 turns once it grows past 20 turns
-- Runs until Ctrl-C
+要点：
+- 使用 `SyncMcpToolCallbackProvider.builder()`（Spring AI 2.0.0 API）
+- 稳定的 `conversationId` 使记忆限定在当前会话内
+- 会话超过 20 轮后会被压缩到最近 10 轮
+- 运行直到按下 Ctrl-C
 
-## Versions
+## 版本
 
-| Dependency | Version |
+| 依赖 | 版本 |
 |---|---|
 | Spring Boot | 4.1.1 |
 | Spring AI | 2.1.0-SNAPSHOT |

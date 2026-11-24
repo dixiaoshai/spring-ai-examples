@@ -17,9 +17,9 @@ class KotlinHelloWorldApplicationTests {
 
 	@Test
 	fun contextLoads() {
-		// Simple smoke test - application context should load without errors
-		// This validates that all Spring AI configuration is properly set up
-		// The CommandLineRunner is mocked to prevent actual API calls during testing
+		// 简单的冒烟测试 - 应用上下文应能无错误加载
+		// 用于验证所有 Spring AI 配置都已正确设置
+		// CommandLineRunner 被 mock，以避免测试期间发起真实的 API 调用
 	}
 
 }

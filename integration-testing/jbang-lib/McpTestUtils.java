@@ -1,8 +1,8 @@
 /*
- * MCP Protocol Testing Utilities
- * Provides comprehensive testing for Model Context Protocol servers
- * including initialization, tool discovery, and invocation
- * Uses HTTP client directly to support the new STREAMABLE protocol
+ * MCP 协议测试工具类
+ * 为 Model Context Protocol 服务器提供全面的测试支持
+ * 涵盖初始化、工具发现与调用
+ * 直接使用 HTTP 客户端以支持新的 STREAMABLE 协议
  */
 
 import java.net.http.*;
@@ -16,20 +16,20 @@ import static java.lang.System.*;
 
 public class McpTestUtils {
     
-    // Test configuration for a specific tool
+    // 针对特定工具的测试配置
     public record ToolTest(
         String toolName,
         Map<String, Object> parameters,
         String expectedContent,
-        boolean optional  // Some tools might not be available in all servers
+        boolean optional  // 某些工具可能并非所有服务器都提供
     ) {
-        // Constructor with default optional = false
+        // 构造方法，optional 默认为 false
         public ToolTest(String toolName, Map<String, Object> parameters, String expectedContent) {
             this(toolName, parameters, expectedContent, false);
         }
     }
     
-    // Result of MCP server testing
+    // MCP 服务器测试的结果
     public record McpTestResult(
         boolean success,
         String serverInfo,
@@ -43,10 +43,10 @@ public class McpTestUtils {
     private static String sessionId = null;
 
     /**
-     * Test an MCP server over HTTP STREAMABLE transport
-     * @param baseUrl The base URL of the MCP server (e.g., "http://localhost:8080/mcp")
-     * @param toolTests List of tools to test with their parameters
-     * @return Test result with details about the server and tool invocations
+     * 通过 HTTP STREAMABLE 传输测试 MCP 服务器
+     * @param baseUrl MCP 服务器的基础 URL（例如 "http://localhost:8080/mcp"）
+     * @param toolTests 待测试的工具列表及其参数
+     * @return 包含服务器与工具调用详情的测试结果
      */
     public static McpTestResult testMcpSseServer(String baseUrl, List<ToolTest> toolTests) {
         out.println("🔌 Testing MCP server via HTTP STREAMABLE transport at: " + baseUrl);
@@ -55,10 +55,10 @@ public class McpTestUtils {
             .connectTimeout(Duration.ofSeconds(10))
             .build();
 
-        sessionId = null;  // Reset session for each test
+        sessionId = null;  // 每次测试都重置会话
 
         try {
-            // Initialize MCP connection
+            // 初始化 MCP 连接
             out.println("🤝 Initializing MCP connection...");
             String initRequest = createJsonRpcRequest("initialize", Map.of(
                 "protocolVersion", "1.0",
@@ -75,7 +75,7 @@ public class McpTestUtils {
             out.println("✅ Connected to: " + serverInfo);
             out.println("📋 Session ID: " + sessionId);
 
-            // List available tools
+            // 列出可用工具
             out.println("🔧 Discovering available tools...");
             String listToolsRequest = createJsonRpcRequest("tools/list", Map.of());
             JsonNode toolsResponse = sendMcpRequest(client, baseUrl, listToolsRequest, false);
@@ -92,14 +92,14 @@ public class McpTestUtils {
             }
             out.println("✅ Found " + availableTools.size() + " tools");
 
-            // Test each requested tool
+            // 测试每个请求的工具
             Map<String, String> toolResults = new HashMap<>();
             boolean allTestsPassed = true;
 
             for (ToolTest test : toolTests) {
                 out.println("\n🧪 Testing tool: " + test.toolName());
 
-                // Check if tool is available
+                // 检查工具是否可用
                 if (!availableTools.contains(test.toolName())) {
                     if (test.optional()) {
                         out.println("⚠️ Tool not available (optional): " + test.toolName());
@@ -112,7 +112,7 @@ public class McpTestUtils {
                 }
 
                 try {
-                    // Call the tool
+                    // 调用工具
                     out.println("  Parameters: " + test.parameters());
                     String callRequest = createJsonRpcRequest("tools/call", Map.of(
                         "name", test.toolName(),
@@ -120,7 +120,7 @@ public class McpTestUtils {
                     ));
                     JsonNode callResponse = sendMcpRequest(client, baseUrl, callRequest, false);
 
-                    // Extract result content
+                    // 提取结果内容
                     String resultContent = "";
                     JsonNode callResult = callResponse.get("result");
                     if (callResult != null && callResult.has("content")) {
@@ -135,11 +135,11 @@ public class McpTestUtils {
                         }
                     }
 
-                    // Store result
+                    // 保存结果
                     toolResults.put(test.toolName(), resultContent);
                     out.println("  Response length: " + resultContent.length() + " chars");
 
-                    // Validate expected content if provided
+                    // 如提供了预期内容则进行校验
                     if (test.expectedContent() != null && !test.expectedContent().isEmpty()) {
                         if (resultContent.toLowerCase().contains(test.expectedContent().toLowerCase())) {
                             out.println("✅ Tool response contains expected content: " + test.expectedContent());
@@ -200,7 +200,7 @@ public class McpTestUtils {
             .timeout(Duration.ofSeconds(30))
             .POST(HttpRequest.BodyPublishers.ofString(jsonBody));
 
-        // Add session ID header for non-init requests
+        // 为非初始化请求添加会话 ID 请求头
         if (!isInit && sessionId != null) {
             requestBuilder.header("mcp-session-id", sessionId);
         }
@@ -208,7 +208,7 @@ public class McpTestUtils {
         HttpRequest request = requestBuilder.build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        // Capture session ID from init response
+        // 从初始化响应中获取会话 ID
         if (isInit) {
             response.headers().firstValue("mcp-session-id").ifPresent(id -> sessionId = id);
         }
@@ -219,17 +219,17 @@ public class McpTestUtils {
 
         String body = response.body();
 
-        // Init returns plain JSON, other requests return SSE format
+        // 初始化请求返回纯 JSON，其他请求返回 SSE 格式
         if (isInit) {
             return mapper.readTree(body);
         } else {
-            // Parse SSE format: extract JSON from "data:" lines
+            // 解析 SSE 格式：从 "data:" 行中提取 JSON
             return parseSseResponse(body);
         }
     }
 
     private static JsonNode parseSseResponse(String sseBody) throws Exception {
-        // SSE format: "id: X\ndata: {...}\n\n"
+        // SSE 格式："id: X\ndata: {...}\n\n"
         StringBuilder jsonData = new StringBuilder();
         for (String line : sseBody.split("\n")) {
             if (line.startsWith("data:")) {
@@ -246,66 +246,66 @@ public class McpTestUtils {
     }
     
     /**
-     * Helper method to create common weather service tests
+     * 创建常用天气服务测试的辅助方法
      */
     public static List<ToolTest> createWeatherTests() {
         return List.of(
             new ToolTest(
                 "getWeatherForecastByLocation",
                 Map.of("latitude", 47.6062, "longitude", -122.3321),
-                "Temperature"  // Weather forecast should contain temperature information
+                "Temperature"  // 天气预报应包含温度信息
             ),
             new ToolTest(
                 "getAlerts",
                 Map.of("state", "NY"),
-                "Event"  // Alert responses contain "Event:" followed by alert type (Watch, Warning, etc.)
+                "Event"  // 警报响应包含 "Event:"，其后是警报类型（Watch、Warning 等）
             )
         );
     }
     
     /**
-     * Helper method to create common SQLite tests
+     * 创建常用 SQLite 测试的辅助方法
      */
     public static List<ToolTest> createSqliteTests() {
         return List.of(
             new ToolTest(
                 "executeSqlQuery",
                 Map.of("query", "SELECT * FROM users LIMIT 1"),
-                "user"  // Should return user data
+                "user"  // 应返回用户数据
             ),
             new ToolTest(
                 "listTables",
                 Map.of(),
-                "table"  // Should list available tables
+                "table"  // 应列出可用表
             )
         );
     }
     
     /**
-     * Helper method to create filesystem tests
+     * 创建文件系统测试的辅助方法
      */
     public static List<ToolTest> createFilesystemTests() {
         return List.of(
             new ToolTest(
                 "listDirectory",
                 Map.of("path", "."),
-                "file"  // Should list files
+                "file"  // 应列出文件
             ),
             new ToolTest(
                 "readFile",
                 Map.of("path", "README.md"),
-                "Spring AI"  // README should mention Spring AI
+                "Spring AI"  // README 应提及 Spring AI
             )
         );
     }
 
     /**
-     * Run a complete MCP weather server integration test.
-     * This is a one-liner for testing standard MCP weather servers.
+     * 运行完整的 MCP 天气服务器集成测试。
+     * 这是用于测试标准 MCP 天气服务器的一行式工具。
      *
-     * @param moduleName Name of the module for logging
-     * @param startupSeconds Seconds to wait for server startup
-     * @param mcpEndpoint The MCP endpoint URL (e.g., "http://localhost:8080/mcp")
+     * @param moduleName 用于日志的模块名
+     * @param startupSeconds 等待服务器启动的秒数
+     * @param mcpEndpoint MCP 端点 URL（例如 "http://localhost:8080/mcp"）
      */
     public static void runMcpWeatherServerTest(String moduleName, int startupSeconds, String mcpEndpoint) throws Exception {
         WebServerTestUtils.runSimpleWebServerTest(

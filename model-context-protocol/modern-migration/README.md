@@ -1,31 +1,31 @@
-# Migrating Spring AI MCP servers and clients to the 2026-07-28 ("modern") protocol
+# 将 Spring AI MCP 服务器与客户端迁移到 2026-07-28（“modern”）协议
 
-These samples show the same small ticket application on three MCP protocols, what changes when a session-based server is moved to the modern one, how a modern server customises the repositories that serve its tools and resources, the same server written against the asynchronous API type, and the Spring AI client after its migration, with the synchronous and the asynchronous client type.
+这些示例展示了同一个小的工单应用在三种 MCP 协议上的实现、把基于会话的服务器迁移到 modern 协议时有哪些变化、modern 服务器如何自定义为其工具和资源提供服务的仓库、同一个服务器用异步 API 类型编写的样子，以及迁移后的 Spring AI 客户端（同步与异步两种客户端类型）。
 
-**Versions:** Spring Boot `4.1.1` · Spring AI `2.1.0-SNAPSHOT` · MCP Java SDK `2.2.0`
+**版本：** Spring Boot `4.1.1` · Spring AI `2.1.0-SNAPSHOT` · MCP Java SDK `2.2.0`
 
-IMPORTANT: The modern server shipped in Spring AI 2.1.0-RC2, and spring-projects/spring-ai#7349 added `spring.ai.mcp.server.type=ASYNC` and moved completions onto prompts and resource templates.
-The modern connections of the Spring AI client, which [modern-client-from-legacy](modern-client-from-legacy/) uses, were added by spring-projects/spring-ai#7385 on top of the modern client of the MCP Java SDK `2.2.0`, and spring-projects/spring-ai#7392 added their asynchronous client type, which [modern-client-async](modern-client-async/) uses.
-Both are in the Spring AI `2.1.0-SNAPSHOT` builds, which the samples take from the Spring snapshot repository.
+重要：modern 服务器随 Spring AI 2.1.0-RC2 发布，spring-projects/spring-ai#7349 增加了 `spring.ai.mcp.server.type=ASYNC`，并把补全功能迁移到提示词和资源模板上。
+[modern-client-from-legacy](modern-client-from-legacy/) 使用的 Spring AI 客户端 modern 连接，由 spring-projects/spring-ai#7385 在 MCP Java SDK `2.2.0` 的 modern 客户端之上加入，而 spring-projects/spring-ai#7392 又增加了它们的异步客户端类型，[modern-client-async](modern-client-async/) 使用的就是这一类型。
+两者都包含在 Spring AI `2.1.0-SNAPSHOT` 构建中，示例从 Spring 快照仓库获取该构建。
 
-## Modules
+## 模块
 
-| Module | Protocol | What it shows |
+| 模块 | 协议 | 展示内容 |
 |---|---|---|
-| [stateless-server](stateless-server/) | `STATELESS` | `@McpTool`, `@McpResource` (static and template) and `@McpPrompt` on a session-less Streamable HTTP server |
-| [streamable-server](streamable-server/) | `STREAMABLE` | The same, plus tools that use the session: client logging, progress, elicitation, sampling, and a runtime tool addition that triggers `tools/list_changed` |
-| [modern-server-from-stateless](modern-server-from-stateless/) | `MODERN` | The stateless server after migration: a property change and two annotation attributes (`ttlMs`, `cacheScope`) |
-| [modern-server-from-streamable](modern-server-from-streamable/) | `MODERN` | The streamable server after migration: elicitation and sampling become multi round-trip requests, logging goes server-side, runtime changes go through the tool repository and `subscriptions/listen` |
-| [modern-server-repositories](modern-server-repositories/) | `MODERN` | Customising the repositories: a programmatic `List<McpSyncTool>` bean, a wrapping tool repository that filters per caller, and a resource repository backed by the domain that turns Spring events into `resources/updated` notifications and completes its template; also an `@McpIcon` and an argument `title` in the definitions |
-| [modern-server-async](modern-server-async/) | `MODERN`, `type=ASYNC` | The streamable migration written against the asynchronous API type on WebFlux: `Mono`, `CompletableFuture` and plain returns, `McpAsyncNotifier` progress, and runtime changes through `InMemoryAsyncToolRepository` |
-| [legacy-client](legacy-client/) | Streamable HTTP | Spring AI MCP client with `@McpElicitation`, `@McpSampling`, `@McpLogging`, `@McpProgress` and `@McpToolListChanged` handlers; works against both legacy servers |
-| [modern-client](modern-client/) | 2026-07-28 | A minimal JSON-RPC driver that shows the wire format, plus curl scripts: `server/discover`, headers, per-request client capabilities, the `input_required` retry loop, `completion/complete`, `subscriptions/listen` |
-| [modern-client-from-legacy](modern-client-from-legacy/) | 2026-07-28, optionally with a legacy connection | The legacy client after migration, on the Spring AI client starter: a `protocol=MODERN` connection whose tools arrive as tool callbacks, a client for each caller, the unchanged `@McpElicitation`, `@McpProgress` and `@McpToolListChanged` methods, a listen stream, a tool filter, an optional scope with one client for each role, and a legacy and a modern server behind one provider |
-| [modern-client-async](modern-client-async/) | 2026-07-28, `type=ASYNC`, optionally with a legacy connection | The migrated client with the asynchronous client type: a caller provider bean instead of a client customizer, reactive `@McpElicitation`, `@McpProgress` and `@McpToolListChanged` methods, an `AsyncModernMcpChangeListener`, the asynchronous SDK client in one reactive pipeline, and what happens when the tools are resolved on a thread that may not block |
+| [stateless-server](stateless-server/) | `STATELESS` | 无会话的 Streamable HTTP 服务器上的 `@McpTool`、`@McpResource`（静态与模板）以及 `@McpPrompt` |
+| [streamable-server](streamable-server/) | `STREAMABLE` | 同样是这些内容，外加使用会话的工具：客户端日志、进度、引导、采样，以及一个触发 `tools/list_changed` 的运行时工具添加 |
+| [modern-server-from-stateless](modern-server-from-stateless/) | `MODERN` | 迁移后的无状态服务器：一个属性变更和两个注解属性（`ttlMs`、`cacheScope`） |
+| [modern-server-from-streamable](modern-server-from-streamable/) | `MODERN` | 迁移后的 streamable 服务器：引导与采样变为多轮往返请求，日志转到服务器端，运行时变更通过工具仓库和 `subscriptions/listen` 进行 |
+| [modern-server-repositories](modern-server-repositories/) | `MODERN` | 自定义仓库：一个编程式的 `List<McpSyncTool>` Bean、一个按调用者过滤的包装工具仓库，以及一个由领域模型支撑的资源仓库，它把 Spring 事件转换为 `resources/updated` 通知并为其模板提供补全；另外还有定义中的一个 `@McpIcon` 和一个参数 `title` |
+| [modern-server-async](modern-server-async/) | `MODERN`、`type=ASYNC` | 用异步 API 类型在 WebFlux 上编写的 streamable 迁移版本：`Mono`、`CompletableFuture` 与普通返回值，`McpAsyncNotifier` 进度，以及通过 `InMemoryAsyncToolRepository` 进行的运行时变更 |
+| [legacy-client](legacy-client/) | Streamable HTTP | 带有 `@McpElicitation`、`@McpSampling`、`@McpLogging`、`@McpProgress` 和 `@McpToolListChanged` 处理器的 Spring AI MCP 客户端；对两个旧版服务器均可用 |
+| [modern-client](modern-client/) | 2026-07-28 | 一个最小化的 JSON-RPC 驱动，展示线上格式，另有 curl 脚本：`server/discover`、请求头、按请求声明的客户端能力、`input_required` 重试循环、`completion/complete`、`subscriptions/listen` |
+| [modern-client-from-legacy](modern-client-from-legacy/) | 2026-07-28，可选带旧版连接 | 迁移后的旧版客户端，基于 Spring AI 客户端 starter：一个 `protocol=MODERN` 连接，其工具以工具回调的形式到达；每个调用者一个客户端；保持不变的 `@McpElicitation`、`@McpProgress` 和 `@McpToolListChanged` 方法；一个监听流；一个工具过滤器；一个可选的 scope，每个角色一个客户端；以及一个提供者背后同时接入的旧版服务器和 modern 服务器 |
+| [modern-client-async](modern-client-async/) | 2026-07-28、`type=ASYNC`，可选带旧版连接 | 使用异步客户端类型的迁移后客户端：用调用者提供者 Bean 代替客户端定制器；响应式的 `@McpElicitation`、`@McpProgress` 和 `@McpToolListChanged` 方法；一个 `AsyncModernMcpChangeListener`；在一个响应式管线中使用的异步 SDK 客户端；以及在可能不允许阻塞的线程上解析工具时会发生什么 |
 
-All servers listen on `http://localhost:8080`, so run one at a time.
+所有服务器都监听 `http://localhost:8080`，因此请一次只运行一个。
 
-## Running the pairs
+## 成对运行
 
 ```bash
 # 1. stateless
@@ -66,13 +66,13 @@ All servers listen on `http://localhost:8080`, so run one at a time.
 (cd modern-client-async           && ./mvnw spring-boot:run)
 ```
 
-The modern clients run a common walk against every server and then the scenario that the server supports, detected from its tool list.
-Quick checks without Java: `modern-client/scripts/discover.sh`, `tools-list.sh`, `tools-call.sh open_ticket '{"title":"x"}'` and `listen.sh`.
-`MCP_HEADER='X-Role: admin'` adds a header and `MCP_CAPABILITIES='{}'` changes the declared client capabilities.
+modern 客户端会针对每个服务器执行一遍通用流程，然后执行服务器所支持的场景（根据其工具列表检测）。
+无需 Java 的快速检查：`modern-client/scripts/discover.sh`、`tools-list.sh`、`tools-call.sh open_ticket '{"title":"x"}'` 和 `listen.sh`。
+`MCP_HEADER='X-Role: admin'` 会添加一个请求头，`MCP_CAPABILITIES='{}'` 会改变声明的客户端能力。
 
-## What changes in the migration
+## 迁移中有哪些变化
 
-### Stateless to modern: configuration only
+### 从无状态到 modern：只改配置
 
 ```diff
 -spring.ai.mcp.server.protocol=STATELESS
@@ -90,46 +90,48 @@ Quick checks without Java: `modern-client/scripts/discover.sh`, `tools-list.sh`,
 +@McpResource(uri = "tickets://all", mimeType = "application/json", ttlMs = 30_000, cacheScope = CacheScope.PUBLIC)
 ```
 
-`TicketProvider` is otherwise identical in the stateless, streamable and both migrated servers.
+除此之外，`TicketProvider` 在无状态服务器、streamable 服务器以及两个迁移后的服务器中都完全相同。
 
-### Streamable to modern: rewrite the session-bound methods
+### 从 streamable 到 modern：重写绑定会话的方法
 
-| Streamable (`InteractiveTicketProvider`) | Modern (`InteractiveTicketProvider`) |
+| Streamable（`InteractiveTicketProvider`） | Modern（`InteractiveTicketProvider`） |
 |---|---|
 | `McpSyncRequestContext ctx` | `McpModernSyncRequestContext ctx` |
-| `ctx.info("...")` to the client | `logger.info(...)` on the server; client logging is deprecated in the 2026-07-28 revision and not exposed |
-| `ctx.progress(p -> p.percentage(10))` | declare the SDK `McpSyncNotifier` and call `notifier.progress(10, 100.0, "...")`; that parameter, and only that one, makes the response a short SSE stream |
-| `ctx.elicit(e -> e.message(...), Confirmation.class)` blocks until the client answers | return `InputRequiredResult.builder().elicit("confirm", form).requestState(id).build()`; on the retry read `ctx.inputResponse("confirm", ElicitResponse.class)` and the ticket id from `ctx.requestState()` |
-| `ctx.sample(s -> s.message(...))` | return `InputRequiredResult.builder().createMessage("summary", request).build()`; on the retry read `ctx.inputResponse("summary", Map.class)` |
-| returns `String` | returns `CallToolOutcome` (a `CallToolResult` or an `InputRequiredResult`) |
-| `ctx.elicit` and `ctx.sample` check the capabilities the client sent at `initialize` | `@McpTool(requiredCapabilities = McpClientCapability.ELICITATION_FORM)` declares what the tool cannot work without |
-| `McpSyncServer.addTool(SyncToolSpecification)` notifies every session | `InMemorySyncToolRepository.add(McpSyncTool.of(tool, handler))` broadcasts to every `subscriptions/listen` stream |
+| 向客户端发送 `ctx.info("...")` | 在服务器端使用 `logger.info(...)`；客户端日志在 2026-07-28 修订版中已废弃且不再暴露 |
+| `ctx.progress(p -> p.percentage(10))` | 声明 SDK 的 `McpSyncNotifier` 并调用 `notifier.progress(10, 100.0, "...")`；正是这个参数（且只有这个参数）使响应成为一段简短的 SSE 流 |
+| `ctx.elicit(e -> e.message(...), Confirmation.class)` 会阻塞直到客户端应答 | 返回 `InputRequiredResult.builder().elicit("confirm", form).requestState(id).build()`；重试时通过 `ctx.inputResponse("confirm", ElicitResponse.class)` 读取应答，通过 `ctx.requestState()` 读取工单 id |
+| `ctx.sample(s -> s.message(...))` | 返回 `InputRequiredResult.builder().createMessage("summary", request).build()`；重试时通过 `ctx.inputResponse("summary", Map.class)` 读取应答 |
+| 返回 `String` | 返回 `CallToolOutcome`（一个 `CallToolResult` 或一个 `InputRequiredResult`） |
+| `ctx.elicit` 与 `ctx.sample` 检查客户端在 `initialize` 时发送的能力 | `@McpTool(requiredCapabilities = McpClientCapability.ELICITATION_FORM)` 声明该工具缺少哪些能力就无法工作 |
+| `McpSyncServer.addTool(SyncToolSpecification)` 通知每个会话 | `InMemorySyncToolRepository.add(McpSyncTool.of(tool, handler))` 广播到每条 `subscriptions/listen` 流 |
 
-On the wire the server no longer sends elicitation and sampling requests to the client.
-The client answers the `inputRequests` of an `input_required` result and retries the same call with `inputResponses` and the sealed `requestState`; see `ModernMcpDriver.callTool`.
-The modern client of the MCP Java SDK runs that loop itself and calls the `@McpElicitation` methods of a Spring AI client for the answers, see [Legacy client to modern](#legacy-client-to-modern-a-property-and-the-handlers-stay).
-There is no handshake either: the client declares its capabilities in `_meta` of every request, and a tool whose `requiredCapabilities` the request did not declare is refused with JSON-RPC error `-32021 Missing required client capability` before the method runs.
+在线上，服务器不再向客户端发送引导和采样请求。
+客户端应答 `inputRequests`（位于 `input_required` 结果中），并携带 `inputResponses` 和密封的 `requestState` 重试同一个调用；参见 `ModernMcpDriver.callTool`。
+MCP Java SDK 的 modern 客户端自己运行该循环，并调用 Spring AI 客户端的 `@McpElicitation` 方法获取应答，参见[从旧版客户端迁移到新版](#legacy-client-to-modern-a-property-and-the-handlers-stay)。
+也不再需要握手：客户端在每次请求的 `_meta` 中声明自己的能力，如果某个工具的 `requiredCapabilities` 未在请求中声明，则会在方法运行之前被以 JSON-RPC 错误 `-32021 Missing required client capability` 拒绝。
 
-### Synchronous to asynchronous: the API type
+### 从同步到异步：API 类型
 
-[modern-server-async](modern-server-async/) is [modern-server-from-streamable](modern-server-from-streamable/) with `spring.ai.mcp.server.type=ASYNC` on the WebFlux starter.
-The tools, resources, prompt and completion are the same; only the programming model changes.
+[modern-server-async](modern-server-async/) 就是 [modern-server-from-streamable](modern-server-from-streamable/)，只是在 WebFlux starter 上加了 `spring.ai.mcp.server.type=ASYNC`。
+工具、资源、提示词和补全都相同；只有编程模型改变。
 
-| Sync (`modern-server-from-streamable`) | Async (`modern-server-async`) |
+| 同步（`modern-server-from-streamable`） | 异步（`modern-server-async`） |
 |---|---|
-| `spring-ai-starter-mcp-server-webmvc`, `type=SYNC` | `spring-ai-starter-mcp-server-webflux`, `type=ASYNC` |
-| returns `String`, `CallToolOutcome` | returns `Mono<String>`, `Mono<CallToolOutcome>`, or a `CompletableFuture`; a plain return still works and runs on `boundedElastic` |
-| `McpModernSyncRequestContext ctx` | `McpModernRequestContext ctx`, the same accessors for both API types |
-| `McpSyncNotifier notifier`, `notifier.progress(...)` | `McpAsyncNotifier notifier`, `notifier.progress(...)` returns a `Mono<Void>` composed into the result |
-| `InMemorySyncToolRepository.add(McpSyncTool.of(...))` | `InMemoryAsyncToolRepository.add(McpAsyncTool.of(...))`, the handler returns a `Mono` |
+| `spring-ai-starter-mcp-server-webmvc`、`type=SYNC` | `spring-ai-starter-mcp-server-webflux`、`type=ASYNC` |
+| 返回 `String`、`CallToolOutcome` | 返回 `Mono<String>`、`Mono<CallToolOutcome>` 或 `CompletableFuture`；普通返回值仍然可用，并运行在 `boundedElastic` 上 |
+| `McpModernSyncRequestContext ctx` | `McpModernRequestContext ctx`，两种 API 类型使用相同的访问器 |
+| `McpSyncNotifier notifier`、`notifier.progress(...)` | `McpAsyncNotifier notifier`，`notifier.progress(...)` 返回一个 `Mono<Void>`，并被组合进结果 |
+| `InMemorySyncToolRepository.add(McpSyncTool.of(...))` | `InMemoryAsyncToolRepository.add(McpAsyncTool.of(...))`，处理器返回一个 `Mono` |
 
-A method that returns a `Flux` is rejected at startup, because an MCP request has one result; return a `Mono` of a list instead.
-On `type=SYNC` it is the other way round: methods with an asynchronous return type, `CompletableFuture` included, are skipped with a warning.
+返回 `Flux` 的方法会在启动时被拒绝，因为一个 MCP 请求只有一个结果；请改为返回一个列表的 `Mono`。
+在 `type=SYNC` 下则相反：异步返回类型的方法（包括 `CompletableFuture`）会被跳过并给出警告。
 
-### Legacy client to modern: a property, and the handlers stay
+<a id="legacy-client-to-modern-a-property-and-the-handlers-stay"></a>
 
-[modern-client-from-legacy](modern-client-from-legacy/) is [legacy-client](legacy-client/) after migration.
-The protocol is a property of the connection, so an application can keep legacy connections next to modern ones, and one `SyncMcpToolCallbackProvider` bean returns the tools of both.
+### 从旧版客户端迁移到新版：属性不变，处理器保持不变
+
+[modern-client-from-legacy](modern-client-from-legacy/) 是迁移后的 [legacy-client](legacy-client/)。
+协议是连接的一个属性，因此一个应用可以在 modern 连接旁保留旧版连接，而一个 `SyncMcpToolCallbackProvider` Bean 会同时返回两者的工具。
 
 ```diff
 -spring.ai.mcp.client.streamable-http.connections.server1.url=http://localhost:8080
@@ -138,8 +140,8 @@ The protocol is a property of the connection, so an application can keep legacy 
 +spring.ai.mcp.client.streamable-http.connections.tickets.listen=true
 ```
 
-The connection is renamed because its name becomes the prefix of the tool names.
-The annotated handler methods keep their annotations and their legacy schema types: one method serves the legacy and the modern connections that it names.
+连接被重命名，因为它的名字会成为工具名的前缀。
+带注解的处理器方法保留其注解和旧版 schema 类型：一个方法同时服务于它所指定的旧版连接和 modern 连接。
 
 ```diff
 -@McpElicitation(clients = "server1")
@@ -148,26 +150,26 @@ The annotated handler methods keep their annotations and their legacy schema typ
 +public StructuredElicitResult<Confirmation> confirm(McpSchema.ElicitRequest request, ToolContext toolContext) {
 ```
 
-| Legacy connection (`legacy-client`) | Modern connection (`modern-client-from-legacy`) |
+| 旧版连接（`legacy-client`） | Modern 连接（`modern-client-from-legacy`） |
 |---|---|
-| the client runs `initialize` at startup | nothing is sent at startup, apart from the listen stream of a connection with `listen=true`; the first request goes out when the tools are first resolved |
-| tools from the `SyncMcpToolCallbackProvider` bean, under their own names | tools from the same bean, named `<connection>_<tool>`, for example `tickets_open_ticket` |
-| `List<McpSyncClient>` beans for resources, prompts and completions | `List<SyncModernMcpConnection>`; `connection.client()` returns the modern `McpSyncClient` of the SDK for the current request |
-| one client for the application, with one session | `client-scope=PER_REQUEST` (the default) creates a client each time the tools are resolved, so each request carries its own caller; `client-scope=SHARED` creates one client; `client-scope=CUSTOM` asks a `SyncModernMcpClientScope` bean, for example for one client for each user |
-| `@McpElicitation` | the same method; the SDK client calls it for the input request of the server and retries the tool call. It may take the `ToolContext` of that tool call, to know whom to ask |
-| `@McpProgress` | the same method |
-| `@McpToolListChanged` | the same method, for a connection with `listen=true`; the tools are listed first, as a modern server sends no list with the change |
-| `@McpSampling` | not supported by the modern SDK client; the server refuses a tool that requires it with `-32021`, so a `McpModernToolFilter` bean hides it |
-| `@McpLogging` | gone, as client logging is |
-| `McpToolFilter`, `McpToolNamePrefixGenerator` | `McpModernToolFilter`, `McpModernToolNamePrefixGenerator`; an application with a `McpToolFilter` bean and a modern connection must define a `McpModernToolFilter` bean too |
-| headers from a `McpSyncHttpClientRequestCustomizer` | headers from a `McpHttpRequestCustomizer` bean, which reads the caller from the `McpTransportContext` of the request |
+| 客户端在启动时运行 `initialize` | 启动时不发送任何内容，除了 `listen=true` 连接的监听流；第一个请求在首次解析工具时才发出 |
+| 工具来自 `SyncMcpToolCallbackProvider` Bean，使用各自的名称 | 工具来自同一个 Bean，名称形如 `<connection>_<tool>`，例如 `tickets_open_ticket` |
+| 为资源、提示词和补全提供 `List<McpSyncClient>` Bean | `List<SyncModernMcpConnection>`；`connection.client()` 返回当前请求对应的 SDK modern `McpSyncClient` |
+| 整个应用一个客户端，一个会话 | `client-scope=PER_REQUEST`（默认值）在每次解析工具时创建一个客户端，因此每个请求都携带自己的调用者；`client-scope=SHARED` 创建一个客户端；`client-scope=CUSTOM` 询问一个 `SyncModernMcpClientScope` Bean，例如为每个用户提供一个客户端 |
+| `@McpElicitation` | 同一个方法；SDK 客户端在服务器请求输入时调用它，并重试工具调用。它可以接收该工具调用的 `ToolContext`，以便知道该问谁 |
+| `@McpProgress` | 同一个方法 |
+| `@McpToolListChanged` | 同一个方法，用于 `listen=true` 的连接；会先列出工具，因为 modern 服务器在变更时不发送列表 |
+| `@McpSampling` | modern SDK 客户端不支持；服务器会以 `-32021` 拒绝需要它的工具，因此用一个 `McpModernToolFilter` Bean 将其隐藏 |
+| `@McpLogging` | 已移除，客户端日志亦然 |
+| `McpToolFilter`、`McpToolNamePrefixGenerator` | `McpModernToolFilter`、`McpModernToolNamePrefixGenerator`；一个同时拥有 `McpToolFilter` Bean 和 modern 连接的应用必须也定义一个 `McpModernToolFilter` Bean |
+| 来自 `McpSyncHttpClientRequestCustomizer` 的请求头 | 来自 `McpHttpRequestCustomizer` Bean 的请求头，该 Bean 从请求的 `McpTransportContext` 中读取调用者 |
 
-Both client starters serve modern connections with the JDK `HttpClient` transport of the SDK.
+两个客户端 starter 都使用 SDK 的 JDK `HttpClient` 传输为 modern 连接提供服务。
 
-### Synchronous to asynchronous: the client type
+### 从同步到异步：客户端类型
 
-[modern-client-async](modern-client-async/) is the migrated client with `spring.ai.mcp.client.type=ASYNC`.
-The connection properties stay; what changes is where the caller comes from and what the handler methods return.
+[modern-client-async](modern-client-async/) 是使用 `spring.ai.mcp.client.type=ASYNC` 的迁移后客户端。
+连接相关的属性保持不变；变化的是调用者的来源以及处理器方法返回什么。
 
 ```diff
 +spring.ai.mcp.client.type=ASYNC
@@ -193,54 +195,54 @@ The connection properties stay; what changes is where the caller comes from and 
 +public Mono<StructuredElicitResult<Confirmation>> confirm(McpSchema.ElicitRequest request, ToolContext toolContext) {
 ```
 
-The tools come from the `AsyncMcpToolCallbackProvider` bean, `SyncModernMcpClientScope` and `SyncModernMcpChangeListener` become `AsyncModernMcpClientScope` and `AsyncModernMcpChangeListener`, and `connection.client()` returns the asynchronous `McpAsyncClient` of the SDK.
-The tool callbacks stay blocking, so a reactive application starts its chat call on a thread that may block, for example with `subscribeOn(Schedulers.boundedElastic())`.
+工具来自 `AsyncMcpToolCallbackProvider` Bean，`SyncModernMcpClientScope` 和 `SyncModernMcpChangeListener` 变为 `AsyncModernMcpClientScope` 和 `AsyncModernMcpChangeListener`，而 `connection.client()` 返回 SDK 的异步 `McpAsyncClient`。
+工具回调仍然是阻塞式的，因此响应式应用会在可能阻塞的线程上发起聊天调用，例如使用 `subscribeOn(Schedulers.boundedElastic())`。
 
-### Programmatic specifications and runtime changes
+### 编程式规格与运行时变更
 
-A modern server has no `McpSyncServer` and no `McpServerFeatures.Sync*Specification` records.
-Tools, prompts and resources are served by repositories, and the Spring AI integration builds the default in-memory repositories from list beans:
+modern 服务器没有 `McpSyncServer`，也没有 `McpServerFeatures.Sync*Specification` 记录。
+工具、提示词和资源由仓库提供服务，而 Spring AI 集成会根据列表 Bean 构建默认的内存仓库：
 
-| Session-based server | Modern server |
+| 基于会话的服务器 | Modern 服务器 |
 |---|---|
-| `@Bean List<McpServerFeatures.SyncToolSpecification>` | `@Bean List<McpSyncTool>`; the SDK type is a `Tool` definition, optional required client capabilities, and a handler |
+| `@Bean List<McpServerFeatures.SyncToolSpecification>` | `@Bean List<McpSyncTool>`；SDK 类型由一个 `Tool` 定义、可选的必需客户端能力以及一个处理器组成 |
 | `@Bean List<SyncPromptSpecification>` | `@Bean List<McpSyncPrompt>` |
-| `@Bean List<SyncResourceSpecification>` / `SyncResourceTemplateSpecification` | `@Bean List<SyncResourceRegistration>` / `List<SyncResourceTemplateRegistration>` (`of(definition, handler)`) |
-| `@Bean List<SyncCompletionSpecification>` | no list of its own: `withCompletionHandler(...)` on the `McpSyncPrompt` or `SyncResourceTemplateRegistration` it completes |
-| `McpSyncServer.addTool/removeTool/notifyToolsListChanged` | `InMemorySyncToolRepository.add/remove`, resolved through `ObjectProvider` |
-| `McpSyncServer.notifyResourcesUpdated` | `InMemorySyncResourceRepository.resourceUpdated(uri)`, or `McpChangeBroadcaster.broadcast(new ServerChange.ResourceUpdated(uri))` from a custom repository |
-| a different tool list per caller | not available; on the modern server, a repository bean that wraps the in-memory one |
+| `@Bean List<SyncResourceSpecification>` / `SyncResourceTemplateSpecification` | `@Bean List<SyncResourceRegistration>` / `List<SyncResourceTemplateRegistration>`（`of(definition, handler)`） |
+| `@Bean List<SyncCompletionSpecification>` | 没有自己的列表：`withCompletionHandler(...)` 调用在所要补全的 `McpSyncPrompt` 或 `SyncResourceTemplateRegistration` 上 |
+| `McpSyncServer.addTool/removeTool/notifyToolsListChanged` | `InMemorySyncToolRepository.add/remove`，通过 `ObjectProvider` 解析 |
+| `McpSyncServer.notifyResourcesUpdated` | `InMemorySyncResourceRepository.resourceUpdated(uri)`，或在自定义仓库中调用 `McpChangeBroadcaster.broadcast(new ServerChange.ResourceUpdated(uri))` |
+| 每个调用者不同的工具列表 | 不可用；在 modern 服务器上，用一个包装内存仓库的仓库 Bean 实现 |
 
-The annotation scanner produces the same list beans, so annotated and programmatic primitives end up in the same repository.
-An annotated `@McpComplete` method is attached to the `@McpPrompt` or `@McpResource` template it names: `TicketProvider.completeOwner` completes the `owner` of the `daily-summary` prompt and `completeTicketId` the `id` of `tickets://{id}`, and the application fails to start if no annotated prompt or template has that name or URI.
-On `type=ASYNC` the same contract uses the async twins: `List<McpAsyncTool>`, `List<McpAsyncPrompt>`, `List<AsyncResourceRegistration>` and `List<AsyncResourceTemplateRegistration>`.
+注解扫描器会生成同样的列表 Bean，因此带注解的原语和编程式原语最终会进入同一个仓库。
+带注解的 `@McpComplete` 方法会附加到它所指定的 `@McpPrompt` 或 `@McpResource` 模板上：`TicketProvider.completeOwner` 为 `owner` 提供补全（`daily-summary` 提示词的），`completeTicketId` 为 `id` 提供补全（`tickets://{id}` 的）；如果没有带注解的提示词或模板具有该名称或 URI，应用将无法启动。
+在 `type=ASYNC` 下，同样的约定使用异步对应类型：`List<McpAsyncTool>`、`List<McpAsyncPrompt>`、`List<AsyncResourceRegistration>` 和 `List<AsyncResourceTemplateRegistration>`。
 
-## Customising the repositories
+## 自定义仓库
 
-[modern-server-repositories](modern-server-repositories/) shows the two ways to replace a repository.
-Defining any bean of an SDK repository type (`McpSyncToolRepository`, `McpSyncResourceRepository`, `McpSyncPromptRepository`, or an `McpAsync*Repository` twin) makes the auto-configured in-memory repository for that primitive back off.
+[modern-server-repositories](modern-server-repositories/) 展示了替换仓库的两种方式。
+只要定义了某一种 SDK 仓库类型（`McpSyncToolRepository`、`McpSyncResourceRepository`、`McpSyncPromptRepository`，或对应的 `McpAsync*Repository` 异步类型）的任意 Bean，该原语自动配置的内存仓库就会退出。
 
-* **Delegation** - `RoleFilteringRepositoryConfiguration` builds the in-memory tool repository from the `List<McpSyncTool>` beans and wraps it. Callers without `X-Role: admin` do not see the `admin_*` tools in `tools/list`, and calling one answers `-32602 Unknown tool`. Use this when the catalogue stays a fixed list and only its visibility depends on the caller.
-* **Implementation** - `TicketResourceRepository` implements `McpSyncResourceRepository` directly. Every ticket is a resource, listed from the domain service on each request and paged by ticket id; nothing is registered, added or removed. Ticket changes arrive as Spring events and leave as `resources/list_changed` and `resources/updated` notifications. It also completes the `id` of its `tickets://{id}` template: `findTemplate` returns the template with a completion handler, and `supportsCompletion()` opts in; both are default methods, so a repository that leaves them out does not complete. Use this when the catalogue lives in a database, a remote service or the domain model.
+* **委托** - `RoleFilteringRepositoryConfiguration` 从 `List<McpSyncTool>` Bean 构建内存工具仓库并将其包装。没有 `X-Role: admin` 的调用者看不到 `admin_*` 工具（在 `tools/list` 中），调用其中一个会返回 `-32602 Unknown tool`。当目录保持为固定列表、只有可见性取决于调用者时，请使用此方式。
+* **实现** - `TicketResourceRepository` 直接实现 `McpSyncResourceRepository`。每张工单都是一个资源，每次请求都从领域服务列出，并按工单 id 分页；不注册、不添加、也不移除任何内容。工单变更以 Spring 事件到达，并以 `resources/list_changed` 和 `resources/updated` 通知发出。它还为它的 `id` 提供补全（`tickets://{id}` 模板的）：`findTemplate` 返回带有补全处理器的模板，`supportsCompletion()` 用于选择加入；两者都是默认方法，因此未实现它们的仓库不会提供补全。当目录位于数据库、远程服务或领域模型中时，请使用此方式。
 
-## Wire format, for the curious
+## 线上格式（满足好奇心）
 
-Every modern request is a POST with `Mcp-Method` and `MCP-Protocol-Version` headers, plus `Mcp-Name` for `tools/call`, `prompts/get` and `resources/read`, and `_meta.io.modelcontextprotocol/protocolVersion` and `clientCapabilities` in the body.
-There is no `initialize`: `server/discover` is a cacheable request.
-Headers that disagree with the body are rejected with JSON-RPC error `-32020`.
+每个 modern 请求都是一个 POST，带有 `Mcp-Method` 和 `MCP-Protocol-Version` 请求头，还带有 `Mcp-Name`（用于 `tools/call`、`prompts/get` 和 `resources/read`），请求体中还有 `_meta.io.modelcontextprotocol/protocolVersion` 和 `clientCapabilities`。
+没有 `initialize`：`server/discover` 是一个可缓存的请求。
+与请求体不一致的请求头会被以 JSON-RPC 错误 `-32020` 拒绝。
 
-## Things to notice
+## 注意事项
 
-- A STATELESS server skips methods that declare `McpSyncRequestContext` (the provider logs a warning), so `stateless-server` has no `InteractiveTicketProvider`: the legacy client prints three tools against it and five against the streamable server.
-- `tools/list` on the modern servers carries `ttlMs` and `cacheScope`; `resources/read tickets://all` carries the values from the annotation.
-- Both admin controllers resolve the server or repository through `ObjectProvider`, wrapped in a `SingletonSupplier` so the lookup happens once, on the first request; the wrapping repository is a `@Bean` method that reads the list beans through `ObjectProvider`. Injecting either directly into a component can create it before the annotated beans are scanned, and the server starts with no annotated tools.
-- The response shape is the method's choice: `delete_ticket` declares `McpSyncNotifier` and answers over `text/event-stream`, with its progress notifications before the `input_required` result; `summarize_tickets` declares only the context and answers with plain JSON. The driver reads the last SSE frame as the response.
-- The required client capabilities are checked before the handler runs, declared with `requiredCapabilities` on the annotation or with `McpSyncTool.of(tool, requiredCapabilities, handler)` on a programmatic tool. A method that asks for undeclared input without them is still refused with `-32021`, but only after it has run, and the server logs a warning recommending the attribute.
-- A filtered tool list depends on the caller, so the wrapping repository returns it with `cacheScope: private`.
-- `completion/complete` carries no `Mcp-Name` header. The server completes only the arguments that a prompt or template declares and answers `-32602` for any other, and a static resource such as `tickets://all` has nothing to complete.
-- On `modern-server-async` the WebFlux transport never blocks an event loop: `Mono` methods run where they are subscribed, and `resolve_ticket`, which returns a plain `String`, runs on `boundedElastic`.
-- The Spring AI client keeps a tool listing across requests only when the server allows it for every caller: a `ttlMs` above zero with `cacheScope: public`. The sample servers send a `ttlMs` with `private`, so `modern-client-from-legacy` lists the tools each time it resolves them, and the client logs once that the listing could be kept. Set `spring.ai.mcp.server.modern.list-cache-scope=PUBLIC` on a server whose tools are the same for every caller, or keep a client that outlives the request: `client-scope=SHARED` for an application with a single identity, or `client-scope=CUSTOM` for one client for each user.
-- A connection with `listen=true` keeps a listen stream open, for the application and not for a caller. When the server reports a tool change, a kept listing is dropped at once and the `@McpToolListChanged` methods are called. They are also called when the stream is established again after it had ended, as the server may have changed in between.
-- A tool callback of a modern connection is bound to the client it was resolved with. `modern-client-from-legacy` reads the caller when that client is built, so a call made later, or on another thread, still carries the caller's `X-Role` header. `modern-client-async` reads it when the tools are resolved, and the callbacks keep it.
-- With the asynchronous client type, resolving the tools on a thread that may not block fails at once with a message that names the connection and the thread, and nothing is sent; `modern-client-async` shows it on `Schedulers.parallel()`.
-- A modern server that cannot be reached does not fail the client: its tools are left out with one warning, and the server is not asked again for `spring.ai.mcp.client.modern.unreachable-cool-down` (30 seconds by default).
+- STATELESS 服务器会跳过声明了 `McpSyncRequestContext` 的方法（提供者会记录一条警告），因此 `stateless-server` 没有 `InteractiveTicketProvider`：旧版客户端对它打印三个工具，而对 streamable 服务器打印五个。
+- modern 服务器上的 `tools/list` 会带有 `ttlMs` 和 `cacheScope`；`resources/read tickets://all` 会带有注解中的值。
+- 两个管理控制器都通过 `ObjectProvider` 解析服务器或仓库，并用 `SingletonSupplier` 包装，因此查找只会在第一个请求时发生一次；包装仓库是一个 `@Bean` 方法，通过 `ObjectProvider` 读取列表 Bean。直接把其中任何一个注入到组件中，可能会在注解 Bean 被扫描之前就创建它，服务器启动时便会没有任何带注解的工具。
+- 响应形态由方法自己选择：`delete_ticket` 声明 `McpSyncNotifier` 并通过 `text/event-stream` 应答，其进度通知在 `input_required` 结果之前发出；`summarize_tickets` 只声明上下文，并用普通 JSON 应答。驱动会把最后一个 SSE 帧作为响应读取。
+- 必需的客户端能力在处理器运行之前检查，通过注解上的 `requiredCapabilities` 或编程式工具上的 `McpSyncTool.of(tool, requiredCapabilities, handler)` 声明。没有声明这些能力却请求未声明输入的方法仍会被以 `-32021` 拒绝，但只会在其运行之后，并且服务器会记录一条推荐使用该属性的警告。
+- 过滤后的工具列表取决于调用者，因此包装仓库会以 `cacheScope: private` 返回它。
+- `completion/complete` 不带 `Mcp-Name` 请求头。服务器只补全提示词或模板声明的参数，对其他任何参数都返回 `-32602`，而像 `tickets://all` 这样的静态资源没有任何可补全的内容。
+- 在 `modern-server-async` 上，WebFlux 传输永远不会阻塞事件循环：`Mono` 方法在订阅它们的线程上运行，而 `resolve_ticket`（返回普通 `String`）运行在 `boundedElastic` 上。
+- 只有当服务器允许每个调用者都保留工具列表时（`ttlMs` 大于零且 `cacheScope: public`），Spring AI 客户端才会跨请求保留该列表。示例服务器发送的 `ttlMs` 带有 `private`，因此 `modern-client-from-legacy` 每次解析工具时都会列出工具，客户端会记录一次提示：该列表本可以保留。可以在工具对所有调用者都相同的服务器上设置 `spring.ai.mcp.server.modern.list-cache-scope=PUBLIC`，或保留一个生命周期长于请求的客户端：单身份的应使用 `client-scope=SHARED`，每个用户一个客户端时使用 `client-scope=CUSTOM`。
+- 带有 `listen=true` 的连接会保持一条监听流打开，这是为应用而不是为某个调用者打开的。当服务器报告工具变更时，已保留的列表会立即被丢弃，并调用 `@McpToolListChanged` 方法。在流结束之后重新建立时也会再次调用这些方法，因为服务器在这段时间内可能已经发生变化。
+- modern 连接的工具回调会绑定到其解析时所使用的客户端。`modern-client-from-legacy` 在构建该客户端时读取调用者，因此之后或在其他线程上发起的调用仍会携带调用者的 `X-Role` 请求头。`modern-client-async` 在解析工具时读取调用者，回调会保留它。
+- 使用异步客户端类型时，在可能不允许阻塞的线程上解析工具会立即失败，并在消息中指出连接和线程，且不会发送任何内容；`modern-client-async` 在 `Schedulers.parallel()` 上展示了这一点。
+- 无法访问的 modern 服务器不会使客户端失败：其工具会被排除并记录一条警告，并且在 `spring.ai.mcp.client.modern.unreachable-cool-down`（默认为 30 秒）期间不会再次询问该服务器。

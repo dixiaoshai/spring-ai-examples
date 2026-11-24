@@ -16,7 +16,7 @@ import com.example.documentforge.model.GenerationResult;
 import com.example.documentforge.service.DocumentGenerationService;
 
 /**
- * Controller for document generation.
+ * 文档生成控制器。
  */
 @Controller
 @RequestMapping("/generate")
@@ -41,14 +41,14 @@ public class GenerateController {
 				prompt.substring(0, Math.min(50, prompt.length())), sourceFile != null && !sourceFile.isEmpty(),
 				useWatermark);
 
-		// Validate inputs
+		// 校验输入
 		if (documentType == null || prompt == null || prompt.isBlank()) {
 			model.addAttribute("error", "Please provide both document type and prompt");
 			model.addAttribute("documentTypes", DocumentType.values());
 			return "fragments/response :: error";
 		}
 
-		// Validate file if provided
+		// 如果提供了文件，则校验文件
 		if (sourceFile != null && !sourceFile.isEmpty()) {
 			if (sourceFile.getSize() > MAX_FILE_SIZE) {
 				model.addAttribute("error", "File too large. Maximum size is 10MB.");
@@ -70,12 +70,12 @@ public class GenerateController {
 			GenerationRequest request = new GenerationRequest(documentType, prompt, useWatermark);
 			GenerationResult result;
 
-			// Use async for PPTX (takes too long for synchronous)
+			// PPTX 使用异步处理（同步处理耗时过长）
 			boolean useAsync = generationService.shouldUseAsync(documentType);
 
 			if (sourceFile != null && !sourceFile.isEmpty()) {
 				if (useAsync) {
-					// Read file content for async processing
+					// 读取文件内容以便异步处理
 					byte[] fileContent = sourceFile.getBytes();
 					String fileName = sourceFile.getOriginalFilename();
 					String contentType = sourceFile.getContentType();

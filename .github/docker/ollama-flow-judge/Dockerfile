@@ -1,40 +1,40 @@
 # ============================================================================
-# Ollama with Flow Judge Model Pre-loaded
+# 预加载 Flow Judge 模型的 Ollama
 # ============================================================================
 #
-# This image contains Ollama with the flow-judge model pre-downloaded
-# for use in CI/CD pipelines where downloading large models is impractical.
+# 此镜像包含已预下载 flow-judge 模型的 Ollama，
+# 用于不便下载大型模型的 CI/CD 流水线。
 #
-# Model: avcodes/flowaicom-flow-judge:q4 (~2.5GB)
-# Base: ollama/ollama:latest
+# 模型：avcodes/flowaicom-flow-judge:q4（约 2.5GB）
+# 基础镜像：ollama/ollama:latest
 #
-# Build:
+# 构建：
 #   docker build -t ollama-flow-judge .
 #
-# Run:
+# 运行：
 #   docker run -d -p 11434:11434 ollama-flow-judge
 #
 # ============================================================================
 
 FROM ollama/ollama:latest
 
-# Set environment variables
+# 设置环境变量
 ENV OLLAMA_HOST=0.0.0.0
 ENV OLLAMA_MODELS=/root/.ollama/models
 
-# Create models directory
+# 创建模型目录
 RUN mkdir -p /root/.ollama/models
 
-# Download the flow-judge model during build
-# This runs ollama in the background, pulls the model, then stops
+# 在构建期间下载 flow-judge 模型
+# 这会后台运行 ollama、拉取模型，然后停止
 RUN ollama serve & \
     sleep 5 && \
     ollama pull avcodes/flowaicom-flow-judge:q4 && \
     pkill ollama
 
-# Expose the Ollama API port
+# 暴露 Ollama API 端口
 EXPOSE 11434
 
-# Default command - start Ollama server
+# 默认命令 - 启动 Ollama 服务器
 ENTRYPOINT ["/bin/ollama"]
 CMD ["serve"]

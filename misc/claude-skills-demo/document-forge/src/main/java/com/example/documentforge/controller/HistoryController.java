@@ -17,7 +17,7 @@ import com.example.documentforge.model.GenerationResult;
 import com.example.documentforge.service.DocumentGenerationService;
 
 /**
- * Controller for generation history management.
+ * 生成历史记录管理的控制器。
  */
 @Controller
 @RequestMapping("/history")
@@ -32,7 +32,7 @@ public class HistoryController {
 	}
 
 	/**
-	 * Get history list as HTMX fragment.
+	 * 以 HTMX 片段形式获取历史记录列表。
 	 */
 	@GetMapping
 	public String getHistory(Model model) {
@@ -46,7 +46,7 @@ public class HistoryController {
 	}
 
 	/**
-	 * Clear all history.
+	 * 清空所有历史记录。
 	 */
 	@DeleteMapping
 	public String clearHistory(Model model) {
@@ -57,7 +57,7 @@ public class HistoryController {
 	}
 
 	/**
-	 * Delete a specific history item.
+	 * 删除指定的历史记录项。
 	 */
 	@DeleteMapping("/{id}")
 	public String deleteHistoryItem(@PathVariable String id, Model model) {
@@ -74,7 +74,7 @@ public class HistoryController {
 	}
 
 	/**
-	 * View a specific result (for async job results).
+	 * 查看指定结果（用于异步任务结果）。
 	 */
 	@GetMapping("/{id}")
 	public String viewResult(@PathVariable String id, Model model) {

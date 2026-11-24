@@ -1,72 +1,72 @@
-# Spring AI Kotlin Tool Callback Demo
+# Spring AI Kotlin 工具回调演示
 
-This project demonstrates the implementation of Tool Callbacks in Spring AI using Kotlin, specifically showing how to integrate OpenAI's API to handle weather-related queries.
+本项目演示如何使用 Kotlin 在 Spring AI 中实现工具回调，特别是展示如何集成 OpenAI 的 API 来处理与天气相关的查询。
 
-## Overview
+## 概述
 
-The application showcases how to:
-- Set up Spring AI with Kotlin
-- Implement Tool Callbacks for weather information
-- Use mock weather service for demonstration
-- Handle OpenAI API integration through Spring AI
+应用展示了如何：
+- 使用 Kotlin 配置 Spring AI
+- 为天气信息实现工具回调
+- 使用模拟天气服务进行演示
+- 通过 Spring AI 完成 OpenAI API 集成
 
-## Prerequisites
+## 前置条件
 
-- JDK 17 or higher
+- JDK 17 或更高版本
 - Kotlin
 - Spring Boot
-- Spring AI dependencies
-- OpenAI API key (configured in your application properties)
+- Spring AI 依赖
+- OpenAI API 密钥（在应用配置中设置）
 
-## Key Components
+## 关键组件
 
-### 1. Main Application Class
+### 1. 主应用类
 
-The `KotlinFunctionCallbackApplication` class initializes the Spring Boot application and sets up the chat client to interact with OpenAI's API. It includes a simple demo that queries weather conditions for San Francisco, Tokyo, and Paris.
+`KotlinFunctionCallbackApplication` 类初始化 Spring Boot 应用，并配置聊天客户端以与 OpenAI 的 API 交互。它包含一个简单的演示，用于查询 San Francisco、Tokyo 和 Paris 的天气状况。
 
-### 2. Configuration
+### 2. 配置
 
-The `Config` class sets up the necessary beans for tool callbacks:
-- Configures the weather tool information
-- Sets up the mock weather service
-- Defines the tool callback structure
+`Config` 类为工具回调配置必要的 Bean：
+- 配置天气工具信息
+- 配置模拟天气服务
+- 定义工具回调结构
 
-### 3. Weather Service
+### 3. 天气服务
 
-The `MockKotlinWeatherService` provides a simple mock implementation that returns predefined weather data for different cities:
+`MockKotlinWeatherService` 提供一个简单的模拟实现，为不同城市返回预定义的天气数据：
 
-### 4. Data Models
+### 4. 数据模型
 
-- `WeatherRequest`: Represents the weather query parameters
-    - location (city name)
-    - latitude
-    - longitude
-    - temperature unit (C/F)
+- `WeatherRequest`：表示天气查询参数
+    - location（城市名）
+    - latitude（纬度）
+    - longitude（经度）
+    - temperature unit（温度单位，C/F）
 
-- `WeatherResponse`: Contains weather information
-    - current temperature
-    - feels like temperature
-    - minimum temperature
-    - maximum temperature
-    - pressure
-    - humidity
-    - unit (C/F)
+- `WeatherResponse`：包含天气信息
+    - 当前温度
+    - 体感温度
+    - 最低温度
+    - 最高温度
+    - 气压
+    - 湿度
+    - 单位（C/F）
 
-## Usage
+## 用法
 
-1. Add your OpenAI API key to `application.properties`:
+1. 将你的 OpenAI API 密钥添加到 `application.properties`：
 ```properties
 spring.ai.openai.api-key=your-api-key-here
 ```
 
-2. Run the application:
+2. 运行应用：
 ```bash
 mvn spring-boot:run
 ```
 
-The application will execute a sample weather query for San Francisco, Tokyo, and Paris, demonstrating how tool callbacks work with Spring AI.
+应用将执行一次针对 San Francisco、Tokyo 和 Paris 的示例天气查询，演示工具回调如何在 Spring AI 中工作。
 
-## Example Output
+## 示例输出
 
 ```
 Response: The current weather conditions in the three cities are:
@@ -76,16 +76,16 @@ Tokyo: 10°C
 Paris: 15°C
 ```
 
-## Implementation Details
+## 实现细节
 
-1. The application uses Spring AI's `ChatClient` to interact with OpenAI's API
-2. Tool callbacks are registered using `FunctionToolCallback.builder()` returning `ToolCallback` instances
-3. Weather queries are handled by the mock service for demonstration purposes
-4. The application uses Kotlin data classes for type-safe request/response handling
+1. 应用使用 Spring AI 的 `ChatClient` 与 OpenAI 的 API 交互
+2. 通过 `FunctionToolCallback.builder()` 注册工具回调，返回 `ToolCallback` 实例
+3. 天气查询由模拟服务处理，仅用于演示
+4. 应用使用 Kotlin data class 实现类型安全的请求/响应处理
 
-## Customization
+## 自定义
 
-To modify the mock weather service:
-1. Update the temperature values in `MockKotlinWeatherService`
-2. Add new city conditions as needed
-3. Implement actual weather API integration by replacing the mock service
+要修改模拟天气服务：
+1. 更新 `MockKotlinWeatherService` 中的温度值
+2. 按需添加新的城市天气状况
+3. 用真实的天气 API 集成替换模拟服务

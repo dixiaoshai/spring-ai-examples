@@ -58,7 +58,7 @@ public class CompletionProvider {
 	}
 
 	/**
-	 * Complete method for usernames in a user status prompt.
+	 * 用户状态提示词中用户名的补全方法。
 	 */
 	@McpComplete(uri = "user-status://{username}")
 	public List<String> completeUsername(String usernamePrefix) {
@@ -87,7 +87,7 @@ public class CompletionProvider {
 	}
 
 	/**
-	 * Complete method for country names in a travel prompt.
+	 * 旅行提示词中国家名称的补全方法。
 	 */
 	@McpComplete(prompt = "travel-planner")
 	public CompleteResult completeCountryName(CompleteRequest request) {

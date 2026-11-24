@@ -20,35 +20,35 @@ class ClaudeCodeWrapper:
     
     def __init__(self, claude_binary_path: str = None, logs_dir: Path = None):
         if claude_binary_path is None:
-            # Try to find Claude Code in PATH
+            # 尝试在 PATH 中查找 Claude Code
             try:
                 result = subprocess.run(['which', 'claude'], capture_output=True, text=True, check=True)
                 self.claude_binary_path = result.stdout.strip()
             except subprocess.CalledProcessError:
-                # Fallback to just 'claude' and let the system find it
+                # 退而使用 'claude'，由系统自行查找
                 self.claude_binary_path = 'claude'
         else:
             self.claude_binary_path = claude_binary_path
         
-        # Set up logs directory for debugging
+        # 设置日志目录以便调试
         if logs_dir is None:
-            # Default to current working directory logs
+            # 默认使用当前工作目录下的 logs
             self.logs_dir = Path.cwd() / "logs"
         else:
             self.logs_dir = Path(logs_dir)
         
-        # Ensure logs directory exists
+        # 确保日志目录存在
         self.logs_dir.mkdir(parents=True, exist_ok=True)
     
     def is_available(self) -> bool:
         """Check if Claude Code is available"""
         try:
-            # Use 'claude' command directly from PATH
+            # 直接使用 PATH 中的 'claude' 命令
             result = subprocess.run(['claude', '--version'],
                          capture_output=True, check=True, timeout=10)
             return True
         except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired) as e:
-            # Debug: print the actual exception for troubleshooting
+            # 调试：输出实际异常以便排查
             print(f"DEBUG: Claude Code availability check failed: {type(e).__name__}: {e}")
             if hasattr(e, 'stdout') and e.stdout:
                 print(f"DEBUG: stdout: {e.stdout}")
@@ -56,7 +56,7 @@ class ClaudeCodeWrapper:
                 print(f"DEBUG: stderr: {e.stderr}")
             return False
         except Exception as e:
-            # Catch any other unexpected exceptions
+            # 捕获其他任何意外异常
             print(f"DEBUG: Unexpected exception in is_available(): {type(e).__name__}: {e}")
             return False
     
@@ -103,27 +103,27 @@ class ClaudeCodeWrapper:
             }
         
         try:
-            # Build command with optional JSON output format and skip permissions
+            # 构建命令，可选 JSON 输出格式并跳过权限检查
             cmd = ['claude', '-p', '--dangerously-skip-permissions']
             if not quiet:
                 cmd.append('--verbose')
             if use_json_output:
                 cmd.extend(['--output-format', 'json'])
             
-            # Ask Claude Code to read and analyze the file directly
+            # 让 Claude Code 直接读取并分析该文件
             file_prompt = f"Please read the file {prompt_path.absolute()} and follow the instructions contained within it."
             cmd.append(file_prompt)
             
-            # Log prompt size for debugging with token estimation (only if not quiet)
+            # 记录提示词大小并估算 token（仅在非静默模式下）
             if not quiet:
                 try:
                     prompt_size = prompt_path.stat().st_size
                     prompt_size_kb = prompt_size / 1024
-                    # Token estimation: ~5 bytes per token or ~200 tokens per KB
-                    estimated_tokens_method1 = prompt_size / 5  # 5 bytes per token
-                    estimated_tokens_method2 = prompt_size_kb * 200  # 200 tokens per KB
+                    # Token 估算：每个 token 约 5 字节，或每 KB 约 200 tokens
+                    estimated_tokens_method1 = prompt_size / 5  # 每个 token 约 5 字节
+                    estimated_tokens_method2 = prompt_size_kb * 200  # 每 KB 约 200 tokens
                     
-                    # Log to both stdout and add to response for debugging
+                    # 同时输出到 stdout 并加入响应，以便调试
                     import logging
                     logging.basicConfig(level=logging.INFO)
                     logger = logging.getLogger(__name__)
@@ -133,29 +133,29 @@ class ClaudeCodeWrapper:
                     logger.info(f"🔍 Estimated tokens (5 bytes/token): {estimated_tokens_method1:,.0f}")
                     logger.info(f"🔍 Estimated tokens (200/KB): {estimated_tokens_method2:,.0f}")
                     
-                    # Show if this is likely to cause issues (Claude supports ~200K tokens)
-                    if prompt_size_kb > 400:  # ~80K tokens at 200 tokens/KB
+                    # 提示是否可能引发问题（Claude 支持约 200K tokens）
+                    if prompt_size_kb > 400:  # 按每 KB 200 tokens 计约 80K tokens
                         logger.warning(f"⚠️  Large prompt detected - may cause Claude Code processing issues")
-                    if estimated_tokens_method1 > 150000:  # Getting close to 200K limit
+                    if estimated_tokens_method1 > 150000:  # 接近 200K 上限
                         logger.warning(f"⚠️  Prompt approaching Claude's 200K token limit")
                         
                 except Exception as e:
                     print(f"🔍 Could not get prompt size: {e}")
             
-            # Call Claude Code with optional progress animation
+            # 调用 Claude Code，并可显示进度动画
             try:
                 start_time = time.time()
                 if not quiet:
                     logger.info(f"🔍 Starting Claude Code execution...")
                 
-                # Start progress animation if requested
+                # 如需要则启动进度动画
                 progress = None
                 if show_progress and not quiet:
                     progress = AnimatedProgress("🧠 Claude Code analyzing")
                     progress.start()
                 
                 try:
-                    # Use Popen for non-blocking execution with progress
+                    # 使用 Popen 进行非阻塞执行，以便展示进度
                     process = subprocess.Popen(
                         cmd,
                         stdout=subprocess.PIPE,
@@ -163,12 +163,12 @@ class ClaudeCodeWrapper:
                         text=True
                     )
                     
-                    # Wait for completion with timeout
+                    # 带超时等待完成
                     stdout, stderr = process.communicate(timeout=timeout)
                     returncode = process.returncode
                     
                 finally:
-                    # Always stop progress animation
+                    # 始终停止进度动画
                     if progress:
                         progress.stop()
                 
@@ -177,7 +177,7 @@ class ClaudeCodeWrapper:
                 if not quiet:
                     logger.info(f"🔍 Claude Code completed in {duration:.1f} seconds")
                 
-                # Check if command succeeded
+                # 检查命令是否成功
                 if returncode != 0:
                     raise subprocess.CalledProcessError(returncode, cmd, stdout, stderr)
                 
@@ -196,7 +196,7 @@ class ClaudeCodeWrapper:
                     'response': None
                 }
             
-            # Save output if requested
+            # 如需要则保存输出
             if output_file_path:
                 output_path = Path(output_file_path)
                 output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -206,14 +206,14 @@ class ClaudeCodeWrapper:
                     f.write(f"Stderr: {stderr or 'None'}\n")
                     f.write(f"Response:\n{stdout}")
             
-            # Process the response based on output format
+            # 根据输出格式处理响应
             if use_json_output:
-                # Extract actual content from Claude Code JSON response
+                # 从 Claude Code 的 JSON 响应中提取实际内容
                 try:
                     import json
                     claude_response = json.loads(stdout)
                     
-                    # Check if this is an error response
+                    # 检查这是否是错误响应
                     if isinstance(claude_response, dict) and claude_response.get('subtype') == 'error_during_execution':
                         return {
                             'success': False,
@@ -222,12 +222,12 @@ class ClaudeCodeWrapper:
                             'response': None
                         }
                     
-                    # Extract actual content and cost information from Claude Code JSON response
+                    # 从 Claude Code 的 JSON 响应中提取实际内容与成本信息
                     actual_content = None
                     cost_info = {}
                     
                     try:
-                        # Debug logging to see what we're working with
+                        # 调试日志，用于查看当前处理的数据
                         import logging
                         logger = logging.getLogger(__name__)
                         logger.info(f"Claude response type: {type(claude_response)}")
@@ -236,9 +236,9 @@ class ClaudeCodeWrapper:
                             if len(claude_response) > 0:
                                 logger.info(f"First item type: {type(claude_response[0])}")
                         
-                        # Handle array format (conversation messages)
+                        # 处理数组格式（对话消息）
                         if isinstance(claude_response, list):
-                            # Find the last assistant message with content
+                            # 查找最后一条带内容的 assistant 消息
                             for i, message in enumerate(reversed(claude_response)):
                                 logger.info(f"Processing message {i}: type={type(message)}")
                                 if not isinstance(message, dict):
@@ -251,7 +251,7 @@ class ClaudeCodeWrapper:
                                         content_list = msg_data['content']
                                         logger.info(f"Content list type: {type(content_list)}")
                                         if isinstance(content_list, list) and len(content_list) > 0:
-                                            # Get text content from the last content item
+                                            # 从最后一个内容项中获取文本内容
                                             last_content = content_list[-1]
                                             logger.info(f"Last content type: {type(last_content)}")
                                             if isinstance(last_content, dict) and 'text' in last_content:
@@ -259,7 +259,7 @@ class ClaudeCodeWrapper:
                                                 logger.info(f"Found content: {actual_content[:100] if actual_content else 'None'}...")
                                                 break
                                                 
-                                # Extract cost information from usage metadata
+                                # 从 usage 元数据中提取成本信息
                                 elif message.get('type') == 'usage':
                                     usage_data = message.get('usage', {})
                                     if usage_data:
@@ -272,7 +272,7 @@ class ClaudeCodeWrapper:
                                         })
                                         logger.info(f"Found usage info: {cost_info}")
                         
-                        # Handle single object format
+                        # 处理单个对象格式
                         elif isinstance(claude_response, dict):
                             if 'result' in claude_response:
                                 actual_content = claude_response['result']
@@ -281,7 +281,7 @@ class ClaudeCodeWrapper:
                             elif 'response' in claude_response:
                                 actual_content = claude_response['response']
                             
-                            # Extract usage/cost information from single object format
+                            # 从单个对象格式中提取 usage/成本信息
                             if 'usage' in claude_response:
                                 usage_data = claude_response['usage']
                                 cost_info.update({
@@ -294,18 +294,18 @@ class ClaudeCodeWrapper:
                                 logger.info(f"Found usage info in single object: {cost_info}")
                         
                     except Exception as parse_error:
-                        # Log the parsing error but continue with fallback
+                        # 记录解析错误，但继续使用兜底方案
                         import logging
                         logger = logging.getLogger(__name__)
                         logger.error(f"Error parsing Claude Code JSON response: {parse_error}")
                         import traceback
                         logger.error(f"Traceback: {traceback.format_exc()}")
                     
-                    # If we couldn't extract content, fallback to raw JSON as string
+                    # 如果无法提取内容，则将原始 JSON 作为字符串兜底
                     if actual_content is None:
                         actual_content = json.dumps(claude_response) if isinstance(claude_response, (dict, list)) else stdout
                     
-                    # Add execution duration to cost info
+                    # 将执行耗时加入成本信息
                     cost_info['duration_seconds'] = duration
                     
                     return {
@@ -318,7 +318,7 @@ class ClaudeCodeWrapper:
                     }
                     
                 except json.JSONDecodeError:
-                    # If it's not valid JSON, return as-is (probably plain text response)
+                    # 如果不是合法 JSON，则原样返回（可能是纯文本响应）
                     return {
                         'success': True,
                         'response': stdout,
@@ -328,7 +328,7 @@ class ClaudeCodeWrapper:
                         'cost_info': {'duration_seconds': duration}
                     }
             else:
-                # Plain text response
+                # 纯文本响应
                 return {
                     'success': True,
                     'response': stdout,
@@ -372,7 +372,7 @@ class ClaudeCodeWrapper:
         
         logger.info(f"🔍 Extracting JSON from response ({len(text_content)} chars)")
         
-        # Strategy 1: Try to extract JSON from markdown code block
+        # 策略 1：尝试从 markdown 代码块中提取 JSON
         try:
             json_pattern = r'```json\s*\n(.*?)\n```'
             json_match = re.search(json_pattern, text_content, re.DOTALL)
@@ -387,11 +387,11 @@ class ClaudeCodeWrapper:
                     return parsed_json
                 except json.JSONDecodeError as e:
                     logger.warning(f"⚠️  JSON code block parse error: {e}")
-                    # Continue to next strategy
+                    # 继续尝试下一种策略
         except Exception as e:
             logger.warning(f"⚠️  Markdown code block extraction failed: {e}")
         
-        # Strategy 2: Try direct JSON parsing (look for { ... } blocks)
+        # 策略 2：尝试直接解析 JSON（查找 { ... } 块）
         try:
             logger.info("🔍 Trying direct JSON parsing from response...")
             lines = text_content.split('\n')
@@ -402,19 +402,19 @@ class ClaudeCodeWrapper:
             for line in lines:
                 line_stripped = line.strip()
                 
-                # Start JSON block detection
+                # 开始检测 JSON 块
                 if line_stripped.startswith('{') and not in_json:
                     in_json = True
                     brace_count = 0
-                    json_lines = [line]  # Reset and start fresh
+                    json_lines = [line]  # 重置并重新开始
                 elif in_json:
                     json_lines.append(line)
                 
-                # Count braces to handle nested objects
+                # 统计花括号数量以处理嵌套对象
                 if in_json:
                     brace_count += line.count('{') - line.count('}')
                     
-                    # End of JSON block
+                    # JSON 块结束
                     if brace_count == 0 and line_stripped.endswith('}'):
                         break
             
@@ -429,15 +429,15 @@ class ClaudeCodeWrapper:
                 except json.JSONDecodeError as e:
                     logger.warning(f"⚠️  Direct JSON parse error: {e}")
                     logger.warning(f"⚠️  Problematic JSON preview: {json_str[:200]}...")
-                    # Continue to next strategy
+                    # 继续尝试下一种策略
         except Exception as e:
             logger.warning(f"⚠️  Direct JSON parsing failed: {e}")
         
-        # Strategy 3: Try to find JSON using simple bracket matching
+        # 策略 3：使用简单的括号匹配查找 JSON
         try:
             logger.info("🔍 Trying bracket-based JSON extraction...")
             
-            # Find first { and last }
+            # 查找第一个 { 与最后一个 }
             first_brace = text_content.find('{')
             last_brace = text_content.rfind('}')
             
@@ -454,7 +454,7 @@ class ClaudeCodeWrapper:
         except Exception as e:
             logger.warning(f"⚠️  Bracket-based JSON extraction failed: {e}")
         
-        # All strategies failed
+        # 所有策略均失败
         logger.error("❌ All JSON extraction strategies failed")
         logger.error(f"❌ Text preview: {text_content[:500]}...")
         return None
@@ -476,25 +476,25 @@ class ClaudeCodeWrapper:
         Returns:
             Dict with keys: success, response (raw text), json_data (parsed), error, etc.
         """
-        # Get raw response using JSON output mode
+        # 使用 JSON 输出模式获取原始响应
         result = self.analyze_from_file(
             prompt_file_path=prompt_file_path,
             output_file_path=output_file_path,
             timeout=timeout,
-            use_json_output=True,  # Force JSON mode for better parsing
+            use_json_output=True,  # 强制 JSON 模式以便更好地解析
             show_progress=show_progress,
             quiet=quiet
         )
         
-        # If the call failed, return as-is
+        # 如果调用失败，则原样返回
         if not result.get('success'):
             return result
         
-        # Extract JSON from the response
+        # 从响应中提取 JSON
         raw_response = result.get('response', '')
         json_data = self.extract_json_from_response(raw_response)
         
-        # Add JSON data to the result
+        # 将 JSON 数据加入结果
         result['json_data'] = json_data
         result['json_extraction_success'] = json_data is not None
         
@@ -517,25 +517,25 @@ class ClaudeCodeWrapper:
         Returns:
             Dict with keys: success, response (raw text), json_data (parsed), error, etc.
         """
-        # Get raw response using JSON output mode
+        # 使用 JSON 输出模式获取原始响应
         result = self.analyze_from_text(
             prompt_text=prompt_text,
             output_file_path=output_file_path,
             timeout=timeout,
-            use_json_output=True,  # Force JSON mode for better parsing
+            use_json_output=True,  # 强制 JSON 模式以便更好地解析
             show_progress=show_progress,
             quiet=quiet
         )
         
-        # If the call failed, return as-is
+        # 如果调用失败，则原样返回
         if not result.get('success'):
             return result
         
-        # Extract JSON from the response
+        # 从响应中提取 JSON
         raw_response = result.get('response', '')
         json_data = self.extract_json_from_response(raw_response)
         
-        # Add JSON data to the result
+        # 将 JSON 数据加入结果
         result['json_data'] = json_data
         result['json_extraction_success'] = json_data is not None
         
@@ -557,7 +557,7 @@ class ClaudeCodeWrapper:
         Returns:
             Dict containing success status, response, error info, etc.
         """
-        # Create persistent prompt file for debugging
+        # 创建持久化的提示词文件以便调试
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         prompt_file_path = self.logs_dir / f"claude-prompt-{timestamp}.md"
         
@@ -567,19 +567,19 @@ class ClaudeCodeWrapper:
         temp_file_path = str(prompt_file_path)
         
         try:
-            # Use the file-based analysis
+            # 使用基于文件的分析
             result = self.analyze_from_file(temp_file_path, output_file_path, timeout, use_json_output, show_progress, quiet)
-            # Keep the prompt file for debugging - don't delete it
+            # 保留提示词文件以便调试 - 不要删除
             return result
         except Exception as e:
-            # Log error but keep prompt file for debugging
+            # 记录错误，但保留提示词文件以便调试
             import logging
             logger = logging.getLogger(__name__)
             logger.error(f"Error in analyze_from_text, prompt saved to: {prompt_file_path}")
             raise
 
 
-# Test function when run directly
+# 直接运行时的测试函数
 if __name__ == "__main__":
     """Test the ClaudeCodeWrapper with the saved prompt"""
     claude = ClaudeCodeWrapper()
@@ -591,7 +591,7 @@ if __name__ == "__main__":
         version = claude.get_version()
         print(f"✅ Claude Code available: {version}")
         
-        # Test with the saved prompt
+        # 使用已保存的提示词进行测试
         prompt_file = '/home/mark/project-mgmt/spring-ai-project-mgmt/pr-review/logs/claude-prompt-ai-analyzer.txt'
         output_file = '/home/mark/project-mgmt/spring-ai-project-mgmt/pr-review/logs/claude-response-wrapper-test.txt'
         

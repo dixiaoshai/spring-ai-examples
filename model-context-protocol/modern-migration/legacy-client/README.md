@@ -1,7 +1,7 @@
-# Tickets client, Streamable HTTP
+# 工单客户端，Streamable HTTP
 
-Spring AI MCP client (`spring-ai-starter-mcp-client-webflux`) configured for `http://localhost:8080`. Works against [stateless-server](../stateless-server/) and [streamable-server](../streamable-server/).
+Spring AI MCP 客户端（`spring-ai-starter-mcp-client-webflux`），为 `http://localhost:8080` 配置。可用于 [stateless-server](../stateless-server/) 和 [streamable-server](../streamable-server/)。
 
-`ClientHandlers` answers the server-initiated requests of the streamable server: `@McpElicitation` accepts the confirmation, `@McpSampling` returns a canned summary, `@McpLogging` and `@McpProgress` print what arrives, `@McpToolListChanged` prints the new tool list after the runtime addition. The runner calls the interactive tools only when the server lists them.
+`ClientHandlers` 应答 streamable 服务器发起的服务器端请求：`@McpElicitation` 接受确认，`@McpSampling` 返回预置的摘要，`@McpLogging` 和 `@McpProgress` 打印收到的内容，`@McpToolListChanged` 打印运行时添加后的新工具列表。运行器仅在服务器列出交互式工具时才调用它们。
 
-Part of [modern-migration](../README.md). Run with `./mvnw spring-boot:run`; the server listens on `http://localhost:8080`.
+属于 [modern-migration](../README.md)。用 `./mvnw spring-boot:run` 运行；服务器监听 `http://localhost:8080`。

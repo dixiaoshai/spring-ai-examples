@@ -1,30 +1,30 @@
-# Orchestrator-Workers Workflow Pattern
+# 编排器—工作者工作流模式
 
-This project demonstrates the Orchestrator-Workers workflow pattern for building effective LLM-based systems, as described in [Anthropic's research on building effective agents](https://www.anthropic.com/research/building-effective-agents).
+本项目演示用于构建高效 LLM 系统的编排器—工作者工作流模式，参考 [Anthropic 关于构建高效智能体的研究](https://www.anthropic.com/research/building-effective-agents)。
 
-![Orchestration Workflow](https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F8985fc683fae4780fb34eab1365ab78c7e51bc8e-2401x1000.png&w=3840&q=75)
+![编排工作流](https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F8985fc683fae4780fb34eab1365ab78c7e51bc8e-2401x1000.png&w=3840&q=75)
 
-## Overview
+## 概述
 
-The Orchestrator-Workers pattern is a flexible approach for handling complex tasks that require dynamic task decomposition and specialized processing. It consists of three main components:
+编排器—工作者模式是一种灵活的方法，用于处理需要动态任务分解和专门化处理的复杂任务。它包含三个主要组件：
 
-- **Orchestrator**: A central LLM that analyzes tasks and determines required subtasks
-- **Workers**: Specialized LLMs that execute specific subtasks
-- **Synthesizer**: Component that combines worker outputs into a final result
+- **编排器（Orchestrator）**：一个中央 LLM，负责分析任务并确定所需的子任务
+- **工作者（Workers）**：执行特定子任务的专门化 LLM
+- **合成器（Synthesizer）**：将工作者输出组合为最终结果的组件
 
-## When to Use
+## 使用场景
 
-This pattern is particularly effective for:
+该模式在以下情况下特别有效：
 
-- Complex tasks where subtasks can't be predicted upfront
-- Tasks requiring different approaches or perspectives
-- Situations needing adaptive problem-solving
-- Tasks benefiting from specialized processing
+- 子任务无法预先预测的复杂任务
+- 需要不同方法或视角的任务
+- 需要自适应问题解决的场景
+- 受益于专门化处理的任务
 
 
-## Implementation
+## 实现
 
-The implementation uses Spring AI's ChatClient for LLM interactions and consists of:
+本实现使用 Spring AI 的 ChatClient 进行 LLM 交互，包含：
 
 ```java
 public class OrchestratorWorkers {
@@ -41,7 +41,7 @@ public class OrchestratorWorkers {
 }
 ```
 
-### Usage Example
+### 用法示例
 
 ```java
 ChatClient chatClient = // ... initialize chat client
@@ -57,11 +57,11 @@ System.out.println("Analysis: " + response.analysis());
 System.out.println("Worker Outputs: " + response.workerResponses());
 ```
 
-## Customization
+## 自定义
 
-The pattern can be customized through:
+该模式可以通过以下方式进行自定义：
 
-1. **Custom Prompts**: Provide specialized prompts for orchestrator and workers
+1. **自定义提示词**：为编排器与工作者提供专门的提示词
 ```java
 agent = new OrchestratorWorkers(
     chatClient,
@@ -70,16 +70,16 @@ agent = new OrchestratorWorkers(
 );
 ```
 
-2. **Default Templates**: Modify the default prompts for common use cases
-   - `DEFAULT_ORCHESTRATOR_PROMPT`: Template for task analysis
-   - `DEFAULT_WORKER_PROMPT`: Template for worker processing
+2. **默认模板**：为常见用例修改默认提示词
+   - `DEFAULT_ORCHESTRATOR_PROMPT`：用于任务分析的模板
+   - `DEFAULT_WORKER_PROMPT`：用于工作者处理的模板
 
-## Dependencies
+## 依赖
 
 - Spring AI
 - Spring Boot
-- Java 17 or later
+- Java 17 或更高版本
 
-## References
+## 参考资料
 
-- [Building Effective Agents (Anthropic Research)](https://www.anthropic.com/research/building-effective-agents)
+- [Building Effective Agents（Anthropic 研究）](https://www.anthropic.com/research/building-effective-agents)

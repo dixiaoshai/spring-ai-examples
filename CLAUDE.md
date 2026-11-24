@@ -1,143 +1,143 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+本文件为 Claude Code（claude.ai/code）在本仓库中处理代码时提供指导。
 
-## Repository Overview
+## 仓库概览
 
-This is a collection of Spring AI examples demonstrating various AI integration patterns and use cases. The repository is organized as a multi-module Maven project with examples covering:
+本仓库是一组 Spring AI 示例，演示各种 AI 集成模式与用例。仓库以多模块 Maven 项目组织，示例覆盖：
 
-- **Agentic Patterns**: Chain workflows, orchestrator-workers, parallelization, routing, and evaluator-optimizer patterns
-- **Model Context Protocol (MCP)**: Extensive examples for MCP clients and servers including SQLite, filesystem, weather, web search, and annotations
-- **Kotlin Examples**: Hello world, function callbacks, and RAG implementations in Kotlin
-- **jinfer (`jinfer/`)**: Local in-JVM models with Qxotic jinfer (chat, tool search, transcription); requires Java 25, built by the root `java25` profile
-- **Miscellaneous**: Function callbacks, streaming responses, and prompt engineering patterns
+- **智能体模式（Agentic Patterns）**：链式工作流、编排器—工作者、并行化、路由、评估器—优化器等模式
+- **模型上下文协议（MCP）**：内容丰富的 MCP 客户端与服务器示例，包括 SQLite、文件系统、天气、Web 搜索与注解
+- **Kotlin 示例**：Kotlin 版 Hello World、函数回调与 RAG 实现
+- **jinfer（`jinfer/`）**：基于 Qxotic jinfer（聊天、工具搜索、转录）的 JVM 内本地模型；需要 Java 25，由根目录的 `java25` profile 构建
+- **其他**：函数回调、流式响应与提示词工程模式
 
-## Build System and Commands
+## 构建系统与命令
 
-This project uses Maven with the Maven Wrapper (mvnw). Each module can be built and run independently.
+本项目使用 Maven 与 Maven Wrapper（mvnw）。每个模块都可以独立构建和运行。
 
-### Common Development Commands
+### 常用开发命令
 
-**Build entire project:**
+**构建整个项目：**
 ```bash
 ./mvnw clean package
 ```
 
-**Run a specific example:**
+**运行指定示例：**
 ```bash
 ./run-example.sh <project-directory-name>
 # Example: ./run-example.sh agentic-patterns/chain-workflow
 ```
 
-**Build and run individual module:**
+**构建并运行单个模块：**
 ```bash
 cd <module-directory>
 ./mvnw clean package
 ./mvnw spring-boot:run
 ```
 
-**Build from root (all modules):**
+**从根目录构建（所有模块）：**
 ```bash
 mvn clean package
 ```
 
-### Version Management
+### 版本管理
 
-**Update Spring AI version across all modules:**
+**更新所有模块的 Spring AI 版本：**
 ```bash
 ./scripts/update-spring-ai-version.sh 1.0.1  # or 1.1.0-SNAPSHOT
 ```
 
-The version management script handles two patterns:
-- **17 modules** use `<spring-ai.version>` property
-- **15 modules** use direct BOM version in dependencyManagement
-- **Total: 32 pom.xml files** updated across the repository
+版本管理脚本会处理两种模式：
+- **17 个模块**使用 `<spring-ai.version>` 属性
+- **15 个模块**在 dependencyManagement 中直接指定 BOM 版本
+- 全仓库共更新 **32 个 pom.xml 文件**
 
-**Check current versions:**
+**查看当前版本：**
 ```bash
 ./scripts/check-spring-ai-version.sh
 ```
 
-**Restore from backup:**
+**从备份恢复：**
 ```bash
 ./scripts/restore-spring-ai-version.sh /path/to/backup
 ```
 
-## Architecture
+## 架构
 
-### Module Structure
-- Each example is a self-contained Spring Boot application
-- Modules follow standard Maven directory structure: `src/main/java` and `src/test/java`
-- Common Spring AI version: `2.1.0-SNAPSHOT`
-- Java version: 17 (document-forge requires 21)
-- Spring Boot parent: `4.1.1`
+### 模块结构
+- 每个示例都是自包含的 Spring Boot 应用
+- 模块遵循标准 Maven 目录结构：`src/main/java` 与 `src/test/java`
+- 通用 Spring AI 版本：`2.1.0-SNAPSHOT`
+- Java 版本：17（document-forge 需要 21）
+- Spring Boot parent：`4.1.1`
 
-### Key Module Categories
+### 主要模块分类
 
-**Agentic Patterns (`agentic-patterns/`):**
-- Demonstrates AI agent workflow patterns
-- Each pattern is a separate module with its own Application class
+**智能体模式（`agentic-patterns/`）：**
+- 演示 AI 智能体工作流模式
+- 每个模式都是独立模块，拥有自己的 Application 类
 
-**Model Context Protocol (`model-context-protocol/`):**
-- MCP client and server implementations
-- Covers various protocols: SQLite, filesystem access, weather APIs, web search
-- Includes both manual and starter-based implementations
-- Server types: WebMVC, WebFlux, and STDIO
+**模型上下文协议（`model-context-protocol/`）：**
+- MCP 客户端与服务器实现
+- 覆盖多种协议：SQLite、文件系统访问、天气 API、Web 搜索
+- 同时包含手动实现与基于 starter 的实现
+- 服务器类型：WebMVC、WebFlux 与 STDIO
 
-**Kotlin Examples (`kotlin/`):**
-- Kotlin-based Spring AI implementations
-- Includes RAG (Retrieval-Augmented Generation) examples
+**Kotlin 示例（`kotlin/`）：**
+- 基于 Kotlin 的 Spring AI 实现
+- 包含 RAG（检索增强生成）示例
 
-### Configuration Patterns
-- Application properties typically in `src/main/resources/application.properties` or `application.yaml`
-- MCP configurations often use `mcp-servers-config.json`
-- Docker Compose files for complex setups (e.g., `compose.yml`)
+### 配置模式
+- 应用配置通常位于 `src/main/resources/application.properties` 或 `application.yaml`
+- MCP 配置常使用 `mcp-servers-config.json`
+- 复杂环境使用 Docker Compose 文件（例如 `compose.yml`）
 
-## Testing Framework
+## 测试框架
 
-This repository uses a comprehensive integration testing framework with **AI-powered validation** for ensuring all examples work correctly across releases. The framework currently covers **24 modules with integration tests** with intelligent validation for interactive applications.
+本仓库使用一套完整的集成测试框架，并通过 **AI 驱动的校验**确保所有示例在不同版本下都能正常工作。该框架目前覆盖 **24 个带集成测试的模块**，并为交互式应用提供智能校验。
 
-### Testing Approaches
+### 测试方式
 
-| Example Type | Test Location | Command | Purpose |
+| 示例类型 | 测试位置 | 命令 | 用途 |
 |--------------|---------------|---------|---------|
-| **Simple** | `src/test/java/` | `./mvnw test` | Unit tests, basic functionality |
-| **Complex** | `integration-tests/` | `jbang integration-tests/Run*.java` | End-to-end integration with AI validation |
+| **简单** | `src/test/java/` | `./mvnw test` | 单元测试、基本功能 |
+| **复杂** | `integration-tests/` | `jbang integration-tests/Run*.java` | 带 AI 校验的端到端集成 |
 
-### Key Features
+### 主要特性
 
-- **24 Modules Tested**: Integration tests for all major example categories
-- **AI Validation**: Intelligent analysis of application logs for non-deterministic outputs
-- **Interactive Application Support**: Testing of chatbots and Scanner-based applications
-- **Centralized Architecture**: Single source of truth with 84% code reduction
-- **Comprehensive Logging**: Full application output preserved for debugging
+- **覆盖 24 个模块**：为所有主要示例类别提供集成测试
+- **AI 校验**：对非确定性输出进行应用日志的智能分析
+- **交互式应用支持**：测试聊天机器人与基于 Scanner 的应用
+- **集中式架构**：单一事实来源，代码量减少 84%
+- **完整日志**：保留应用全部输出以便调试
 
-### Primary Integration Testing Tools
+### 主要集成测试工具
 
-The framework provides **two essential tools** for integration testing:
+该框架提供 **两个核心工具** 用于集成测试：
 
-**1. ⭐ Run all integration tests (primary test runner):**
+**1. ⭐ 运行全部集成测试（主测试运行器）：**
 ```bash
 ./integration-testing/scripts/run-integration-tests.sh
 ```
 
-**Run specific integration test:**
+**运行指定集成测试：**
 ```bash
 ./integration-testing/scripts/run-integration-tests.sh module-name
 ```
 
-**Run with clean logs:**
+**使用干净日志运行：**
 ```bash
 ./integration-testing/scripts/run-integration-tests.sh --clean-logs
 ```
 
-**2. ⭐ Create integration tests for new examples (scaffolding tool):**
+**2. ⭐ 为新示例创建集成测试（脚手架工具）：**
 ```bash
 # Essential for extending the framework - creates ExampleInfo.json + Run*.java files
 python3 integration-testing/scripts/scaffold_integration_test.py <module-path> [--complexity simple|complex|mcp]
 ```
 
-**Create integration test with AI validation:**
+**创建带 AI 校验的集成测试：**
 ```bash
 # Simple example (hybrid AI validation)
 python3 integration-testing/scripts/scaffold_integration_test.py kotlin/kotlin-hello-world --complexity simple
@@ -152,16 +152,16 @@ python3 integration-testing/scripts/scaffold_integration_test.py agents/reflecti
 python3 integration-testing/scripts/scaffold_integration_test.py model-context-protocol/weather/server --complexity complex
 ```
 
-**Test specific example:**
+**测试指定示例：**
 ```bash
 cd <module-directory>
 jbang integration-tests/Run*.java  # For complex examples
 ./mvnw test                         # For simple examples
 ```
 
-### Integration Test Structure
+### 集成测试结构
 
-Complex examples include an `integration-tests/` directory with AI validation:
+复杂示例包含带 AI 校验的 `integration-tests/` 目录：
 ```
 module/
 ├── integration-tests/
@@ -169,40 +169,40 @@ module/
 │   └── RunModule.java        # JBang launcher (uses centralized utilities)
 ```
 
-### JBang Script Pattern & AI Validation
+### JBang 脚本模式与 AI 校验
 
-All integration test scripts use centralized utilities with AI validation support:
-- **Centralized Architecture**: Each script is only ~18 lines (84% code reduction)
-- **AI Integration**: Automatic AI validation using Claude for intelligent analysis
-- **Universal Support**: All test logic in `integration-testing/jbang-lib/IntegrationTestUtils.java`
-- **Interactive Apps**: Special handling for Scanner-based applications
+所有集成测试脚本都使用带 AI 校验支持的集中式工具类：
+- **集中式架构**：每个脚本仅约 18 行（代码量减少 84%）
+- **AI 集成**：使用 Claude 自动进行 AI 校验与智能分析
+- **通用支持**：所有测试逻辑位于 `integration-testing/jbang-lib/IntegrationTestUtils.java`
+- **交互式应用**：针对基于 Scanner 的应用做特殊处理
 
-**Validation Modes:**
-- **Primary**: AI-only validation for unpredictable AI outputs
-- **Hybrid**: Regex patterns + AI validation for reliability
-- **Fallback**: Regex primary with AI backup for interactive applications
+**校验模式：**
+- **Primary**：仅使用 AI 校验，适用于不可预测的 AI 输出
+- **Hybrid**：正则表达式 + AI 校验，兼顾可靠性
+- **Fallback**：以正则为主、AI 兜底，适用于交互式应用
 
-See `integration-testing/docs/README.md` for complete guide and `integration-testing/docs/TROUBLESHOOTING.md` for troubleshooting.
+完整指南见 `integration-testing/docs/README.md`，故障排查见 `integration-testing/docs/TROUBLESHOOTING.md`。
 
-### 🤖 AI Validation (NEW)
+### 🤖 AI 校验（新功能）
 
-The integration testing framework now includes AI-powered validation using Claude to intelligently analyze test outputs. This goes beyond regex pattern matching to understand context, validate unpredictable AI outputs, and assess complex workflows.
+集成测试框架现在包含基于 Claude 的 AI 驱动校验，可智能分析测试输出。它超越了正则表达式匹配，能够理解上下文、校验不可预测的 AI 输出并评估复杂工作流。
 
-**Key Benefits:**
-- **Intelligent Assessment** - Understands if examples achieved their intended purpose
-- **Handles AI Outputs** - Validates jokes, conversations, creative content  
-- **Context-Aware** - Uses README documentation for validation context
-- **Multi-Component Support** - Validates distributed systems holistically
-- **Cost Efficient** - ~400 tokens per validation with high cache utilization
+**主要优势：**
+- **智能评估**：判断示例是否达成了预期目的
+- **处理 AI 输出**：可校验笑话、对话与创意内容
+- **上下文感知**：利用 README 文档作为校验上下文
+- **多组件支持**：对分布式系统进行整体校验
+- **成本高效**：每次校验约 400 tokens，缓存利用率高
 
-**When AI Validation Excels:**
-- Chat examples (jokes, conversations, creative responses)
-- Agentic patterns (multi-step reasoning, workflow completion)
-- MCP examples (protocol validation, tool discovery)
-- Function calling (realistic tool usage verification)
-- Complex workflows with unpredictable outputs
+**AI 校验的优势场景：**
+- 聊天示例（笑话、对话、创意回复）
+- 智能体模式（多步推理、工作流完成）
+- MCP 示例（协议校验、工具发现）
+- 函数调用（真实工具使用验证）
+- 输出不可预测的复杂工作流
 
-**Configuration Example:**
+**配置示例：**
 ```json
 {
   "timeoutSec": 300,
@@ -217,54 +217,54 @@ The integration testing framework now includes AI-powered validation using Claud
 }
 ```
 
-**Validation Modes:**
-- `primary` - AI validation only (best for unpredictable AI outputs)
-- `hybrid` - Both regex and AI must pass (recommended for most cases)  
-- `fallback` - AI validation if regex fails (gradual migration)
+**校验模式：**
+- `primary` - 仅 AI 校验（最适合不可预测的 AI 输出）
+- `hybrid` - 正则与 AI 都必须通过（大多数场景推荐）
+- `fallback` - 正则失败时再使用 AI 校验（渐进式迁移）
 
-For complete details, see `integration-testing/docs/AI_VALIDATION.md`.
+完整细节见 `integration-testing/docs/AI_VALIDATION.md`。
 
-## Development Notes
+## 开发说明
 
-- Use the integration testing framework for comprehensive example testing and validation
-- Each module has its own Maven wrapper for isolated builds
-- Examples demonstrate both OpenAI and other AI model integrations
-- MCP examples often include database setup scripts (e.g., `create-database.sh`)
-- Complex examples should include integration tests for CI/CD validation
+- 使用集成测试框架对示例进行全面测试与校验
+- 每个模块都有自己的 Maven Wrapper，便于隔离构建
+- 示例同时演示 OpenAI 及其他 AI 模型的集成
+- MCP 示例通常包含数据库初始化脚本（例如 `create-database.sh`）
+- 复杂示例应包含集成测试，用于 CI/CD 校验
 
-## Commit Message Guidelines
+## 提交信息规范
 
-**IMPORTANT**: When committing code to this repository, commit messages should appear to be authored by humans:
+**重要**：向本仓库提交代码时，提交信息应看起来由人类编写：
 
-- ❌ **DO NOT include**: Robot emoji (🤖), "Generated with Claude Code", "Co-Authored-By: Claude", or any AI attribution
-- ✅ **DO use**: Professional commit messages following established conventions
+- ❌ **不要包含**：机器人 emoji（🤖）、“Generated with Claude Code”、“Co-Authored-By: Claude”，或任何 AI 署名
+- ✅ **应当使用**：遵循既有规范的专业提交信息
 
-### The Seven Rules of a Great Git Commit Message
+### 优秀 Git 提交信息的七条规则
 
-Based on [Chris Beams' classic guide](https://cbea.ms/git-commit/), follow these rules:
+基于 [Chris Beams 的经典指南](https://cbea.ms/git-commit/)，遵循以下规则：
 
-1. **Separate subject from body with a blank line**
-2. **Limit the subject line to 50 characters**
-3. **Capitalize the subject line**
-4. **Do not end the subject line with a period**
-5. **Use the imperative mood in the subject line** ("Add feature" not "Added feature")
-6. **Wrap the body at 72 characters**
-7. **Use the body to explain what and why vs. how**
+1. **用空行分隔标题与正文**
+2. **标题限制在 50 个字符以内**
+3. **标题首字母大写**
+4. **标题末尾不加句号**
+5. **标题使用祈使语气**（“Add feature” 而不是 “Added feature”）
+6. **正文每行不超过 72 个字符**
+7. **正文解释“是什么、为什么”，而不是“怎么做”**
 
-### Modern Conventions (Recommended)
+### 现代约定（推荐）
 
-Combine the classic rules with conventional commit format:
+将经典规则与 Conventional Commits 格式结合使用：
 
-- `feat(scope): add new feature` - new functionality
-- `fix(scope): resolve issue description` - bug fixes  
-- `docs(scope): update documentation` - documentation changes
-- `refactor(scope): restructure without changing behavior` - code refactoring
-- `test(scope): add or update tests` - test changes
-- `chore(scope): maintenance tasks` - build, dependencies, etc.
+- `feat(scope): add new feature` - 新增功能
+- `fix(scope): resolve issue description` - 缺陷修复
+- `docs(scope): update documentation` - 文档变更
+- `refactor(scope): restructure without changing behavior` - 代码重构
+- `test(scope): add or update tests` - 测试变更
+- `chore(scope): maintenance tasks` - 构建、依赖等维护工作
 
-### Examples
+### 示例
 
-**Good:**
+**好：**
 ```
 feat(mcp): add weather server with OAuth2 support
 
@@ -272,17 +272,17 @@ Implements OAuth2 authentication for weather data access.
 Resolves rate limiting issues and improves security.
 ```
 
-**Good (simple):**
+**好（简单）：**
 ```
 fix: resolve port conflicts in integration tests
 ```
 
-**Bad:**
+**差：**
 ```
 🤖 Generated with Claude Code: Fixed some stuff
 
 Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
-### Writing Tip
-Your commit message should complete: "If applied, this commit will _[subject line]_"
+### 写作提示
+你的提交信息应当能够补全这句话：“If applied, this commit will _[subject line]_”（若应用此提交，将……）

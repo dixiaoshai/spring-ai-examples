@@ -1,10 +1,10 @@
-# JUnit5 API Design Specification
+# JUnit5 API 设计规范
 
-## Executive Summary
+## 执行摘要
 
-This document provides the complete API specification for the Spring AI JUnit5 integration testing framework. It defines all public interfaces, annotations, classes, and extension points that developers will use to create and maintain AI-validated integration tests.
+本文档给出 Spring AI JUnit5 集成测试框架的完整 API 规范。它定义了开发者用于创建与维护 AI 校验集成测试的全部公共接口、注解、类与扩展点。
 
-## Package Structure
+## 包结构
 
 ```
 org.springframework.ai.test
@@ -52,11 +52,11 @@ org.springframework.ai.test
     └── TimeoutException.java
 ```
 
-## Core Annotations API
+## 核心注解 API
 
 ### @SpringAIIntegrationTest
 
-Primary test class annotation that enables Spring AI integration testing.
+用于启用 Spring AI 集成测试的主测试类注解。
 
 ```java
 package org.springframework.ai.test.annotations;
@@ -124,7 +124,7 @@ public @interface SpringAIIntegrationTest {
 
 ### @AIValidation
 
-Configures AI-powered validation for test methods or classes.
+为测试方法或测试类配置 AI 驱动的校验。
 
 ```java
 package org.springframework.ai.test.annotations;
@@ -196,7 +196,7 @@ public @interface AIValidation {
 
 ### @ExpectedBehavior
 
-Describes expected application behavior for AI validation with automatic README inference.
+描述 AI 校验所需的预期应用行为，并支持自动 README 推断。
 
 ```java
 package org.springframework.ai.test.annotations;
@@ -301,7 +301,7 @@ public @interface ExpectedBehavior {
 
 ### @SuccessPatterns
 
-Defines regex patterns for traditional validation.
+定义用于传统校验的正则表达式模式。
 
 ```java
 package org.springframework.ai.test.annotations;
@@ -369,11 +369,11 @@ public @interface SuccessPatterns {
 }
 ```
 
-## Validation API
+## 校验 API
 
 ### ValidationContext
 
-Encapsulates all context needed for validation.
+封装校验所需的全部上下文。
 
 ```java
 package org.springframework.ai.test.core;
@@ -434,7 +434,7 @@ public class ValidationContext {
 
 ### ValidationResult
 
-Result of AI validation.
+AI 校验的结果。
 
 ```java
 package org.springframework.ai.test.core;
@@ -491,7 +491,7 @@ public class ValidationResult {
 
 ### AIValidationEngine
 
-Core engine for AI validation.
+AI 校验的核心引擎。
 
 ```java
 package org.springframework.ai.test.validation;
@@ -553,11 +553,11 @@ public interface AIValidationEngine {
 }
 ```
 
-## Configuration API
+## 配置 API
 
 ### TestConfiguration
 
-Base configuration interface.
+基础配置接口。
 
 ```java
 package org.springframework.ai.test.config;
@@ -611,7 +611,7 @@ public interface TestConfiguration {
 
 ### ValidationConfig
 
-Configuration for validation behavior.
+校验行为的配置。
 
 ```java
 package org.springframework.ai.test.config;
@@ -647,11 +647,11 @@ public class ValidationConfig {
 }
 ```
 
-## Output Capture API
+## 输出捕获 API
 
 ### OutputCapture
 
-Captures application output during test execution.
+在测试执行期间捕获应用输出。
 
 ```java
 package org.springframework.ai.test.output;
@@ -710,7 +710,7 @@ public interface OutputCapture {
 
 ### CapturedOutput
 
-Represents captured application output.
+表示捕获到的应用输出。
 
 ```java
 package org.springframework.ai.test.output;
@@ -760,11 +760,11 @@ public class CapturedOutput {
 }
 ```
 
-## Reporting API
+## 报告 API
 
 ### TestReporter
 
-Interface for test reporting.
+用于生成测试报告的接口。
 
 ```java
 package org.springframework.ai.test.reporting;
@@ -813,11 +813,11 @@ public interface TestReporter {
 }
 ```
 
-## Utility API
+## 工具 API
 
 ### ValidationAssertions
 
-Custom assertions for validation results.
+针对校验结果的自定义断言。
 
 ```java
 package org.springframework.ai.test.utils;
@@ -876,7 +876,7 @@ public class ValidationAssertions {
 
 ### TestDataBuilder
 
-Builder for test data and mocks.
+测试数据与 mock 的构建器。
 
 ```java
 package org.springframework.ai.test.utils;
@@ -930,11 +930,11 @@ public class TestDataBuilder {
 }
 ```
 
-## Exception API
+## 异常 API
 
 ### ValidationException
 
-Base exception for validation errors.
+校验错误的基础异常。
 
 ```java
 package org.springframework.ai.test.exceptions;
@@ -972,11 +972,11 @@ public class ValidationException extends RuntimeException {
 }
 ```
 
-## Extension Points
+## 扩展点
 
-### Custom Validation Provider
+### 自定义校验提供者
 
-Interface for custom validation providers.
+自定义校验提供者的接口。
 
 ```java
 package org.springframework.ai.test.validation;
@@ -1016,9 +1016,9 @@ public interface ValidationProvider {
 }
 ```
 
-### Test Lifecycle Hooks
+### 测试生命周期钩子
 
-Interface for test lifecycle customization.
+用于自定义测试生命周期的接口。
 
 ```java
 package org.springframework.ai.test.core;
@@ -1069,9 +1069,9 @@ public interface TestLifecycleHooks {
 }
 ```
 
-## Usage Examples
+## 使用示例
 
-### Simple Test Example
+### 简单测试示例
 
 ```java
 @SpringAIIntegrationTest(timeout = 120)
@@ -1089,7 +1089,7 @@ public class SimpleAITest {
 }
 ```
 
-### Complex Test Example
+### 复杂测试示例
 
 ```java
 @SpringAIIntegrationTest(
@@ -1128,7 +1128,7 @@ public class ComplexWorkflowTest {
 }
 ```
 
-### Custom Validation Example
+### 自定义校验示例
 
 ```java
 public class CustomValidationProvider implements ValidationProvider {
@@ -1170,17 +1170,17 @@ public class CustomValidationTest {
 }
 ```
 
-## Version Compatibility
+## 版本兼容性
 
-| Framework Version | JUnit Version | Spring Boot Version | Java Version |
+| 框架版本 | JUnit 版本 | Spring Boot 版本 | Java 版本 |
 |-------------------|---------------|---------------------|--------------|
 | 1.0.x | 5.10.x | 3.4.x | 17+ |
 | 1.1.x | 5.11.x | 3.5.x | 17+ |
 | 2.0.x | 5.11.x | 3.5.x | 21+ |
 
-## Migration Guide
+## 迁移指南
 
-### From JBang to JUnit5
+### 从 JBang 迁移到 JUnit5
 
 ```java
 // Old JBang approach
@@ -1203,7 +1203,7 @@ public class ExampleIntegrationTest {
 }
 ```
 
-### From JSON to Annotations
+### 从 JSON 迁移到注解
 
 ```json
 // Old ExampleInfo.json
@@ -1231,28 +1231,28 @@ public class MigratedTest {
 }
 ```
 
-## Best Practices
+## 最佳实践
 
-### 1. Annotation Organization
-- Apply class-level annotations for common configuration
-- Use method-level annotations for specific test requirements
-- Keep annotations readable and well-organized
+### 1. 注解组织
+- 在类级别使用注解完成通用配置
+- 对特定的测试需求使用方法级注解
+- 保持注解可读且组织有序
 
-### 2. Validation Strategy
-- Use PRIMARY mode for pure AI outputs
-- Use HYBRID mode for mixed deterministic/AI content
-- Use FALLBACK mode during migration
+### 2. 校验策略
+- 对纯 AI 输出使用 PRIMARY 模式
+- 对确定性与 AI 内容混合的场景使用 HYBRID 模式
+- 迁移期间使用 FALLBACK 模式
 
-### 3. Performance Optimization
-- Enable caching for repeated validations
-- Use batch validation for test suites
-- Configure appropriate timeouts
+### 3. 性能优化
+- 对重复校验启用缓存
+- 对测试套件使用批量校验
+- 配置合适的超时时间
 
-### 4. Cost Management
-- Monitor token usage through cost reports
-- Use templates to minimize token consumption
-- Enable caching to reduce API calls
+### 4. 成本管理
+- 通过成本报告监控 token 用量
+- 使用模板以最小化 token 消耗
+- 启用缓存以减少 API 调用
 
-## Conclusion
+## 结论
 
-This API design provides a comprehensive, type-safe, and extensible framework for AI-driven integration testing. The annotation-based approach offers excellent IDE support while maintaining flexibility through extension points and custom providers. The design balances ease of use for simple cases with powerful capabilities for complex testing scenarios.
+本 API 设计为 AI 驱动的集成测试提供了一个全面、类型安全且可扩展的框架。基于注解的方式既提供出色的 IDE 支持，又通过扩展点与自定义提供者保持灵活性。该设计在简单场景的易用性与复杂测试场景的强大能力之间取得了平衡。

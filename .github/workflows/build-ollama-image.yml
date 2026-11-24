@@ -1,17 +1,17 @@
 # ============================================================================
-# Build Ollama Flow Judge Image
+# 构建 Ollama Flow Judge 镜像
 # ============================================================================
 #
-# Builds and pushes the Ollama image with pre-loaded flow-judge model to ghcr.io.
-# This image is used by the integration tests workflow.
+# 构建并推送预加载 flow-judge 模型的 Ollama 镜像到 ghcr.io。
+# 该镜像供集成测试工作流使用。
 #
-# TRIGGERS:
-#   - Push to main with changes to the Dockerfile
-#   - Manual trigger (workflow_dispatch)
+# 触发条件：
+#   - 向 main 推送且 Dockerfile 有变更
+#   - 手动触发（workflow_dispatch）
 #
-# The image is cached in ghcr.io and only rebuilt when:
-#   - The Dockerfile changes
-#   - Manually triggered (e.g., to update to newer Ollama version)
+# 镜像会缓存在 ghcr.io 中，仅在以下情况重新构建：
+#   - Dockerfile 发生变更
+#   - 手动触发（例如升级到更新的 Ollama 版本）
 #
 # ============================================================================
 

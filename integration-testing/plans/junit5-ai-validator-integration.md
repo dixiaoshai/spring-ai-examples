@@ -1,12 +1,12 @@
-# JUnit5 AI Validator Integration Design
+# JUnit5 AI 校验器集成设计
 
-## Executive Summary
+## 执行摘要
 
-This document details the integration architecture for incorporating the existing AI validation engine (Python-based Claude validator) into the new JUnit5 annotation-based testing framework. The design emphasizes seamless integration, performance optimization, and cost-effective validation while maintaining the flexibility and power of the current AI validation system.
+本文档详细说明如何把现有的 AI 校验引擎（基于 Python 的 Claude 校验器）集成到新的 JUnit5 注解驱动测试框架中。该设计强调无缝集成、性能优化与高性价比的校验，同时保留当前 AI 校验系统的灵活性与能力。
 
-## Integration Architecture Overview
+## 集成架构总览
 
-### System Components
+### 系统组件
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -56,11 +56,11 @@ This document details the integration architecture for incorporating the existin
 └───────────────────────────────────────────────────────────────┘
 ```
 
-## Core Integration Components
+## 核心集成组件
 
-### 1. AI Validation Controller
+### 1. AI 校验控制器
 
-Central orchestrator for AI validation within JUnit5 framework.
+JUnit5 框架中 AI 校验的中央编排器。
 
 ```java
 @Component
@@ -97,9 +97,9 @@ public class AIValidationController {
 }
 ```
 
-### 2. Request Builder
+### 2. 请求构建器
 
-Transforms JUnit5 annotations into validation requests.
+把 JUnit5 注解转换为校验请求。
 
 ```java
 public class ValidationRequestBuilder {
@@ -149,9 +149,9 @@ public class ValidationRequestBuilder {
 }
 ```
 
-### 3. Validator Executor
+### 3. 校验器执行器
 
-Manages communication with Python validator.
+管理与 Python 校验器之间的通信。
 
 ```java
 public interface ValidatorExecutor {
@@ -215,9 +215,9 @@ public class ProcessBasedValidatorExecutor implements ValidatorExecutor {
 }
 ```
 
-### 4. Alternative Execution Strategies
+### 4. 备选执行策略
 
-#### HTTP-Based Executor (For Containerized Validator)
+#### 基于 HTTP 的执行器（用于容器化校验器）
 
 ```java
 @Component
@@ -239,7 +239,7 @@ public class HttpBasedValidatorExecutor implements ValidatorExecutor {
 }
 ```
 
-#### Native JNI Integration (For Performance)
+#### 原生 JNI 集成（用于提升性能）
 
 ```java
 @Component
@@ -259,9 +259,9 @@ public class NativeValidatorExecutor implements ValidatorExecutor {
 }
 ```
 
-### 5. Response Parser
+### 5. 响应解析器
 
-Parses validation responses into structured results.
+把校验响应解析为结构化结果。
 
 ```java
 public class ValidationResponseParser {
@@ -294,9 +294,9 @@ public class ValidationResponseParser {
 }
 ```
 
-## Performance Optimization
+## 性能优化
 
-### 1. Caching Strategy
+### 1. 缓存策略
 
 ```java
 @Component
@@ -325,7 +325,7 @@ public class ValidationCache {
 }
 ```
 
-### 2. Batch Validation
+### 2. 批量校验
 
 ```java
 @Component
@@ -361,7 +361,7 @@ public class BatchValidationProcessor {
 }
 ```
 
-### 3. Parallel Execution
+### 3. 并行执行
 
 ```java
 @Configuration
@@ -398,9 +398,9 @@ public class ParallelValidationOrchestrator {
 }
 ```
 
-## Cost Management
+## 成本管理
 
-### 1. Cost Tracking
+### 1. 成本跟踪
 
 ```java
 @Entity
@@ -463,7 +463,7 @@ public class CostTracker {
 }
 ```
 
-### 2. Cost Optimization
+### 2. 成本优化
 
 ```java
 @Component
@@ -507,9 +507,9 @@ public class CostOptimizer {
 }
 ```
 
-## Integration with Test Lifecycle
+## 与测试生命周期的集成
 
-### 1. Test Execution Flow
+### 1. 测试执行流程
 
 ```java
 public class SpringAITestExtension implements AfterTestExecutionCallback {
@@ -575,7 +575,7 @@ public class SpringAITestExtension implements AfterTestExecutionCallback {
 }
 ```
 
-### 2. Result Reporting
+### 2. 结果报告
 
 ```java
 @Component
@@ -617,9 +617,9 @@ public class AIValidationReporter implements TestExecutionListener {
 }
 ```
 
-## Error Handling
+## 错误处理
 
-### 1. Validation Failures
+### 1. 校验失败
 
 ```java
 public class ValidationErrorHandler {
@@ -668,7 +668,7 @@ public class ValidationErrorHandler {
 }
 ```
 
-### 2. Retry Logic
+### 2. 重试逻辑
 
 ```java
 @Component
@@ -713,9 +713,9 @@ public class ValidationRetryHandler {
 }
 ```
 
-## Configuration Management
+## 配置管理
 
-### 1. Application Properties
+### 1. 应用配置
 
 ```yaml
 spring-ai-test:
@@ -740,7 +740,7 @@ spring-ai-test:
       parallel-threads: 4
 ```
 
-### 2. Profile-Based Configuration
+### 2. 基于 Profile 的配置
 
 ```java
 @Configuration
@@ -777,9 +777,9 @@ public class LocalValidationConfig {
 }
 ```
 
-## Monitoring and Observability
+## 监控与可观测性
 
-### 1. Metrics Collection
+### 1. 指标采集
 
 ```java
 @Component
@@ -811,7 +811,7 @@ public class ValidationMetrics {
 }
 ```
 
-### 2. Logging
+### 2. 日志记录
 
 ```java
 @Aspect
@@ -845,9 +845,9 @@ public class ValidationLoggingAspect {
 }
 ```
 
-## Future Enhancements
+## 未来增强
 
-### 1. Multi-Model Support
+### 1. 多模型支持
 
 ```java
 public interface AIValidationProvider {
@@ -872,7 +872,7 @@ public class GeminiValidationProvider implements AIValidationProvider {
 }
 ```
 
-### 2. Intelligent Template Selection
+### 2. 智能模板选择
 
 ```java
 @Component
@@ -898,7 +898,7 @@ public class TemplateSelector {
 }
 ```
 
-### 3. Self-Learning Optimization
+### 3. 自学习优化
 
 ```java
 @Component
@@ -925,6 +925,6 @@ public class ValidationLearningEngine {
 }
 ```
 
-## Conclusion
+## 结论
 
-This integration design provides a robust, scalable, and maintainable architecture for incorporating AI validation into the JUnit5 testing framework. The design emphasizes performance through caching and parallel execution, cost management through tracking and optimization, and reliability through comprehensive error handling and retry logic. The modular architecture allows for future enhancements while maintaining backward compatibility with the existing Python-based validation system.
+本集成设计为把 AI 校验引入 JUnit5 测试框架提供了稳健、可扩展且可维护的架构。该设计通过缓存与并行执行提升性能，通过跟踪与优化管理成本，通过完善的错误处理与重试逻辑保障可靠性。模块化的架构既支持未来的增强，又保持与现有基于 Python 的校验系统的向后兼容。

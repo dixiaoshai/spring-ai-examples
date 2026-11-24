@@ -25,7 +25,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 // ------------------------------------------------------------
-// EVALUATOR-OPTIMIZER
+// 评估器—优化器
 // ------------------------------------------------------------
 
 @SpringBootApplication

@@ -22,50 +22,50 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.util.Assert;
 
 /**
- * Workflow: <b>Evaluator-optimizer</b>
+ * 工作流：<b>评估器—优化器</b>
  * <p/>
- * Implements the Evaluator-Optimizer workflow pattern for Large Language Model
- * (LLM) interactions. This workflow orchestrates a dual-LLM process where one
- * model
- * generates responses while another provides evaluation and feedback in an
- * iterative loop,
- * similar to a human writer's iterative refinement process.
+ * 实现面向大型语言模型（LLM）
+ * 交互的评估器—优化器工作流模式。该工作流编排一个双 LLM 流程：
+ * 一个模型生成响应，另一个模型
+ * 则在迭代循环中提供评估与反馈，
+ * 这一过程类似于
+ * 人类作者的迭代精炼过程。
  *
  * <p>
- * The workflow consists of two main components:
+ * 该工作流包含两个主要组件：
  * <ul>
- * <li>A generator LLM that produces initial responses and refines them based on
- * feedback</li>
- * <li>An evaluator LLM that analyzes responses and provides detailed feedback
- * for improvement</li>
+ * <li>生成器 LLM：生成初始响应，并基于
+ * 反馈对其进行精炼</li>
+ * <li>评估器 LLM：分析响应并提供详细的
+ * 改进反馈</li>
  * </ul>
  *
- * <b>Usage Criteria</b>
- * This workflow is particularly effective in scenarios that meet the following
- * conditions:
+ * <b>使用标准</b>
+ * 该工作流在满足以下条件的场景中
+ * 特别有效：
  * <ul>
- * <li>Clear evaluation criteria exist for assessing response quality</li>
- * <li>Iterative refinement provides measurable value to the output</li>
- * <li>The task benefits from multiple rounds of critique and improvement</li>
+ * <li>存在用于评估响应质量的明确评估标准</li>
+ * <li>迭代精炼能为输出带来可衡量的价值</li>
+ * <li>任务受益于多轮评审与改进</li>
  * </ul>
  *
- * <b>Fitness Indicators</b>
- * Two key indicators suggest this workflow is appropriate:
+ * <b>适用性指标</b>
+ * 两个关键指标表明该工作流是合适的：
  * <ul>
- * <li>LLM responses can be demonstrably improved when feedback is
- * articulated</li>
- * <li>The evaluator LLM can provide substantive and actionable feedback</li>
+ * <li>当反馈被清晰表述时，LLM 的响应能够
+ * 得到可证明的改进</li>
+ * <li>评估器 LLM 能提供实质性且可操作的反馈</li>
  * </ul>
  *
- * <b>Example Applications</b>
+ * <b>示例应用</b>
  * <ul>
- * <li>Literary translation requiring capture of subtle nuances through
- * iterative refinement</li>
- * <li>Complex search tasks needing multiple rounds of searching and
- * analysis</li>
- * <li>Code generation where quality can be improved through systematic
- * review</li>
- * <li>Content creation requiring multiple drafts and specific improvements</li>
+ * <li>需要捕捉细微差别并通过迭代精炼的
+ * 文学翻译</li>
+ * <li>需要多轮搜索与分析的
+ * 复杂搜索任务</li>
+ * <li>可通过系统性审查提升质量的
+ * 代码生成</li>
+ * <li>需要多份草稿与针对性改进的内容创作</li>
  * </ul>
  * 
  * @author Christian Tzolov
@@ -111,21 +111,21 @@ public class EvaluatorOptimizer {
 			""";
 
 	/**
-	 * Represents a solution generation step. Contains the model's thoughts and the
-	 * proposed solution.
+	 * 表示一个解决方案生成步骤。包含模型的思考内容与
+	 * 所提议的解决方案。
 	 * 
-	 * @param thoughts The model's understanding of the task and feedback
-	 * @param response The model's proposed solution
+	 * @param thoughts 模型对任务与反馈的理解
+	 * @param response 模型提议的解决方案
 	 */
 	public static record Generation(String thoughts, String response) {
 	}
 
 	/**
-	 * Represents an evaluation response. Contains the evaluation result and
-	 * detailed feedback.
+	 * 表示一个评估响应。包含评估结果与
+	 * 详细反馈。
 	 * 
-	 * @param evaluation The evaluation result (PASS, NEEDS_IMPROVEMENT, or FAIL)
-	 * @param feedback   Detailed feedback for improvement
+	 * @param evaluation 评估结果（PASS、NEEDS_IMPROVEMENT 或 FAIL）
+	 * @param feedback 用于改进的详细反馈
 	 */
 	public static record EvaluationResponse(Evaluation evaluation, String feedback) {
 
@@ -135,12 +135,12 @@ public class EvaluatorOptimizer {
 	}
 
 	/**
-	 * Represents the final refined response. Contains the final solution and the
-	 * chain of thought showing the evolution of the solution.
+	 * 表示最终精炼后的响应。包含最终解决方案以及
+	 * 展示解决方案演进过程的思维链。
 	 * 
-	 * @param solution       The final solution
-	 * @param chainOfThought The chain of thought showing the evolution of the
-	 *                       solution
+	 * @param solution 最终解决方案
+	 * @param chainOfThought 展示解决方案
+	 * 演进过程的思维链
 	 */
 	public static record RefinedResponse(String solution, List<Generation> chainOfThought) {
 	}
@@ -166,26 +166,26 @@ public class EvaluatorOptimizer {
 	}
 
 	/**
-	 * Initiates the evaluator-optimizer workflow for a given task. This method
-	 * orchestrates the iterative process of generation and evaluation until a
-	 * satisfactory solution is reached.
+	 * 为给定任务启动评估器—优化器工作流。该方法
+	 * 编排生成与评估的迭代过程，
+	 * 直到获得令人满意的解决方案。
 	 * 
 	 * <p>
-	 * The workflow follows these steps:
+	 * 该工作流遵循以下步骤：
 	 * </p>
 	 * <ol>
-	 * <li>Generate an initial solution</li>
-	 * <li>Evaluate the solution against quality criteria</li>
-	 * <li>If evaluation passes, return the solution</li>
-	 * <li>If evaluation indicates need for improvement, incorporate feedback and
-	 * generate new solution</li>
-	 * <li>Repeat steps 2-4 until a satisfactory solution is achieved</li>
+	 * <li>生成初始解决方案</li>
+	 * <li>依据质量标准评估该解决方案</li>
+	 * <li>如果评估通过，则返回该解决方案</li>
+	 * <li>如果评估表明需要改进，则纳入反馈并
+	 * 生成新的解决方案</li>
+	 * <li>重复步骤 2-4，直到获得令人满意的解决方案</li>
 	 * </ol>
 	 * 
-	 * @param task The task or problem to be solved through iterative refinement
-	 * @return A RefinedResponse containing the final solution and the chain of
-	 *         thought
-	 *         showing the evolution of the solution
+	 * @param task 需要通过迭代精炼解决的任务或问题
+	 * @return 一个 RefinedResponse，包含最终解决方案以及
+	 * 思维链
+	 * （展示解决方案的演进过程）
 	 */
 	public RefinedResponse loop(String task) {
 		List<String> memory = new ArrayList<>();
@@ -195,19 +195,19 @@ public class EvaluatorOptimizer {
 	}
 
 	/**
-	 * Internal recursive implementation of the evaluator-optimizer loop. This
-	 * method
-	 * maintains the state of previous attempts and feedback while recursively
-	 * refining
-	 * the solution until it meets the evaluation criteria.
+	 * 评估器—优化器循环的内部递归实现。该方法
+	 * 在递归精炼解决方案的过程中，
+	 * 维护此前各次尝试与反馈的状态，
+	 * 直至解决方案满足
+	 * 评估标准。
 	 * 
-	 * @param task           The original task to be solved
-	 * @param context        Accumulated context including previous attempts and
-	 *                       feedback
-	 * @param memory         List of previous solution attempts for reference
-	 * @param chainOfThought List tracking the evolution of solutions and reasoning
-	 * @return A RefinedResponse containing the final solution and complete solution
-	 *         history
+	 * @param task 待解决的原始任务
+	 * @param context 累积的上下文，包括此前的尝试与
+	 * 反馈
+	 * @param memory 供参考的此前解决方案尝试列表
+	 * @param chainOfThought 跟踪解决方案与推理演进过程的列表
+	 * @return 包含最终解决方案及完整解决方案
+	 * 历史的 RefinedResponse
 	 */
 	private RefinedResponse loop(String task, String context, List<String> memory,
 			List<Generation> chainOfThought) {
@@ -219,12 +219,12 @@ public class EvaluatorOptimizer {
 		EvaluationResponse evaluationResponse = evalute(generation.response(), task);
 
 		if (evaluationResponse.evaluation().equals(EvaluationResponse.Evaluation.PASS)) {
-			// Solution is accepted!
+			// 解决方案被接受！
 			return new RefinedResponse(generation.response(), chainOfThought);
 		}
 
-		// Accumulated new context including the last and the previous attempts and
-		// feedbacks.
+		// 累积的新上下文，包含最近一次和此前各次
+		// 尝试与反馈。
 		StringBuilder newContext = new StringBuilder();
 		newContext.append("Previous attempts:");
 		for (String m : memory) {
@@ -236,13 +236,13 @@ public class EvaluatorOptimizer {
 	}
 
 	/**
-	 * Generates or refines a solution based on the given task and feedback context.
-	 * This method represents the generator component of the workflow, producing
-	 * responses that can be iteratively improved through evaluation feedback.
+	 * 基于给定任务和反馈上下文生成或精炼解决方案。
+	 * 该方法代表工作流中的生成器组件，
+	 * 生成可通过评估反馈迭代改进的响应。
 	 * 
-	 * @param task    The primary task or problem to be solved
-	 * @param context Previous attempts and feedback for iterative improvement
-	 * @return A Generation containing the model's thoughts and proposed solution
+	 * @param task 待解决的主要任务或问题
+	 * @param context 用于迭代改进的此前尝试与反馈
+	 * @return 包含模型思考内容与提议解决方案的 Generation
 	 */
 	private Generation generate(String task, String context) {
 		Generation generationResponse = chatClient.prompt()
@@ -259,19 +259,19 @@ public class EvaluatorOptimizer {
 	}
 
 	/**
-	 * Evaluates if a solution meets the specified requirements and quality
-	 * criteria.
-	 * This method represents the evaluator component of the workflow, analyzing
-	 * solutions
-	 * and providing detailed feedback for further refinement until the desired
-	 * quality
-	 * level is reached.
+	 * 评估解决方案是否满足指定的要求与质量
+	 * 标准。
+	 * 该方法代表工作流中的评估器组件，分析
+	 * 解决方案
+	 * 并提供详细反馈以进一步精炼，直到达到期望的
+	 * 质量
+	 * 水平。
 	 * 
-	 * @param content The solution content to be evaluated
-	 * @param task    The original task against which to evaluate the solution
-	 * @return An EvaluationResponse containing the evaluation result
-	 *         (PASS/NEEDS_IMPROVEMENT/FAIL)
-	 *         and detailed feedback for improvement
+	 * @param content 待评估的解决方案内容
+	 * @param task 用于评估解决方案的原始任务
+	 * @return 一个 EvaluationResponse，包含评估结果
+	 * （PASS/NEEDS_IMPROVEMENT/FAIL）
+	 * 以及用于改进的详细反馈
 	 */
 	private EvaluationResponse evalute(String content, String task) {
 

@@ -14,9 +14,8 @@ import org.springframework.stereotype.Service;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * The in-memory ticket store of the other samples, plus a {@link TicketChanged} event for every
- * change. The resource repository turns those events into MCP notifications, so the domain
- * code never talks to the MCP server.
+ * 其他示例中的内存工单存储，并为每次变更增加一个 {@link TicketChanged} 事件。
+ * 资源仓库会将这些事件转换为 MCP 通知，因此领域代码从不直接与 MCP 服务器交互。
  */
 @Service
 public class TicketService {
@@ -24,7 +23,7 @@ public class TicketService {
 	public record Ticket(String id, String title, boolean resolved) {
 	}
 
-	/** Published after a ticket was opened, resolved or deleted. */
+	/** 在工单被打开、解决或删除之后发布。 */
 	public record TicketChanged(String id, Kind kind) {
 
 		public enum Kind {
@@ -86,7 +85,7 @@ public class TicketService {
 		return JSON.writeValueAsString(tickets);
 	}
 
-	/** The number behind {@code t-}, which orders the ids and pages them. */
+	/** {@code t-} 后面的数字，用于对 id 排序和分页。 */
 	static int number(String id) {
 		if (!id.startsWith("t-")) {
 			throw new IllegalArgumentException("Not a ticket id: " + id);

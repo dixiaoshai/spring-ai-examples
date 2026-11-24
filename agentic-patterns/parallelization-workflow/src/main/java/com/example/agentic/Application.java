@@ -35,7 +35,7 @@ public class Application {
 
 		return args -> {
 			// ------------------------------------------------------------
-			// PARALLEL WORKFLOW
+			// 并行化工作流
 			// ------------------------------------------------------------
 
 			List<String> parallelResponse = new ParallelizationlWorkflow(chatClientBuilder.build())

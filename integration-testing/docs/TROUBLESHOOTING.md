@@ -1,30 +1,30 @@
-# Integration Testing Troubleshooting Guide
+# 集成测试故障排查指南
 
-## Quick Reference
+## 速查表
 
-| Symptom | Most Likely Cause | Quick Fix |
+| 现象 | 最可能的原因 | 快速修复 |
 |---------|-------------------|-----------|
-| ❌ Port 8080 in use | Previous test didn't clean up | `lsof -ti:8080 \| xargs -r kill` |
-| ❌ NoSuchElementException | Interactive app, missing config | Add `"requiresUserInteraction": true` |
-| ❌ Docker Compose error | Path/working directory issue | Check compose.yaml location |
-| ❌ Missing env variable | API key not set | `export OPENAI_API_KEY=your-key` |
-| ❌ AI validation failed | Application didn't start properly | Check Spring Boot log for actual errors |
-| ❌ Pattern not found | Output changed or wrong regex | Update successRegex patterns |
+| ❌ 8080 端口被占用 | 上一个测试未清理 | `lsof -ti:8080 \| xargs -r kill` |
+| ❌ NoSuchElementException | 交互式应用，缺少配置 | 添加 `"requiresUserInteraction": true` |
+| ❌ Docker Compose 错误 | 路径/工作目录问题 | 检查 compose.yaml 的位置 |
+| ❌ 缺少环境变量 | 未设置 API 密钥 | `export OPENAI_API_KEY=your-key` |
+| ❌ AI 校验失败 | 应用未正常启动 | 检查 Spring Boot 日志中的实际错误 |
+| ❌ 未找到模式 | 输出已变化或正则错误 | 更新 successRegex 模式 |
 
-## Common Issues & Solutions
+## 常见问题与解决方案
 
-### 1. Port Conflicts
+### 1. 端口冲突
 
-#### Symptom
+#### 现象
 ```
 Port 8080 was already in use
 org.springframework.boot.web.server.PortInUseException
 ```
 
-#### Root Cause
-Previous Spring Boot processes didn't terminate cleanly
+#### 根本原因
+之前的 Spring Boot 进程未干净退出
 
-#### Solutions
+#### 解决方案
 ```bash
 # Quick fix - kill processes on port 8080
 lsof -ti:8080 | xargs -r kill
@@ -36,24 +36,24 @@ lsof -ti:8080 | xargs -r kill
 lsof -i :8080
 ```
 
-#### Prevention
-- Use `run-integration-tests.sh` which includes automatic port cleanup
-- Allow processes to shut down gracefully between tests
-- Consider dynamic port assignment for parallel testing
+#### 预防措施
+- 使用自带自动端口清理的 `run-integration-tests.sh`
+- 允许进程在测试之间优雅关闭
+- 考虑为并行测试使用动态端口分配
 
-### 2. Interactive Application Failures
+### 2. 交互式应用失败
 
-#### Symptom
+#### 现象
 ```
 java.util.NoSuchElementException: No line found
 Application exited with code: 1
 ```
 
-#### Root Cause
-Applications using `Scanner.nextLine()` fail when no input is available in automated testing
+#### 根本原因
+使用 `Scanner.nextLine()` 的应用在自动化测试中没有可用输入时会失败
 
-#### Solution
-Configure the test to allow non-zero exit codes for interactive applications:
+#### 解决方案
+配置测试，允许交互式应用返回非零退出码：
 
 ```json
 {
@@ -67,29 +67,29 @@ Configure the test to allow non-zero exit codes for interactive applications:
 }
 ```
 
-#### How It Works
-- Test validates application startup and readiness indicators
-- Allows exit code 1 as expected behavior
-- Focuses on "ready for interaction" rather than "completed interaction"
+#### 工作原理
+- 测试校验应用启动与就绪标志
+- 将退出码 1 视为预期行为而允许
+- 关注“已准备好交互”而不是“已完成交互”
 
-#### Examples
-- `agents/reflection` - Shows "Let's chat!" then fails on Scanner.nextLine()
-- `sqlite/chatbot` - Shows "Starting interactive chat session" then fails
-- `brave-chatbot` - Shows "I am your AI assistant" then fails
+#### 示例
+- `agents/reflection` - 显示 “Let's chat!” 后在 Scanner.nextLine() 处失败
+- `sqlite/chatbot` - 显示 “Starting interactive chat session” 后失败
+- `brave-chatbot` - 显示 “I am your AI assistant” 后失败
 
-### 3. Docker Compose Path Issues
+### 3. Docker Compose 路径问题
 
-#### Symptom
+#### 现象
 ```
 Docker Compose file 'kotlin/rag-with-kotlin/compose.yaml' does not exist
 ```
 
-#### Root Cause
-Application looks for Docker Compose file relative to project root, but runs from module directory
+#### 根本原因
+应用相对于项目根目录查找 Docker Compose 文件，但实际从模块目录运行
 
-#### Solutions
+#### 解决方案
 
-**Option 1: Setup Commands**
+**选项 1：安装命令**
 ```json
 {
   "setupCommands": [
@@ -102,7 +102,7 @@ Application looks for Docker Compose file relative to project root, but runs fro
 }
 ```
 
-**Option 2: Working Directory Fix**
+**选项 2：修正工作目录**
 ```json
 {
   "setupCommands": [
@@ -111,17 +111,17 @@ Application looks for Docker Compose file relative to project root, but runs fro
 }
 ```
 
-**Option 3: Application Configuration**
-Update the application's Docker Compose configuration to use relative paths from module directory
+**选项 3：应用配置**
+更新应用的 Docker Compose 配置，改用相对于模块目录的路径
 
-### 4. Environment Variable Issues
+### 4. 环境变量问题
 
-#### Symptom
+#### 现象
 ```
 ❌ Missing required environment variable: OPENAI_API_KEY
 ```
 
-#### Solutions
+#### 解决方案
 ```bash
 # Set for current session
 export OPENAI_API_KEY="your-api-key-here"
@@ -136,8 +136,8 @@ export BRAVE_API_KEY="your-brave-key-here"
 env | grep -E "(OPENAI|ANTHROPIC|BRAVE)_API_KEY"
 ```
 
-#### Configuration
-Ensure `ExampleInfo.json` lists all required environment variables:
+#### 配置
+确保 `ExampleInfo.json` 列出了所有必需的环境变量：
 ```json
 {
   "requiredEnv": [
@@ -147,26 +147,26 @@ Ensure `ExampleInfo.json` lists all required environment variables:
 }
 ```
 
-### 5. AI Validation Failures
+### 5. AI 校验失败
 
-#### Symptom
+#### 现象
 ```
 ⚠️ AI validation failed: AI validation script failed with exit code: 1
 ```
 
-#### Diagnosis Steps
-1. **Check the actual application output** in the Spring Boot log
-2. **Verify the application started successfully** (look for "Started Application")
-3. **Check for real errors** in the application logs
-4. **Ensure environment variables are set** properly
+#### 诊断步骤
+1. 在 Spring Boot 日志中**检查应用的实际输出**
+2. **确认应用已成功启动**（查找 “Started Application”）
+3. **检查应用日志中的真实错误**
+4. **确保环境变量已正确设置**
 
-#### Common Causes
-- **Application startup failure**: Real Spring Boot errors masked by AI validation
-- **Missing dependencies**: External services not available
-- **Configuration issues**: Wrong API keys or configuration values
-- **Network problems**: Can't reach external APIs
+#### 常见原因
+- **应用启动失败**：真实的 Spring Boot 错误被 AI 校验掩盖
+- **缺少依赖**：外部服务不可用
+- **配置问题**：API 密钥或配置值错误
+- **网络问题**：无法访问外部 API
 
-#### Solutions
+#### 解决方案
 ```bash
 # Run test individually to see full output
 cd module-directory
@@ -179,22 +179,22 @@ cat integration-testing/logs/integration-tests/module-spring-boot-*.log
 ./mvnw spring-boot:run
 ```
 
-### 6. Pattern Matching Issues
+### 6. 模式匹配问题
 
-#### Symptom
+#### 现象
 ```
 ❌ Missing: Started.*Application
 ❌ Missing: Expected output pattern
 ```
 
-#### Diagnosis
-1. **Check actual output** in the displayed application logs
-2. **Verify regex patterns** are correct for the application
-3. **Look for output variations** due to different environments
+#### 诊断
+1. 在展示的应用日志中**检查实际输出**
+2. **核实正则模式**对该应用是否正确
+3. **留意因环境不同而出现的输出差异**
 
-#### Solutions
+#### 解决方案
 
-**Update Success Patterns**
+**更新成功模式**
 ```json
 {
   "successRegex": [
@@ -204,14 +204,14 @@ cat integration-testing/logs/integration-tests/module-spring-boot-*.log
 }
 ```
 
-**Test Regex Patterns**
+**测试正则模式**
 ```bash
 # Test regex against actual output
 grep -E "Started.*Application" log-file.txt
 ```
 
-**Switch to AI Validation**
-For applications with unpredictable output:
+**改用 AI 校验**
+对于输出不可预测的应用：
 ```json
 {
   "aiValidation": {
@@ -221,14 +221,14 @@ For applications with unpredictable output:
 }
 ```
 
-### 7. Build Failures
+### 7. 构建失败
 
-#### Symptom
+#### 现象
 ```
 [ERROR] Failed to execute goal ... compilation failure
 ```
 
-#### Solutions
+#### 解决方案
 ```bash
 # Clean build
 ./mvnw clean
@@ -243,20 +243,20 @@ java -version  # Should be 17+
 ./mvnw clean package
 ```
 
-### 8. JBang Compilation Issues
+### 8. JBang 编译问题
 
-#### Symptom
+#### 现象
 ```
 [jbang] Error compiling script
 cannot find symbol
 ```
 
-#### Common Causes
-- **Missing dependencies** in JBang `//DEPS` directives
-- **Wrong source paths** in `//SOURCES` directive
-- **Java version mismatch**
+#### 常见原因
+- JBang `//DEPS` 指令中**缺少依赖**
+- `//SOURCES` 指令中的**源路径错误**
+- **Java 版本不匹配**
 
-#### Solutions
+#### 解决方案
 ```bash
 # Update JBang
 jbang version
@@ -269,9 +269,9 @@ jbang cache clear
 jbang --verbose integration-tests/RunModule.java
 ```
 
-## Debugging Workflows
+## 调试工作流
 
-### 1. Test Failure Investigation
+### 1. 测试失败排查
 
 ```bash
 # Step 1: Run individual test
@@ -288,7 +288,7 @@ cat integration-testing/logs/integration-tests/module-spring-boot-*.log
 cat integration-tests/ExampleInfo.json
 ```
 
-### 2. New Test Creation Debug
+### 2. 新建测试的调试
 
 ```bash
 # Step 1: Scaffold test
@@ -305,7 +305,7 @@ jbang integration-tests/RunModule.java
 jbang integration-tests/RunModule.java
 ```
 
-### 3. Full Test Suite Debug
+### 3. 完整测试套件调试
 
 ```bash
 # Run with detailed output
@@ -318,17 +318,17 @@ jbang integration-tests/RunModule.java
 ./integration-testing/scripts/rit-direct.sh --clean-logs
 ```
 
-## Configuration Debugging
+## 配置调试
 
-### Validation Mode Selection
+### 校验模式选择
 
-| Application Type | Recommended Mode | Reasoning |
+| 应用类型 | 推荐模式 | 理由 |
 |------------------|------------------|-----------|
-| Interactive (Scanner) | `fallback` | Allow regex failure, use AI to validate readiness |
-| Predictable output | `hybrid` | Use regex for speed, AI for additional validation |
-| Variable AI output | `primary` | Skip regex, use only AI validation |
+| 交互式（Scanner） | `fallback` | 允许正则失败，用 AI 校验就绪状态 |
+| 可预测输出 | `hybrid` | 用正则保证速度，用 AI 做额外校验 |
+| 多变的 AI 输出 | `primary` | 跳过正则，仅使用 AI 校验 |
 
-### Timeout Tuning
+### 超时调优
 
 ```json
 {
@@ -336,13 +336,13 @@ jbang integration-tests/RunModule.java
 }
 ```
 
-Guidelines:
-- **Simple examples**: 60-120 seconds
-- **Interactive apps**: 15-25 seconds (just startup validation)
-- **Complex workflows**: 300-600 seconds
-- **Docker-dependent**: 180+ seconds (allow for service startup)
+指南：
+- **简单示例**：60-120 秒
+- **交互式应用**：15-25 秒（仅启动校验）
+- **复杂工作流**：300-600 秒
+- **Docker 依赖**：180 秒以上（留出服务启动时间）
 
-### Environment Variable Debugging
+### 环境变量调试
 
 ```bash
 # Check all environment variables
@@ -355,21 +355,21 @@ echo $OPENAI_API_KEY
 OPENAI_API_KEY=test-key jbang integration-tests/RunModule.java
 ```
 
-## Advanced Troubleshooting
+## 高级故障排查
 
-### Log Analysis
+### 日志分析
 
-**Spring Boot Log Location**
+**Spring Boot 日志位置**
 ```bash
 integration-testing/logs/integration-tests/module-spring-boot-timestamp.log
 ```
 
-**Test Execution Log Location**
+**测试执行日志位置**
 ```bash
 integration-testing/logs/background-runs/test_module_timestamp.log
 ```
 
-**Log Analysis Commands**
+**日志分析命令**
 ```bash
 # Find errors in Spring Boot log
 grep -E "(ERROR|WARN|Exception)" spring-boot.log
@@ -381,14 +381,14 @@ grep -E "(Starting|Started)" spring-boot.log
 grep -E "your-pattern" spring-boot.log
 ```
 
-### Performance Issues
+### 性能问题
 
-**Symptoms**
-- Tests timeout frequently
-- Slow application startup
-- Memory issues during testing
+**症状**
+- 测试频繁超时
+- 应用启动缓慢
+- 测试期间出现内存问题
 
-**Solutions**
+**解决方案**
 ```bash
 # Increase timeout for specific test
 # Edit ExampleInfo.json: "timeoutSec": 600
@@ -401,9 +401,9 @@ df -h
 # Currently tests run sequentially to avoid port conflicts
 ```
 
-### AI Validation Debugging
+### AI 校验调试
 
-**Check AI validation configuration**
+**检查 AI 校验配置**
 ```json
 {
   "aiValidation": {
@@ -414,39 +414,39 @@ df -h
 }
 ```
 
-**AI validation cost monitoring**
-- Each validation costs ~$0.002 (400 tokens)
-- Monitor usage if running frequently
-- Consider using regex for predictable outputs
+**AI 校验成本监控**
+- 每次校验约花费 $0.002（400 tokens）
+- 如果频繁运行，请监控用量
+- 对可预测的输出考虑使用正则
 
-## Prevention Best Practices
+## 预防性最佳实践
 
-### 1. Before Creating New Tests
-- Use appropriate configuration template from `integration-testing/learnings/templates/`
-- Test locally before committing
-- Verify all environment variables are documented
-- Check timeout is appropriate for application complexity
+### 1. 创建新测试之前
+- 使用 `integration-testing/learnings/templates/` 中合适的配置模板
+- 提交前先在本地测试
+- 核实所有环境变量均已记录
+- 检查超时是否与应用复杂度匹配
 
-### 2. Regular Maintenance
-- Run full test suite monthly: `./integration-testing/scripts/rit-direct.sh`
-- Update success patterns when applications change
-- Review and update environment variable requirements
-- Monitor AI validation costs
+### 2. 定期维护
+- 每月运行完整测试套件：`./integration-testing/scripts/rit-direct.sh`
+- 应用变化时更新成功模式
+- 审查并更新环境变量要求
+- 监控 AI 校验成本
 
-### 3. Code Review Checklist
-- [ ] Configuration follows established templates
-- [ ] Timeout is appropriate for application type
-- [ ] All environment variables are documented
-- [ ] Success patterns match actual application output
-- [ ] AI validation mode is appropriate for application type
-- [ ] Test passes locally before commit
+### 3. 代码评审清单
+- [ ] 配置遵循既定模板
+- [ ] 超时与应用类型匹配
+- [ ] 所有环境变量均已记录
+- [ ] 成功模式与实际应用输出匹配
+- [ ] AI 校验模式与应用类型匹配
+- [ ] 提交前测试已在本地通过
 
-## Getting Help
+## 获取帮助
 
-1. **Check this guide** for common issues
-2. **Review logs** in `integration-testing/logs/`
-3. **Test manually** with `./mvnw spring-boot:run`
-4. **Check configuration** against templates in `integration-testing/learnings/templates/`
-5. **Run individual test** with `jbang integration-tests/RunModule.java`
+1. **查阅本指南**以排查常见问题
+2. **查看 `integration-testing/logs/` 中的日志**
+3. **手动运行测试**：`./mvnw spring-boot:run`
+4. **对照 `integration-testing/learnings/templates/` 中的模板检查配置**
+5. **运行单个测试**：`jbang integration-tests/RunModule.java`
 
-For issues not covered here, check the learning documents in `integration-testing/learnings/` for detailed technical insights and patterns.
+对于本指南未涵盖的问题，请查阅 `integration-testing/learnings/` 中的经验文档，以获取详细的技术洞见与模式。

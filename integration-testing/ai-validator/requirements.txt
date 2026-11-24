@@ -1,12 +1,12 @@
-# AI Validator Dependencies
-# These dependencies are needed for the AI-based validation system
+# AI 校验器依赖
+# 基于 AI 的校验系统需要这些依赖
 
-# Core Python libraries (usually built-in, but listed for clarity)
+# 核心 Python 库（通常是内置的，此处列出以便说明）
 pathlib
 subprocess
 json
 typing
 dataclasses
 
-# External dependencies (if any additional ones are needed)
-# Note: claude_code_wrapper.py may have its own dependencies
+# 外部依赖（如有额外需求）
+# 注意：claude_code_wrapper.py 可能有自己的依赖

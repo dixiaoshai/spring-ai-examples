@@ -1,29 +1,29 @@
-# Learning Review: Phase 3a.6 - JBang Utility Centralization
+# 学习回顾：第 3a.6 阶段 - JBang 工具类集中化
 
-## Overview
+## 概览
 
-Phase 3a.6 successfully eliminated code duplication across all JBang integration test scripts by creating a centralized utility pattern. This reduced each script from ~110-130 lines to ~18 lines, achieving 84% code reduction.
+第 3a.6 阶段通过创建集中式工具类模式，成功消除了所有 JBang 集成测试脚本中的代码重复。每个脚本从约 110-130 行缩减到约 18 行，实现了 84% 的代码缩减。
 
-## Key Accomplishments
+## 主要成果
 
-### 1. Created Centralized Utilities
-- **Location**: `integration-testing/jbang-lib/IntegrationTestUtils.java`
-- **Functionality**: All test logic centralized in one reusable class
-- **Benefits**: Single location for bug fixes and enhancements
+### 1. 创建集中式工具类
+- **位置**：`integration-testing/jbang-lib/IntegrationTestUtils.java`
+- **功能**：所有测试逻辑集中于一个可复用的类
+- **收益**：缺陷修复与增强只需在一处进行
 
-### 2. Refactored All Scripts
-- **Count**: 18 JBang scripts refactored
-- **Reduction**: ~110-130 lines → ~18 lines per script
-- **Duplication**: 0% - all logic now centralized
+### 2. 重构所有脚本
+- **数量**：重构了 18 个 JBang 脚本
+- **缩减**：每个脚本从约 110-130 行 → 约 18 行
+- **重复**：0% - 所有逻辑现已集中
 
-### 3. Solved Path Resolution
-- **Challenge**: Modules at different directory depths (2-5 levels)
-- **Solution**: Dynamic path calculation in refactoring scripts
-- **Result**: All scripts correctly reference the centralized utilities
+### 3. 解决路径解析问题
+- **挑战**：模块处于不同目录深度（2-5 层）
+- **方案**：在重构脚本中动态计算路径
+- **结果**：所有脚本都能正确引用集中式工具类
 
-## Technical Details
+## 技术细节
 
-### The New Pattern
+### 新模式
 
 ```java
 ///usr/bin/env jbang "$0" "$@" ; exit $?
@@ -40,79 +40,79 @@ public class RunExample {
 }
 ```
 
-### Path Resolution by Module Depth
+### 按模块深度解析路径
 
-| Depth | Example Module | SOURCES Path |
+| 深度 | 示例模块 | SOURCES 路径 |
 |-------|----------------|--------------|
 | 2 | `kotlin/kotlin-hello-world` | `../../../integration-testing/jbang-lib/` |
 | 3 | `models/chat/helloworld` | `../../../../integration-testing/jbang-lib/` |
 | 3 | `model-context-protocol/client-starter/starter-default-client` | `../../../integration-testing/jbang-lib/` |
-| 4+ | Deeper modules | Add more `../` as needed |
+| 4+ | 更深的模块 | 按需添加更多 `../` |
 
-## Challenges and Solutions
+## 挑战与解决方案
 
-### Challenge 1: Path Depth Variations
-- **Issue**: Different modules at different directory depths
-- **Initial Error**: "Could not find: IntegrationTestUtils.java"
-- **Solution**: Created `fix-jbang-paths.sh` to systematically correct all paths
+### 挑战 1：路径深度差异
+- **问题**：不同模块处于不同目录深度
+- **最初的错误**：“Could not find: IntegrationTestUtils.java”
+- **方案**：创建 `fix-jbang-paths.sh` 系统性修正所有路径
 
-### Challenge 2: Batch Refactoring
-- **Issue**: Need to update 18 scripts consistently
-- **Solution**: Created `refactor-jbang-scripts.sh` for automated refactoring
-- **Result**: All scripts updated in one batch operation
+### 挑战 2：批量重构
+- **问题**：需要一致地更新 18 个脚本
+- **方案**：创建 `refactor-jbang-scripts.sh` 进行自动化重构
+- **结果**：所有脚本在一次批量操作中完成更新
 
-### Challenge 3: Testing Validation
-- **Issue**: Ensuring refactored scripts work identically
-- **Solution**: Tested multiple scripts individually before full rollout
-- **Result**: 100% backward compatibility maintained
+### 挑战 3：测试验证
+- **问题**：确保重构后的脚本行为完全一致
+- **方案**：在全面铺开前逐个测试多个脚本
+- **结果**：保持了 100% 的向后兼容
 
-## Lessons Learned
+## 经验教训
 
-### 1. Always Centralize Common Code
-- Duplication makes maintenance harder
-- Central utilities enable consistent improvements
-- Bug fixes apply to all tests automatically
+### 1. 始终集中公共代码
+- 重复会让维护更困难
+- 集中式工具类可实现一致的改进
+- 缺陷修复会自动作用于所有测试
 
-### 2. Path Resolution Matters
-- JBang's relative path resolution requires careful attention
-- Directory depth affects SOURCES directive paths
-- Dynamic path calculation prevents manual errors
+### 2. 路径解析很重要
+- JBang 的相对路径解析需要格外注意
+- 目录深度会影响 SOURCES 指令中的路径
+- 动态路径计算可避免人为错误
 
-### 3. Incremental Testing is Key
-- Test one script thoroughly before batch operations
-- Verify output is identical after refactoring
-- Use fastest example (helloworld) for quick iteration
+### 3. 增量测试至关重要
+- 在批量操作前彻底测试一个脚本
+- 重构后核实输出完全一致
+- 使用最快的示例（helloworld）进行快速迭代
 
-### 4. Documentation Must Evolve
-- Updated scaffolding tool to generate new pattern
-- Created dedicated pattern documentation
-- Established new pattern as the standard
+### 4. 文档必须同步演进
+- 更新脚手架工具以生成新模式
+- 创建专门介绍该模式的文档
+- 将新模式确立为标准
 
-## Impact on Future Development
+## 对未来开发的影响
 
-### For New Examples
-1. **Always use** the centralized pattern for new JBang scripts
-2. **Never duplicate** test logic in individual scripts
-3. **Use scaffolding** tool which now generates the correct pattern
+### 对新示例
+1. 新的 JBang 脚本**始终使用**集中式模式
+2. **绝不要**在单个脚本中重复测试逻辑
+3. **使用脚手架**工具，它现在会生成正确的模式
 
-### For Maintenance
-1. **Fix bugs** in IntegrationTestUtils.java only
-2. **Add features** to the centralized utilities
-3. **Keep scripts minimal** - just the main method
+### 对维护
+1. 只在 IntegrationTestUtils.java 中**修复缺陷**
+2. 将**新功能**添加到集中式工具类
+3. **保持脚本精简** - 只保留 main 方法
 
-### For Documentation
-1. **Pattern guide** created at `integration-testing/docs/JBANG_PATTERN.md`
-2. **README updated** with new architecture section
-3. **Scaffolding updated** to generate new pattern automatically
+### 对文档
+1. 在 `integration-testing/docs/JBANG_PATTERN.md` 创建了**模式指南**
+2. **README 已更新**，增加了新的架构章节
+3. **脚手架已更新**，可自动生成新模式
 
-## Metrics Summary
+## 指标汇总
 
-- **Scripts Refactored**: 18
-- **Code Reduction**: 84% (from ~110-130 to ~18 lines)
-- **Duplication**: 0% (was ~100%)
-- **Maintenance Points**: 1 (was 18)
-- **Test Compatibility**: 100% maintained
+- **重构的脚本**：18
+- **代码缩减**：84%（从约 110-130 行缩减到约 18 行）
+- **重复**：0%（原为约 100%）
+- **维护点**：1（原为 18）
+- **测试兼容性**：100% 保持
 
-## Conclusion
+## 结论
 
-Phase 3a.6 successfully eliminated technical debt in the JBang integration test scripts. The centralized pattern is now the standard for all future integration tests, ensuring maintainability and consistency across the entire test suite.
+第 3a.6 阶段成功消除了 JBang 集成测试脚本中的技术债。集中式模式现在是所有未来集成测试的标准，确保整个测试套件的一致性与可维护性。

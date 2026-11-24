@@ -1,6 +1,6 @@
 /*
- * Centralized utilities for JBang integration tests
- * Provides common functionality to eliminate code duplication across test scripts
+ * JBang 集成测试的集中式工具类
+ * 提供通用功能，以消除测试脚本之间的代码重复
  */
 
 import com.fasterxml.jackson.databind.*;
@@ -16,7 +16,7 @@ import static java.lang.System.*;
 
 public class IntegrationTestUtils {
     
-    // Record for AI validation configuration
+    // AI 校验配置的记录类型
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record AIValidationConfig(
         boolean enabled,
@@ -28,7 +28,7 @@ public class IntegrationTestUtils {
         Map<String, Object> successCriteria
     ) {}
     
-    // Record for test configuration
+    // 测试配置的记录类型
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record ExampleInfo(
         int timeoutSec, 
@@ -39,7 +39,7 @@ public class IntegrationTestUtils {
         AIValidationConfig aiValidation
     ) {}
     
-    // Load configuration from ExampleInfo.json
+    // 从 ExampleInfo.json 加载配置
     public static ExampleInfo loadConfig() throws Exception {
         Path configPath = Path.of("integration-tests/ExampleInfo.json");
         ObjectMapper mapper = new ObjectMapper();
@@ -47,7 +47,7 @@ public class IntegrationTestUtils {
         return mapper.readValue(configPath.toFile(), ExampleInfo.class);
     }
     
-    // Verify required environment variables
+    // 校验必需的环境变量
     public static void verifyEnvironment(ExampleInfo cfg) {
         for (String envVar : cfg.requiredEnv()) {
             if (getenv(envVar) == null) {
@@ -57,7 +57,7 @@ public class IntegrationTestUtils {
         }
     }
     
-    // Run a command with timeout
+    // 带超时地运行命令
     public static void runCommand(String[] cmd, int timeoutSec) throws Exception {
         ProcessResult result = new ProcessExecutor()
             .command(cmd)
@@ -72,17 +72,17 @@ public class IntegrationTestUtils {
         }
     }
     
-    // Run setup commands if specified
+    // 如有指定，则运行安装命令
     public static void runSetupCommands(ExampleInfo cfg) throws Exception {
         if (cfg.setupCommands() != null) {
             for (String setupCmd : cfg.setupCommands()) {
                 out.println("🔧 Running setup: " + setupCmd);
-                runCommand(setupCmd.split("\\s+"), 60); // 1 minute timeout for setup
+                runCommand(setupCmd.split("\\s+"), 60); // 安装命令超时 1 分钟
             }
         }
     }
     
-    // Run cleanup commands if specified
+    // 如有指定，则运行清理命令
     public static void runCleanupCommands(ExampleInfo cfg) {
         if (cfg.cleanupCommands() != null) {
             for (String cleanupCmd : cfg.cleanupCommands()) {
@@ -96,15 +96,15 @@ public class IntegrationTestUtils {
         }
     }
     
-    // Build the application
+    // 构建应用
     public static void buildApplication(String moduleName) throws Exception {
         out.println("🏗️  Building " + moduleName + "...");
         runCommand(new String[]{"./mvnw", "clean", "package", "-q", "-DskipTests"}, 300);
     }
     
-    // Create log file path
+    // 创建日志文件路径
     public static Path createLogFile(String moduleName) throws Exception {
-        // Try different relative paths based on module depth
+        // 根据模块深度尝试不同的相对路径
         Path logDir = null;
         if (Files.exists(Paths.get("../../../integration-testing"))) {
             logDir = Paths.get("../../../integration-testing/logs/integration-tests");
@@ -120,7 +120,7 @@ public class IntegrationTestUtils {
         return logDir.resolve(moduleName + "-spring-boot-" + System.currentTimeMillis() + ".log");
     }
     
-    // Run the Spring Boot application
+    // 运行 Spring Boot 应用
     public static ProcessResult runSpringBootApp(ExampleInfo cfg, Path logFile) throws Exception {
         return new ProcessExecutor()
             .command("./mvnw", "spring-boot:run", "-q")
@@ -130,7 +130,7 @@ public class IntegrationTestUtils {
             .execute();
     }
     
-    // Display full output
+    // 展示完整输出
     public static void displayOutput(String output) {
         out.println("📋 Full Application Output:");
         out.println("---");
@@ -138,25 +138,25 @@ public class IntegrationTestUtils {
         out.println("---");
     }
     
-    // Display log file path
+    // 展示日志文件路径
     public static void displayLogPath(Path logFile) {
         out.println("📁 Full Spring Boot log: " + logFile.toAbsolutePath().normalize());
     }
     
-    // Perform AI validation using Python script
+    // 使用 Python 脚本执行 AI 校验
     public static boolean performAIValidation(String output, Path logFile, ExampleInfo cfg, String moduleName) throws Exception {
         AIValidationConfig aiConfig = cfg.aiValidation();
         if (aiConfig == null || !aiConfig.enabled()) {
-            return true; // AI validation not enabled, return success
+            return true; // 未启用 AI 校验，直接返回成功
         }
         
         out.println("🤖 Running AI validation...");
         
-        // Build Python command - calculate path to repository root and then to validator
+        // 构建 Python 命令：先计算到仓库根目录的路径，再指向校验器
         Path currentDir = Path.of(".").toAbsolutePath();
         Path repoRoot = currentDir;
         
-        // Navigate up to find the repository root (contains integration-testing directory)
+        // 向上查找仓库根目录（包含 integration-testing 目录）
         while (repoRoot != null && !repoRoot.resolve("integration-testing").toFile().exists()) {
             repoRoot = repoRoot.getParent();
         }
@@ -173,10 +173,10 @@ public class IntegrationTestUtils {
             "--log-path", logFile.toAbsolutePath().toString(),
             "--example-name", moduleName,
             "--output-format", "json",
-            "--verbose"  // Enable verbose output for debugging in CI
+            "--verbose"  // 启用详细输出，便于在 CI 中调试
         };
         
-        // Build dynamic command with optional parameters
+        // 构建带可选参数的动态命令
         List<String> cmdList = new ArrayList<>(Arrays.asList(baseCmd));
         
         if (aiConfig.expectedBehavior() != null && !aiConfig.expectedBehavior().isEmpty()) {
@@ -204,38 +204,38 @@ public class IntegrationTestUtils {
         String[] fullCmd = cmdList.toArray(new String[0]);
         
         try {
-            // Execute AI validation
+            // 执行 AI 校验
             ProcessResult result = new ProcessExecutor()
                 .command(fullCmd)
-                .timeout(180, TimeUnit.SECONDS) // 3 minutes timeout for AI validation
+                .timeout(180, TimeUnit.SECONDS) // AI 校验的 3 分钟超时
                 .readOutput(true)
-                .redirectErrorStream(true) // Merge stderr into stdout for better error visibility
+                .redirectErrorStream(true) // 合并 stderr 到 stdout，以便更清楚地观察错误
                 .execute();
 
             String aiOutput = result.outputUTF8();
             int aiExitCode = result.getExitValue();
 
-            // Check exit code
+            // 检查退出码
             if (aiExitCode != 0) {
                 err.println("AI validation output: " + aiOutput);
                 throw new Exception("AI validation script failed with exit code: " + aiExitCode);
             }
             
-            // With quiet mode, output should be clean JSON
+            // 静默模式下，输出应是干净的 JSON
             String jsonOutput = aiOutput.trim();
             
             if (jsonOutput.isEmpty()) {
                 throw new Exception("No output from AI validation");
             }
             
-            // Parse JSON response directly (no complex filtering needed with quiet mode)
+            // 直接解析 JSON 响应（静默模式下无需复杂过滤）
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> aiResult;
             
             try {
                 aiResult = mapper.readValue(jsonOutput, Map.class);
             } catch (Exception e) {
-                // If direct parsing fails, try extracting JSON as fallback
+                // 如果直接解析失败，则尝试提取 JSON 作为兜底
                 String extractedJson = extractJsonFromOutput(aiOutput);
                 if (extractedJson != null && !extractedJson.trim().isEmpty()) {
                     aiResult = mapper.readValue(extractedJson, Map.class);
@@ -248,13 +248,13 @@ public class IntegrationTestUtils {
             Double confidence = (Double) aiResult.get("confidence");
             String reasoning = (String) aiResult.get("reasoning");
             
-            // Display AI validation results
+            // 展示 AI 校验结果
             out.println("🤖 AI Validation Result:");
             out.println("  Success: " + aiSuccess);
             out.println("  Confidence: " + String.format("%.2f", confidence));
             out.println("  Reasoning: " + reasoning);
             
-            // Show cost information if available
+            // 如有成本信息则展示
             @SuppressWarnings("unchecked")
             Map<String, Object> costInfo = (Map<String, Object>) aiResult.get("cost_info");
             if (costInfo != null) {
@@ -298,21 +298,21 @@ public class IntegrationTestUtils {
         } catch (Exception e) {
             err.println("⚠️  AI validation failed: " + e.getMessage());
             
-            // Handle based on validation mode
+            // 根据校验模式进行处理
             String mode = aiConfig.validationMode();
             if ("primary".equals(mode)) {
                 throw new Exception("AI validation failed and is required: " + e.getMessage());
             } else if ("hybrid".equals(mode)) {
                 err.println("⚠️  AI validation failed, falling back to regex patterns only");
-                return true; // Let regex validation handle it
+                return true; // 交由正则校验处理
             } else { // fallback mode
                 err.println("⚠️  AI validation failed, using regex validation result");
-                return true; // Use whatever regex validation determined
+                return true; // 使用正则校验的结果
             }
         }
     }
     
-    // Extract JSON from mixed output (filtering out logging lines)
+    // 从混合输出中提取 JSON（过滤掉日志行）
     public static String extractJsonFromOutput(String output) {
         String[] lines = output.split("\n");
         StringBuilder jsonBuilder = new StringBuilder();
@@ -322,7 +322,7 @@ public class IntegrationTestUtils {
         for (String line : lines) {
             String trimmedLine = line.trim();
             
-            // Skip logging lines
+            // 跳过日志行
             if (trimmedLine.startsWith("INFO:") || 
                 trimmedLine.startsWith("DEBUG:") || 
                 trimmedLine.startsWith("WARNING:") ||
@@ -330,7 +330,7 @@ public class IntegrationTestUtils {
                 continue;
             }
             
-            // Look for JSON start
+            // 查找 JSON 起始位置
             if (trimmedLine.startsWith("{") && !inJsonBlock) {
                 inJsonBlock = true;
                 braceCount = 0;
@@ -341,7 +341,7 @@ public class IntegrationTestUtils {
                 jsonBuilder.append(line).append("\n");
                 braceCount += line.chars().map(c -> c == '{' ? 1 : c == '}' ? -1 : 0).sum();
                 
-                // Check if JSON block is complete
+                // 检查 JSON 块是否完整
                 if (braceCount <= 0 && trimmedLine.endsWith("}")) {
                     break;
                 }
@@ -351,51 +351,51 @@ public class IntegrationTestUtils {
         return inJsonBlock ? jsonBuilder.toString().trim() : null;
     }
     
-    // Main test execution flow
+    // 主测试执行流程
     public static void runIntegrationTest(String moduleName) throws Exception {
-        // Load configuration
+        // 加载配置
         ExampleInfo cfg = loadConfig();
         
-        // Verify environment
+        // 校验环境
         verifyEnvironment(cfg);
         
         try {
-            // Build application
+            // 构建应用
             buildApplication(moduleName);
             
-            // Run setup commands AFTER build to avoid clean removing test files
+            // 在构建之后运行安装命令，避免 clean 删除测试文件
             runSetupCommands(cfg);
             
-            // Create log file
+            // 创建日志文件
             Path logFile = createLogFile(moduleName.toLowerCase().replace(" ", "-"));
             
-            // Run application
+            // 运行应用
             out.println("🚀 Running " + moduleName + "...");
             ProcessResult result = runSpringBootApp(cfg, logFile);
             int exitCode = result.getExitValue();
             
-            // Read output
+            // 读取输出
             String output = Files.readString(logFile);
             
-            // Verify patterns and display log path
+            // 校验模式并展示日志路径
             out.println("✅ Verifying output patterns...");
             out.println("📁 Full Spring Boot log: " + logFile.toAbsolutePath().normalize());
             
-            // Display full output first
+            // 先展示完整输出
             displayOutput(output);
             
-            // First, check if AI validation is enabled and in primary mode
+            // 首先检查 AI 校验是否已启用且处于 primary 模式
             AIValidationConfig aiConfig = cfg.aiValidation();
             boolean regexValidationNeeded = true;
             boolean aiValidationPassed = true;
             
             if (aiConfig != null && aiConfig.enabled() && "primary".equals(aiConfig.validationMode())) {
-                // Primary AI validation mode - skip regex patterns
+                // Primary AI 校验模式 - 跳过正则模式
                 out.println("🤖 Using AI validation as primary validation method");
                 regexValidationNeeded = false;
                 aiValidationPassed = performAIValidation(output, logFile, cfg, moduleName);
             } else {
-                // Run regex validation first
+                // 先运行正则校验
                 int failedPatterns = 0;
                 for (String pattern : cfg.successRegex()) {
                     if (output.matches("(?s).*" + pattern + ".*")) {
@@ -406,35 +406,35 @@ public class IntegrationTestUtils {
                     }
                 }
                 
-                // Run AI validation if configured
+                // 如已配置则运行 AI 校验
                 if (aiConfig != null && aiConfig.enabled()) {
                     if ("hybrid".equals(aiConfig.validationMode())) {
-                        // Hybrid mode - both must pass
+                        // Hybrid 模式 - 两者都必须通过
                         out.println("🤖 Running additional AI validation (hybrid mode)");
                         aiValidationPassed = performAIValidation(output, logFile, cfg, moduleName);
                     } else if ("fallback".equals(aiConfig.validationMode()) && failedPatterns > 0) {
-                        // Fallback mode - only run AI if regex failed
+                        // Fallback 模式 - 仅当正则失败时才运行 AI
                         out.println("🤖 Regex validation failed, trying AI validation (fallback mode)");
                         aiValidationPassed = performAIValidation(output, logFile, cfg, moduleName);
                         if (aiValidationPassed) {
                             out.println("🎉 AI validation succeeded, overriding regex failure!");
-                            failedPatterns = 0; // Reset failed patterns since AI validation passed
+                            failedPatterns = 0; // AI 校验通过，重置失败的模式计数
                         }
                     }
                 }
                 
-                // Check regex results if needed
+                // 如需要则检查正则结果
                 if (regexValidationNeeded && failedPatterns > 0 && !aiValidationPassed) {
                     err.println("❌ Failed pattern verification: " + failedPatterns + " patterns missing");
                     exit(1);
                 }
             }
             
-            // Keep log file for debugging - DO NOT DELETE
+            // 保留日志文件以便调试 - 不要删除
             out.println("\n📁 Spring Boot log preserved: " + logFile.toAbsolutePath().normalize());
             
-            // Final validation check
-            // Allow non-zero exit codes for interactive applications that use AI validation
+            // 最终校验检查
+            // 对使用 AI 校验的交互式应用允许非零退出码
             boolean allowNonZeroExit = aiConfig != null && aiConfig.enabled() && 
                 aiConfig.successCriteria() != null && 
                 aiConfig.successCriteria().containsKey("requiresUserInteraction") &&
@@ -455,7 +455,7 @@ public class IntegrationTestUtils {
             out.println("🎉 Integration test completed successfully!");
             
         } finally {
-            // Run cleanup commands
+            // 运行清理命令
             runCleanupCommands(cfg);
         }
     }

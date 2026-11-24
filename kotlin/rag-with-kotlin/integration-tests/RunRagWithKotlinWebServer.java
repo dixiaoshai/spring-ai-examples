@@ -7,8 +7,8 @@
 //SOURCES ../../../integration-testing/jbang-lib/WebServerTestUtils.java
 
 /*
- * Web server integration test for kotlin/rag-with-kotlin
- * Tests the RAG-powered dog adoption demo
+ * kotlin/rag-with-kotlin 的 Web 服务器集成测试
+ * 测试由 RAG 驱动的领养狗演示
  */
 
 import static java.lang.System.*;
@@ -16,7 +16,7 @@ import static java.lang.System.*;
 public class RunRagWithKotlinWebServer {
 
     public static void main(String... args) throws Exception {
-        // Check for required env var
+        // 检查必需的环境变量
         if (getenv("OPENAI_API_KEY") == null && getenv("SPRING_AI_OPENAI_API_KEY") == null) {
             err.println("Missing required environment variable: OPENAI_API_KEY");
             exit(1);
@@ -25,7 +25,7 @@ public class RunRagWithKotlinWebServer {
         WebServerTestUtils.runSimpleWebServerTest(
             WebServerTestUtils.WebServerTestConfig.withWait(
                 "rag-with-kotlin",
-                45,  // RAG workflow needs time to load dogs into vector store
+                45,  // RAG 工作流需要时间将狗加载到向量存储中
                 RunRagWithKotlinWebServer::validateRagWorkflow
             )
         );
@@ -33,7 +33,7 @@ public class RunRagWithKotlinWebServer {
 
     private static boolean validateRagWorkflow() {
         try {
-            // Read server log to verify RAG workflow completed
+            // 读取服务器日志以验证 RAG 工作流已完成
             String logContent = WebServerTestUtils.readServerLog();
 
             boolean hasStarted = logContent.contains("Started RagWithKotlin");
@@ -58,7 +58,7 @@ public class RunRagWithKotlinWebServer {
             }
             out.println("✅ RAG workflow completed");
 
-            // Test the /dogs endpoint
+            // 测试 /dogs 端点
             out.println("Testing /dogs endpoint...");
             var response = WebServerTestUtils.httpGet("http://localhost:8090/dogs");
 

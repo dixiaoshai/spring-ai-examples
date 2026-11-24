@@ -1,57 +1,57 @@
-# Spring AI MCP Annotations Server
+# Spring AI MCP 注解服务器
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-Demonstrates how to build an MCP server using Spring AI's annotation-driven model. Covers tools, resources, prompts, and completions with a declarative, annotation-based approach.
+演示如何使用 Spring AI 的注解驱动模型构建 MCP 服务器。以声明式、基于注解的方式涵盖工具、资源、提示词与补全。
 
-**Dependencies:** Spring Boot `4.1.1`, Spring AI `2.1.0-SNAPSHOT`
+**依赖：** Spring Boot `4.1.1`，Spring AI `2.1.0-SNAPSHOT`
 
-Reference: [MCP Server Boot Starter](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-server-boot-starter-docs.html)
+参考：[MCP 服务器 Boot Starter](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-server-boot-starter-docs.html)
 
-## Capabilities
+## 能力
 
-### Tools
+### 工具
 
-| Provider | Annotation | Tools |
+| Provider | 注解 | 工具 |
 |----------|-----------|-------|
-| `SpringAiToolProvider` | `@Tool` | `getWeatherForecastByLocation`, `getAlerts` |
-| `McpToolProvider` | `@McpTool` | `getTemperature` (with progress token) |
-| `DocumentProvider` | `@McpTool` | `read_doc_contents`, `edit_document` |
-| `ToolProvider2` | `@McpTool` | `toolLggingSamplingElicitationProgress` (logging, sampling, elicitation, progress) |
+| `SpringAiToolProvider` | `@Tool` | `getWeatherForecastByLocation`、`getAlerts` |
+| `McpToolProvider` | `@McpTool` | `getTemperature`（带进度 token） |
+| `DocumentProvider` | `@McpTool` | `read_doc_contents`、`edit_document` |
+| `ToolProvider2` | `@McpTool` | `toolLggingSamplingElicitationProgress`（日志、sampling、elicitation、进度） |
 
-### Resources
+### 资源
 
-| URI | Description |
+| URI | 说明 |
 |-----|-------------|
-| `user-profile://{username}` | User profile info |
-| `user-attribute://{username}/{attribute}` | Specific profile attribute |
-| `user-profile-exchange://{username}` | Profile with server exchange context |
-| `user-connections://{username}` | User connections list |
-| `user-notifications://{username}` | User notifications |
-| `user-status://{username}` | User status |
-| `user-location://{username}` | User location |
-| `user-avatar://{username}` | Base64-encoded avatar (image/png) |
-| `docs://documents` | List all documents (application/json) |
-| `docs://documents/{docId}` | Fetch document content |
-| `static://hello` | Static "Hello World!" resource |
+| `user-profile://{username}` | 用户档案信息 |
+| `user-attribute://{username}/{attribute}` | 指定的档案属性 |
+| `user-profile-exchange://{username}` | 带服务器交换上下文的档案 |
+| `user-connections://{username}` | 用户连接列表 |
+| `user-notifications://{username}` | 用户通知 |
+| `user-status://{username}` | 用户状态 |
+| `user-location://{username}` | 用户位置 |
+| `user-avatar://{username}` | Base64 编码的头像（image/png） |
+| `docs://documents` | 列出所有文档（application/json） |
+| `docs://documents/{docId}` | 获取文档内容 |
+| `static://hello` | 静态 "Hello World!" 资源 |
 
-### Prompts
+### 提示词
 
-`greeting`, `personalized-message`, `conversation-starter`, `map-arguments`, `single-message`, `string-list`, `format` (Markdown reformat via `DocumentProvider`)
+`greeting`, `personalized-message`, `conversation-starter`, `map-arguments`, `single-message`, `string-list`, `format`（通过 `DocumentProvider` 重排 Markdown）
 
-### Completions
+### 补全
 
-`@McpComplete` on `user-status://{username}` (username suggestions), `personalized-message` prompt (name suggestions), `travel-planner` prompt (country names).
+`@McpComplete` 作用于 `user-status://{username}`（用户名建议），`personalized-message` 提示词（姓名建议），`travel-planner` 提示词（国家名称）。
 
-## Build
+## 构建
 
 ```bash
 ./mvnw clean install -DskipTests
 ```
 
-## Run
+## 运行
 
-### WebMVC (SSE / Streamable-HTTP / Stateless)
+### WebMVC 传输（SSE / Streamable-HTTP / Stateless）
 
 ```bash
 # Streamable-HTTP (default in application.properties)
@@ -69,7 +69,7 @@ java -Dspring.ai.mcp.server.stdio=true \
      -jar target/mcp-annotations-server-0.0.1-SNAPSHOT.jar
 ```
 
-## Configuration
+## 配置
 
 ```properties
 spring.ai.mcp.server.name=my-weather-server
@@ -82,9 +82,9 @@ spring.ai.mcp.server.protocol=STREAMABLE   # SSE | STREAMABLE | STATELESS
 # logging.pattern.console=
 ```
 
-## Connecting a Client
+## 连接客户端
 
-See the companion `mcp-annotations-client` module. Configure the transport in `application.properties`:
+请参阅配套的 `mcp-annotations-client` 模块。在 `application.properties` 中配置传输方式：
 
 ```properties
 # Streamable-HTTP
@@ -94,7 +94,7 @@ spring.ai.mcp.client.streamable-http.connections.server1.url=http://localhost:80
 # spring.ai.mcp.client.sse.connections.server1.url=http://localhost:8080
 ```
 
-For STDIO, use a `mcp-servers-config.json`:
+使用 STDIO 时，请使用 `mcp-servers-config.json`：
 
 ```json
 {
@@ -112,9 +112,9 @@ For STDIO, use a `mcp-servers-config.json`:
 }
 ```
 
-## Additional Resources
+## 更多资源
 
-- [MCP Server Boot Starter](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-server-boot-starter-docs.html)
-- [MCP Client Boot Starter](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-client-boot-starter-docs.html)
-- [MCP Annotations Project](https://github.com/spring-ai-community/mcp-annotations)
-- [Model Context Protocol Specification](https://modelcontextprotocol.github.io/specification/)
+- [MCP 服务器 Boot Starter](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-server-boot-starter-docs.html)
+- [MCP 客户端 Boot Starter](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-client-boot-starter-docs.html)
+- [MCP Annotations 项目](https://github.com/spring-ai-community/mcp-annotations)
+- [模型上下文协议规范](https://modelcontextprotocol.github.io/specification/)

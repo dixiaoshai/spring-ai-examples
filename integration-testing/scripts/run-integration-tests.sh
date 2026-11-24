@@ -1,25 +1,25 @@
 #!/bin/bash
 
-# Direct RIT - Run Integration Tests directly via JBang
-# Complete bypass of Python script to avoid hanging issues
+# Direct RIT - 直接通过 JBang 运行集成测试
+# 完全绕过 Python 脚本，以避免挂起问题
 #
-# Usage:
-#   ./run-integration-tests.sh                  # Run all tests
-#   ./run-integration-tests.sh --clean-logs     # Clean all logs and run all tests
-#   ./run-integration-tests.sh helloworld       # Run only tests matching "helloworld"
-#   ./run-integration-tests.sh --clean-logs helloworld  # Clean logs and run specific test
+# 用法：
+#   ./run-integration-tests.sh                  # 运行全部测试
+#   ./run-integration-tests.sh --clean-logs     # 清理所有日志并运行全部测试
+#   ./run-integration-tests.sh helloworld       # 仅运行匹配 "helloworld" 的测试
+#   ./run-integration-tests.sh --clean-logs helloworld  # 清理日志并运行指定测试
 
-# Don't exit on command failure (let tests fail individually)
+# 命令失败时不退出（让各测试自行失败）
 set -uo pipefail
 
-# Find script directory and project root
+# 查找脚本目录与项目根目录
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
-# Change to project root to ensure consistent behavior
+# 切换到项目根目录以确保行为一致
 cd "${PROJECT_ROOT}"
 
-# Parse arguments
+# 解析参数
 CLEAN_LOGS=false
 TEST_FILTER=""
 
@@ -42,7 +42,7 @@ LOG_FILE="${PROJECT_ROOT}/${LOGS_DIR}/run-integration-tests_${TIMESTAMP}.log"
 
 mkdir -p "${LOGS_DIR}"
 
-# Clean all logs if requested
+# 如需要则清理所有日志
 if [ "$CLEAN_LOGS" = true ]; then
     echo "🧹 Cleaning all logs..."
     rm -rf "${LOGS_BASE_DIR}"/*
@@ -50,7 +50,7 @@ if [ "$CLEAN_LOGS" = true ]; then
     mkdir -p "${LOGS_BASE_DIR}/integration-tests"
 fi
 
-# Create the log file first
+# 先创建日志文件
 touch "${LOG_FILE}"
 
 echo "🚀 Starting Spring AI Examples Integration Tests (Direct Mode)"
@@ -60,27 +60,27 @@ fi
 echo "📝 Log file: ${LOG_FILE}"
 echo "==============================================="
 
-# Clean up old logs from previous runs (but not the current log file)
+# 清理上次运行的旧日志（但不含当前日志文件）
 echo "🧹 Cleaning up old run logs..." | tee -a "${LOG_FILE}"
 find "${LOGS_DIR}" -name "*.log" -not -name "$(basename "${LOG_FILE}")" -delete 2>/dev/null || true
 
-# Port cleanup - kill any processes using port 8080 to prevent conflicts
+# 端口清理 - 结束占用 8080 端口的进程以防止冲突
 echo "🔧 Cleaning up port 8080..." | tee -a "${LOG_FILE}"
 if lsof -ti:8080 >/dev/null 2>&1; then
     echo "  Found processes using port 8080, terminating..." | tee -a "${LOG_FILE}"
     lsof -ti:8080 | xargs kill -9 2>/dev/null || true
-    sleep 2  # Give processes time to cleanup
+    sleep 2  # 给进程留出清理时间
     echo "  Port 8080 cleanup completed" | tee -a "${LOG_FILE}"
 else
     echo "  Port 8080 is free" | tee -a "${LOG_FILE}"
 fi
 
-# Find all JBang integration test scripts
+# 查找所有 JBang 集成测试脚本
 if [ -n "$TEST_FILTER" ]; then
-    # Filter scripts by the provided pattern
+    # 按提供的模式过滤脚本
     jbang_scripts=($(find . -name "Run*.java" -path "*/integration-tests/*" | grep -i "$TEST_FILTER" | sort))
 else
-    # Find all scripts
+    # 查找所有脚本
     jbang_scripts=($(find . -name "Run*.java" -path "*/integration-tests/*" | sort))
 fi
 
@@ -98,14 +98,14 @@ for script in "${jbang_scripts[@]}"; do
     parent_name=$(basename $(dirname "${module_dir}"))
     full_name="${parent_name}/${module_name}"
     
-    # Create individual test log file
+    # 创建单个测试的日志文件
     individual_log="${LOGS_DIR}/test_${parent_name}_${module_name}_${TIMESTAMP}.log"
     
     echo "🔄 Testing ${full_name}..." | tee -a "${LOG_FILE}"
     echo "   Script: ${script}" | tee -a "${LOG_FILE}"
     echo "   Individual log: ${individual_log}" | tee -a "${LOG_FILE}"
     
-    # Run JBang script with both main log and individual log
+    # 运行 JBang 脚本，同时写入主日志与单个日志
     if (cd "${module_dir}" && timeout 300s jbang "integration-tests/$(basename "${script}")") 2>&1 | tee "${individual_log}" >> "${LOG_FILE}"; then
         echo "✅ ${full_name} - PASSED" | tee -a "${LOG_FILE}"
         echo "   ✅ Individual log: ${individual_log}" | tee -a "${LOG_FILE}"
@@ -122,7 +122,7 @@ for script in "${jbang_scripts[@]}"; do
         failed_tests+=("${full_name}")
     fi
     
-    # Clean up any hanging processes on port 8080 after each test
+    # 每个测试后清理 8080 端口上挂起的进程
     if lsof -ti:8080 >/dev/null 2>&1; then
         echo "🧹 Cleaning up hanging processes on port 8080..." | tee -a "${LOG_FILE}"
         lsof -ti:8080 | xargs kill -9 2>/dev/null || true
@@ -149,7 +149,7 @@ fi
 echo "" | tee -a "${LOG_FILE}"
 echo "📝 Full log: ${LOG_FILE}"
 
-# Exit with proper code
+# 以正确的退出码退出
 if [ ${failed} -gt 0 ]; then
     echo "❌ Testing completed with failures!"
     exit 1

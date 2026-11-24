@@ -1,13 +1,13 @@
-# TODO: Fix Version Management Gaps
+# TODO：修复版本管理中的缺口
 
-## Problem
-The current `update-spring-ai-version.sh` script only updates 17 pom.xml files that use the `<spring-ai.version>` property. However, we have 24 modules with integration tests, and some use different version management approaches.
+## 问题
+当前的 `update-spring-ai-version.sh` 脚本只更新了 17 个使用 `<spring-ai.version>` 属性的 pom.xml 文件。然而，我们有 24 个带集成测试的模块，其中部分模块采用了不同的版本管理方式。
 
-## Modules with Integration Tests (24 total)
-### Using spring-ai.version property (17):
-- agentic-patterns/* (5 modules)
-- kotlin/* (3 modules)
-- misc/* (2 modules)
+## 带集成测试的模块（共 24 个）
+### 使用 spring-ai.version 属性的模块（17 个）：
+- agentic-patterns/*（5 个模块）
+- kotlin/*（3 个模块）
+- misc/*（2 个模块）
 - model-context-protocol/brave
 - model-context-protocol/brave-docker-agents-gateway
 - model-context-protocol/client-starter/*
@@ -15,7 +15,7 @@ The current `update-spring-ai-version.sh` script only updates 17 pom.xml files t
 - model-context-protocol/sampling/mcp-sampling-client
 - prompt-engineering/prompt-engineering-patterns
 
-### Using spring-ai-bom directly (7):
+### 直接使用 spring-ai-bom 的模块（7 个）：
 - agents/reflection
 - models/chat/helloworld
 - model-context-protocol/filesystem
@@ -26,16 +26,16 @@ The current `update-spring-ai-version.sh` script only updates 17 pom.xml files t
 - model-context-protocol/web-search/brave-starter
 - model-context-protocol/dynamic-tool-update/server
 
-## Version Management Approaches Found
+## 已发现的版本管理方式
 
-### Approach 1: spring-ai.version property
+### 方式 1：spring-ai.version 属性
 ```xml
 <properties>
     <spring-ai.version>1.1.0-SNAPSHOT</spring-ai.version>
 </properties>
 ```
 
-### Approach 2: Direct BOM version
+### 方式 2：直接指定 BOM 版本
 ```xml
 <dependencyManagement>
     <dependencies>
@@ -50,17 +50,17 @@ The current `update-spring-ai-version.sh` script only updates 17 pom.xml files t
 </dependencyManagement>
 ```
 
-## Solution Needed
-Update `scripts/update-spring-ai-version.sh` to:
-1. Update `<spring-ai.version>` property (already done)
-2. Also update direct BOM versions in dependencyManagement sections
-3. Handle both patterns in a single script
+## 所需的解决方案
+更新 `scripts/update-spring-ai-version.sh`，使其能够：
+1. 更新 `<spring-ai.version>` 属性（已完成）
+2. 同时更新 dependencyManagement 段中直接指定的 BOM 版本
+3. 用单个脚本处理这两种模式
 
-## Impact
-Without fixing this, when we test with Spring AI 1.0.1:
-- 17 modules will use 1.0.1
-- 7 modules will still use 1.1.0-SNAPSHOT
-- This causes inconsistent testing and potential failures
+## 影响
+如果不修复此问题，当我们用 Spring AI 1.0.1 进行测试时：
+- 17 个模块将使用 1.0.1
+- 7 个模块仍将使用 1.1.0-SNAPSHOT
+- 这会导致测试不一致以及潜在的失败
 
-## Priority
-HIGH - Must be fixed before Phase 3a (local testing with 1.0.1) can be completed
+## 优先级
+高 —— 必须在阶段 3a（使用 1.0.1 进行本地测试）完成之前修复

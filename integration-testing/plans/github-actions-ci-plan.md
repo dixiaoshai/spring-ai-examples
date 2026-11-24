@@ -1,132 +1,132 @@
-# GitHub Actions CI/CD Implementation Plan
+# GitHub Actions CI/CD 实施计划
 
-## Overview
-Implement GitHub Actions integration testing with multi-version Spring AI support through a systematic, phased approach. All state is tracked via checkboxes in this plan and learnings documents.
+## 概述
+通过系统化、分阶段的方式，实现带多版本 Spring AI 支持的 GitHub Actions 集成测试。所有状态都通过本计划和经验总结文档中的复选框进行跟踪。
 
-**Priority Focus**: Version management (1.0.1 ↔ 1.1.0-SNAPSHOT) and multi-version test matrix validation are higher risk than full coverage, so we tackle these first.
+**优先重点**：版本管理（1.0.1 ↔ 1.1.0-SNAPSHOT）与多版本测试矩阵验证的风险高于全量覆盖，因此我们先处理这些内容。
 
-## Reference Architecture
-This plan leverages proven patterns from the Spring AI repository's GitHub Actions workflow (see `integration-testing/plans/spring-ai-github-build-workflow.yml`), including:
-- JDK 17 setup with Temurin distribution and Maven caching
-- Environment variable management for API keys (`OPENAI_API_KEY`, `SPRING_AI_OPENAI_API_KEY`)
-- Branch-based triggering (`main`, `*.*.x` pattern)
-- Organization-specific conditions (`github.repository_owner`)
-- Maven batch mode execution with update snapshots
+## 参考架构
+本计划借鉴 Spring AI 仓库 GitHub Actions 工作流中久经验证的模式（见 `integration-testing/plans/spring-ai-github-build-workflow.yml`），包括：
+- 使用 Temurin 发行版的 JDK 17 配置与 Maven 缓存
+- API 密钥的环境变量管理（`OPENAI_API_KEY`、`SPRING_AI_OPENAI_API_KEY`）
+- 基于分支的触发（`main`、`*.*.x` 模式）
+- 组织特定的条件（`github.repository_owner`）
+- 带快照更新的 Maven 批处理模式执行
 
-Note: Our implementation will use simpler patterns suitable for examples repository (no Artifactory, docs deployment, or SSH keys).
+注意：我们的实现将采用更适合示例仓库的简化模式（不涉及 Artifactory、文档部署或 SSH 密钥）。
 
-## Goals (Reprioritized)
-1. **Priority 1**: Version management scripts (1.0.1 ↔ 1.1.0-SNAPSHOT)
-2. **Priority 2**: Multi-version test matrix validation with 3 examples
-3. **Priority 3**: Full coverage rollout (97% local reliability gives confidence)
-4. Enable automated integration testing via GitHub Actions
-5. Provide manual and automatic workflow triggers
-6. Create comprehensive documentation for maintenance
-
----
-
-## Phase 1: Foundation & Script Renaming
-
-*Same priority as before - needed for clear naming*
-
-### Phase 1 Pre-Conditions
-- [ ] Review existing learnings in `integration-testing/learnings/` directory
-- [ ] Understand current integration testing setup
-- [ ] Verify `rit-direct.sh` exists and functions
-
-### Phase 1 Implementation
-- [x] Check current file exists: `integration-testing/scripts/rit-direct.sh`
-- [x] Execute rename: `mv integration-testing/scripts/rit-direct.sh integration-testing/scripts/run-integration-tests.sh`
-- [x] Update references in `CLAUDE.md`
-- [x] Update references in `integration-testing/README.md`
-- [x] Update references in `integration-testing/TODO.txt` (no references found)
-- [x] Search for other references: `grep -r "rit-direct.sh" . --exclude-dir=.git`
-- [x] Update any additional references found
-
-### Phase 1 Validation
-- [x] Test locally: `./integration-testing/scripts/run-integration-tests.sh helloworld`
-- [x] Verify exit code is 0
-- [x] Test locally: `./integration-testing/scripts/run-integration-tests.sh kotlin-hello-world`
-- [x] Verify exit code is 0
-- [x] Check logs created in `integration-testing/logs/`
-
-### Phase 1 Completion & Commit Point
-- [x] Commit: `git commit -m "refactor: rename integration test runner to run-integration-tests.sh"`
-- [x] Create learnings document: `integration-testing/learnings/phase-1-script-renaming.md`
-- [x] Document any issues encountered
-- [x] Review Phase 2 below and adjust if needed based on learnings
+## 目标（重新排序）
+1. **优先级 1**：版本管理脚本（1.0.1 ↔ 1.1.0-SNAPSHOT）
+2. **优先级 2**：用 3 个示例验证多版本测试矩阵
+3. **优先级 3**：全量覆盖推广（本地 97% 的可靠性让我们有信心）
+4. 通过 GitHub Actions 启用自动化集成测试
+5. 提供手动与自动两种工作流触发方式
+6. 编写完整的维护文档
 
 ---
 
-## Phase 2: Version Management System (HIGH PRIORITY)
+## 阶段 1：基础工作与脚本重命名
 
-*Moved up from Phase 3 - this is the highest risk component*
+*优先级与之前相同 —— 为了命名清晰所必需*
 
-### Phase 2 Pre-Conditions
-- [x] Read `integration-testing/learnings/phase-1-script-renaming.md`
-- [x] Reflect on Phase 1 learnings and assess if Phase 2 plan needs adjustment
-- [x] Review if any blockers or concerns were identified
-- [x] Confirm renamed script is working locally
-- [x] Understand current Spring AI version structure
+### 阶段 1 前置条件
+- [ ] 查阅 `integration-testing/learnings/` 目录中已有的经验总结
+- [ ] 理解当前的集成测试设置
+- [ ] 确认 `rit-direct.sh` 存在且可正常工作
 
-### Phase 2 Implementation
-- [x] Analyze current version distribution: `grep -r "spring-ai.version" . --include="pom.xml" | wc -l`
-- [x] Document which modules use version property vs. which don't (17 use property, 17 don't)
-- [x] Create script: `scripts/update-spring-ai-version.sh`
-- [x] Add shebang and parameter handling:
+### 阶段 1 实施
+- [x] 检查当前文件是否存在：`integration-testing/scripts/rit-direct.sh`
+- [x] 执行重命名：`mv integration-testing/scripts/rit-direct.sh integration-testing/scripts/run-integration-tests.sh`
+- [x] 更新 `CLAUDE.md` 中的引用
+- [x] 更新 `integration-testing/README.md` 中的引用
+- [x] 更新 `integration-testing/TODO.txt` 中的引用（未发现引用）
+- [x] 搜索其他引用：`grep -r "rit-direct.sh" . --exclude-dir=.git`
+- [x] 更新所有找到的额外引用
+
+### 阶段 1 验证
+- [x] 本地测试：`./integration-testing/scripts/run-integration-tests.sh helloworld`
+- [x] 确认退出码为 0
+- [x] 本地测试：`./integration-testing/scripts/run-integration-tests.sh kotlin-hello-world`
+- [x] 确认退出码为 0
+- [x] 检查在 `integration-testing/logs/` 中生成的日志
+
+### 阶段 1 完成与提交节点
+- [x] 提交：`git commit -m "refactor: rename integration test runner to run-integration-tests.sh"`
+- [x] 创建经验总结文档：`integration-testing/learnings/phase-1-script-renaming.md`
+- [x] 记录遇到的任何问题
+- [x] 审阅下面的阶段 2，并根据经验总结进行调整
+
+---
+
+## 阶段 2：版本管理系统（高优先级）
+
+*从原阶段 3 提前 —— 这是风险最高的组成部分*
+
+### 阶段 2 前置条件
+- [x] 阅读 `integration-testing/learnings/phase-1-script-renaming.md`
+- [x] 反思阶段 1 的经验，评估阶段 2 的计划是否需要调整
+- [x] 检查是否发现了任何阻塞项或疑虑
+- [x] 确认重命名后的脚本可在本地正常工作
+- [x] 理解当前的 Spring AI 版本结构
+
+### 阶段 2 实施
+- [x] 分析当前的版本分布：`grep -r "spring-ai.version" . --include="pom.xml" | wc -l`
+- [x] 记录哪些模块使用版本属性、哪些不使用（17 个使用属性，17 个不使用）
+- [x] 创建脚本：`scripts/update-spring-ai-version.sh`
+- [x] 添加 shebang 与参数处理：
   ```bash
   #!/bin/bash
   VERSION="${1:-1.1.0-SNAPSHOT}"
   echo "Updating Spring AI version to: $VERSION"
   ```
-- [x] Add find command to locate all pom.xml files
-- [x] Add sed command to update `<spring-ai.version>` property
-- [x] Add backup functionality before modifications
-- [x] Add validation for version format (handle both release and SNAPSHOT)
-- [x] Add restore capability from backups (separate script)
-- [x] Make script executable: `chmod +x scripts/*.sh`
+- [x] 添加 find 命令以定位所有 pom.xml 文件
+- [x] 添加 sed 命令以更新 `<spring-ai.version>` 属性
+- [x] 在修改前添加备份功能
+- [x] 添加版本格式校验（同时支持正式版与 SNAPSHOT）
+- [x] 添加从备份恢复的能力（独立脚本）
+- [x] 使脚本可执行：`chmod +x scripts/*.sh`
 
-### Phase 2 Local Testing
-- [x] Test with release version: `./scripts/update-spring-ai-version.sh 1.0.1`
-- [x] Verify: `grep "spring-ai.version" misc/openai-streaming-response/pom.xml`
-- [x] Test with SNAPSHOT: `./scripts/update-spring-ai-version.sh 1.1.0-SNAPSHOT`
-- [x] Verify SNAPSHOT format preserved
-- [x] Test restore functionality
-- [x] Verify original versions restored
-- [x] Run integration test to ensure changed version works: `./integration-testing/scripts/run-integration-tests.sh kotlin-hello-world`
+### 阶段 2 本地测试
+- [x] 使用正式版本测试：`./scripts/update-spring-ai-version.sh 1.0.1`
+- [x] 验证：`grep "spring-ai.version" misc/openai-streaming-response/pom.xml`
+- [x] 使用 SNAPSHOT 测试：`./scripts/update-spring-ai-version.sh 1.1.0-SNAPSHOT`
+- [x] 确认 SNAPSHOT 格式得到保留
+- [x] 测试恢复功能
+- [x] 确认原始版本已恢复
+- [x] 运行集成测试以确保修改后的版本可用：`./integration-testing/scripts/run-integration-tests.sh kotlin-hello-world`
 
-### Phase 2 Version Compatibility Testing
-- [x] Test examples with 1.0.1: `./integration-testing/scripts/run-integration-tests.sh kotlin-hello-world`
-- [x] Test examples with 1.1.0-SNAPSHOT: `./integration-testing/scripts/run-integration-tests.sh kotlin-hello-world`
-- [x] Document any version-specific issues (none found)
-- [x] Create compatibility matrix for tested versions
+### 阶段 2 版本兼容性测试
+- [x] 使用 1.0.1 测试示例：`./integration-testing/scripts/run-integration-tests.sh kotlin-hello-world`
+- [x] 使用 1.1.0-SNAPSHOT 测试示例：`./integration-testing/scripts/run-integration-tests.sh kotlin-hello-world`
+- [x] 记录任何版本相关问题（未发现）
+- [x] 为已测版本创建兼容性矩阵
 
-### Phase 2 Completion & Commit Point
-- [x] Create learnings document: `integration-testing/learnings/phase-2-version-management.md`
-- [x] Document version compatibility findings
-- [x] Note any version-specific behavior or limitations (none found)
-- [x] List tested version combinations
-- [x] Commit version management system: `git commit -m "feat: add Spring AI version management system"`
-- [x] Review Phase 3 and adjust based on learnings
+### 阶段 2 完成与提交节点
+- [x] 创建经验总结文档：`integration-testing/learnings/phase-2-version-management.md`
+- [x] 记录版本兼容性发现
+- [x] 记录任何版本特定行为或限制（未发现）
+- [x] 列出已测试的版本组合
+- [x] 提交版本管理系统：`git commit -m "feat: add Spring AI version management system"`
+- [x] 审阅阶段 3 并根据经验总结进行调整
 
 ---
 
-## Phase 3: Minimal GitHub Actions Workflow
+## 阶段 3：最小可用的 GitHub Actions 工作流
 
-*Basic workflow to validate version management works in CI*
+*用于验证版本管理在 CI 中可正常工作的基础工作流*
 
-### Phase 3 Pre-Conditions
-- [x] Read ALL previous learnings documents (phases 1-2)
-- [x] Reflect on learnings and assess if Phase 3 plan needs significant adjustment
-- [x] Identify any blockers or technical debt from previous phases (none found)
-- [x] Confirm version management script works locally
-- [ ] Ensure GitHub repository write access
-- [ ] Have OPENAI_API_KEY available for secrets
+### 阶段 3 前置条件
+- [x] 阅读所有先前经验总结文档（阶段 1-2）
+- [x] 反思经验总结，评估阶段 3 的计划是否需要大幅调整
+- [x] 识别先前阶段遗留的阻塞项或技术债（未发现）
+- [x] 确认版本管理脚本可在本地正常工作
+- [ ] 确保拥有 GitHub 仓库的写权限
+- [ ] 准备好 OPENAI_API_KEY 以配置为密钥
 
-### Phase 3 Implementation
-- [x] Create directory: `.github/workflows/`
-- [x] Create file: `.github/workflows/integration-tests-manual.yml`
-- [ ] Add workflow based on `spring-ai-github-build-workflow.yml` patterns:
+### 阶段 3 实施
+- [x] 创建目录：`.github/workflows/`
+- [x] 创建文件：`.github/workflows/integration-tests-manual.yml`
+- [ ] 参照 `spring-ai-github-build-workflow.yml` 的模式添加工作流：
   ```yaml
   name: Integration Tests (Manual)
   on:
@@ -142,129 +142,129 @@ Note: Our implementation will use simpler patterns suitable for examples reposit
       runs-on: ubuntu-latest
       timeout-minutes: 30
   ```
-- [x] Add JDK 17 setup step (following reference workflow pattern)
-- [x] Add Maven cache configuration
-- [x] Add version update step using Phase 2 script
-- [x] Add test execution for exactly 3 examples:
+- [x] 添加 JDK 17 配置步骤（沿用参考工作流的模式）
+- [x] 添加 Maven 缓存配置
+- [x] 添加使用阶段 2 脚本更新版本的步骤
+- [x] 添加仅针对 3 个示例的测试执行：
   - `models/chat/helloworld`
   - `kotlin/kotlin-hello-world`
   - `misc/spring-ai-java-function-callback`
-- [x] Configure environment variables (OPENAI_API_KEY, SPRING_AI_OPENAI_API_KEY)
-- [x] Add artifact upload for logs
+- [x] 配置环境变量（OPENAI_API_KEY、SPRING_AI_OPENAI_API_KEY）
+- [x] 添加日志产物上传
 
-### Phase 3 GitHub Secrets Configuration
-- [x] Navigate to repository Settings > Secrets and variables > Actions
-- [x] Add repository secret: OPENAI_API_KEY
-- [x] Document secret configuration process
+### 阶段 3 GitHub 密钥配置
+- [x] 导航到仓库 Settings > Secrets and variables > Actions
+- [x] 添加仓库密钥：OPENAI_API_KEY
+- [x] 记录密钥配置流程
 
-### Phase 3 CI Validation
-- [x] Commit workflow: `git commit -m "feat: add GitHub Actions workflow with version management"`
-- [x] Push to GitHub: `git push`
-- [x] Navigate to Actions tab and select workflow
-- [x] Trigger workflow with default version (1.0.1)
-- [x] Monitor execution and identify issues (JBang, AI validation)
-- [ ] Trigger workflow with version 1.0.1 (after fixes)
-- [ ] Download artifacts and verify version was applied correctly
-- [ ] Trigger workflow with version 1.1.0-SNAPSHOT
-- [ ] Verify both SNAPSHOT and release versions work
+### 阶段 3 CI 验证
+- [x] 提交工作流：`git commit -m "feat: add GitHub Actions workflow with version management"`
+- [x] 推送到 GitHub：`git push`
+- [x] 导航到 Actions 标签页并选择工作流
+- [x] 使用默认版本（1.0.1）触发工作流
+- [x] 监控执行并识别问题（JBang、AI 校验）
+- [ ] 使用 1.0.1 版本触发工作流（修复后）
+- [ ] 下载产物并确认版本已正确应用
+- [ ] 使用 1.1.0-SNAPSHOT 版本触发工作流
+- [ ] 确认 SNAPSHOT 版本与正式版本均可正常工作
 
-### Phase 3 Troubleshooting (if needed)
-- [x] If failures occur, analyze logs
-- [x] Fix GitHub Actions specific issues (JBang install, exit codes, AI validation)
-- [x] Re-run workflow to verify fixes
+### 阶段 3 故障排查（如需要）
+- [x] 如出现失败，分析日志
+- [x] 修复 GitHub Actions 特有问题（JBang 安装、退出码、AI 校验）
+- [x] 重新运行工作流以验证修复
 
-### Phase 3 Completion & Commit Point
-- [x] Commit workflow updates: `git commit -m "feat: add manual GitHub Actions workflow for integration tests"`
-- [x] Create learnings document: `integration-testing/learnings/phase-3-minimal-workflow.md`
-- [x] Document GitHub Actions setup process (see integration-testing/docs/GITHUB_ACTIONS_SETUP.md)
-- [x] Note any CI-specific issues or limitations
-- [x] Document version management integration success
-- [x] Review Phase 3b and adjust based on learnings
+### 阶段 3 完成与提交节点
+- [x] 提交工作流更新：`git commit -m "feat: add manual GitHub Actions workflow for integration tests"`
+- [x] 创建经验总结文档：`integration-testing/learnings/phase-3-minimal-workflow.md`
+- [x] 记录 GitHub Actions 配置流程（见 integration-testing/docs/GITHUB_ACTIONS_SETUP.md）
+- [x] 记录任何 CI 特有问题或限制
+- [x] 记录版本管理集成的成功经验
+- [x] 审阅阶段 3b 并根据经验总结进行调整
 
 ---
 
-## Phase 3a: Local Testing with Spring AI 1.0.1
+## 阶段 3a：使用 Spring AI 1.0.1 进行本地测试
 
-*Critical validation phase - ensure all integration tests work locally before CI/CD*
+*关键验证阶段 —— 确保所有集成测试在进入 CI/CD 之前都能在本地正常工作*
 
-### Phase 3a Pre-Conditions
-- [x] Confirm version management scripts work
-- [x] Have OPENAI_API_KEY configured locally
-- [x] Have ANTHROPIC_API_KEY configured locally (for AI validation)
-- [x] Claude Code CLI installed locally
+### 阶段 3a 前置条件
+- [x] 确认版本管理脚本可正常工作
+- [x] 本地已配置 OPENAI_API_KEY
+- [x] 本地已配置 ANTHROPIC_API_KEY（用于 AI 校验）
+- [x] 本地已安装 Claude Code CLI
 
-### Phase 3a Implementation - Version Update
-- [x] Update all modules to Spring AI 1.0.1:
+### 阶段 3a 实施 —— 版本更新
+- [x] 将所有模块更新到 Spring AI 1.0.1：
   ```bash
   ./scripts/update-spring-ai-version.sh 1.0.1
   ```
-- [x] Verify version update:
+- [x] 验证版本更新：
   ```bash
   ./scripts/check-spring-ai-version.sh
   ```
-- [x] Confirm all 32 pom files show version 1.0.1 (17 use property, 15 use direct BOM)
+- [x] 确认全部 32 个 pom 文件都显示版本 1.0.1（17 个使用属性，15 个直接使用 BOM）
 
-### Phase 3a Testing - Core Examples
-- [x] Test models/chat/helloworld:
+### 阶段 3a 测试 —— 核心示例
+- [x] 测试 models/chat/helloworld：
   ```bash
   ./integration-testing/scripts/run-integration-tests.sh "chat/helloworld"
   ```
-- [x] Test kotlin/kotlin-hello-world:
+- [x] 测试 kotlin/kotlin-hello-world：
   ```bash
   ./integration-testing/scripts/run-integration-tests.sh kotlin-hello-world
   ```
-- [x] Test misc/spring-ai-java-function-callback:
+- [x] 测试 misc/spring-ai-java-function-callback：
   ```bash
   ./integration-testing/scripts/run-integration-tests.sh spring-ai-java-function-callback
   ```
 
-### Phase 3a Testing - All Examples
-- [x] Run full test suite:
+### 阶段 3a 测试 —— 全部示例
+- [x] 运行完整测试套件：
   ```bash
   ./integration-testing/scripts/run-integration-tests.sh
   ```
-- [x] Document which tests pass/fail (17 pass, 7 fail/timeout)
-- [x] Identify any version-specific issues (none found - false negative on kotlin-hello-world)
-- [x] Fix Docker Compose path issue in kotlin/rag-with-kotlin
-- [x] Re-run until all enabled tests pass
+- [x] 记录哪些测试通过/失败（17 个通过，7 个失败/超时）
+- [x] 识别任何版本相关问题（未发现 —— kotlin-hello-world 存在一次误报）
+- [x] 修复 kotlin/rag-with-kotlin 中的 Docker Compose 路径问题
+- [x] 反复运行直至所有启用的测试通过
 
-### Phase 3a AI Validation Testing
-- [x] Verify Claude Code CLI is available:
+### 阶段 3a AI 校验测试
+- [x] 确认 Claude Code CLI 可用：
   ```bash
   claude --version
   ```
-- [x] Test with AI validation enabled for core examples
-- [x] Document AI validation false negative for kotlin-hello-world
-- [x] Added TODO to investigate AI validation issues
+- [x] 为核心示例启用 AI 校验进行测试
+- [x] 记录 kotlin-hello-world 的 AI 校验误报
+- [x] 添加 TODO 以调研 AI 校验问题
 
-### Phase 3a Troubleshooting
-- [x] For build failures: Checked for API breaking changes in 1.0.1 (none found)
-- [x] For runtime failures: Checked logs in integration-testing/logs/
-- [x] For AI validation failures: Identified false negative with kotlin-hello-world
-- [x] Document all issues and resolutions in analysis-summary.md
+### 阶段 3a 故障排查
+- [x] 构建失败：检查了 1.0.1 中的 API 破坏性变更（未发现）
+- [x] 运行时失败：检查了 integration-testing/logs/ 中的日志
+- [x] AI 校验失败：定位到 kotlin-hello-world 的误报
+- [x] 将所有问题与解决方案记录在 analysis-summary.md 中
 
-### Phase 3a Completion & Commit Point
-- [x] All core examples (3) pass with Spring AI 1.0.1
-- [x] Document pass/fail status for all examples (test-results-1.0.1.md)
-- [x] Commit any fixes: `git commit -m "fix: resolve Docker Compose path for kotlin RAG example"`
-- [x] Create learnings document: Created test-results-1.0.1.md and analysis-summary.md
-- [x] Update test configurations as needed (TODO.txt updated)
-- [x] Review Phase 3b and adjust based on findings
+### 阶段 3a 完成与提交节点
+- [x] 所有核心示例（3 个）在 Spring AI 1.0.1 下通过
+- [x] 记录所有示例的通过/失败状态（test-results-1.0.1.md）
+- [x] 提交任何修复：`git commit -m "fix: resolve Docker Compose path for kotlin RAG example"`
+- [x] 创建经验总结文档：已创建 test-results-1.0.1.md 与 analysis-summary.md
+- [x] 按需更新测试配置（已更新 TODO.txt）
+- [x] 审阅阶段 3b 并根据发现进行调整
 
 ---
 
-## Phase 3c: Validate All 17 Passing Tests in CI
+## 阶段 3c：在 CI 中验证全部 17 个通过的测试
 
-*Critical validation phase - ensure all 17 known passing tests work in GitHub Actions before matrix testing*
+*关键验证阶段 —— 在矩阵测试之前，确保全部 17 个已知通过的测试都能在 GitHub Actions 中正常工作*
 
-### Phase 3c Pre-Conditions
-- [ ] Read learnings from Phase 3a (test results with 1.0.1)
-- [ ] Confirm which 17 tests pass locally with API keys
-- [ ] Ensure ANTHROPIC_API_KEY is added to GitHub Secrets
-- [ ] Ensure BRAVE_API_KEY is added to GitHub Secrets
+### 阶段 3c 前置条件
+- [ ] 阅读阶段 3a 的经验总结（使用 1.0.1 的测试结果）
+- [ ] 确认哪 17 个测试在本地配置 API 密钥后可正常通过
+- [ ] 确保已将 ANTHROPIC_API_KEY 添加到 GitHub Secrets
+- [ ] 确保已将 BRAVE_API_KEY 添加到 GitHub Secrets
 
-### Phase 3c Implementation - Expand Workflow
-- [ ] Update workflow to run all 17 passing tests instead of just 3:
+### 阶段 3c 实施 —— 扩展工作流
+- [ ] 更新工作流，运行全部 17 个通过的测试而不仅仅是 3 个：
   ```yaml
   # The 17 passing tests:
   # 1. agents/reflection
@@ -285,75 +285,75 @@ Note: Our implementation will use simpler patterns suitable for examples reposit
   # 16. model-context-protocol/web-search/brave-starter
   # 17. models/chat/helloworld
   ```
-- [ ] Structure tests in logical groups (agents, patterns, MCP, etc.)
-- [ ] Add progress indicators between test groups
-- [ ] Increase timeout if needed (from 30 to 60 minutes)
+- [ ] 将测试按逻辑分组组织（agents、patterns、MCP 等）
+- [ ] 在测试组之间添加进度指示
+- [ ] 按需延长超时时间（从 30 分钟到 60 分钟）
 
-### Phase 3c Testing Strategy
-- [ ] Run tests in order of complexity (simple → complex)
-- [ ] Group related tests together for better debugging
-- [ ] Add clear section headers in output
-- [ ] Track execution time per test
+### 阶段 3c 测试策略
+- [ ] 按复杂度顺序运行测试（由简到繁）
+- [ ] 将相关测试放在一起，便于调试
+- [ ] 在输出中添加清晰的章节标题
+- [ ] 跟踪每个测试的执行耗时
 
-### Phase 3c GitHub Actions Execution
-- [ ] Commit updated workflow: `git commit -m "feat: expand CI to test all 17 passing examples"`
-- [ ] Push to GitHub: `git push`
-- [ ] Trigger workflow with Spring AI 1.0.1
-- [ ] Monitor execution for all 17 tests
-- [ ] Document execution times
-- [ ] Identify any CI-specific failures
+### 阶段 3c GitHub Actions 执行
+- [ ] 提交更新后的工作流：`git commit -m "feat: expand CI to test all 17 passing examples"`
+- [ ] 推送到 GitHub：`git push`
+- [ ] 使用 Spring AI 1.0.1 触发工作流
+- [ ] 监控全部 17 个测试的执行
+- [ ] 记录执行耗时
+- [ ] 识别任何 CI 特有的失败
 
-### Phase 3c Troubleshooting
-- [ ] If tests fail in CI but pass locally:
-  - Check environment variable configuration
-  - Verify API keys are properly set
-  - Review CI-specific resource constraints
-  - Check for timeout issues
-- [ ] Document any CI-specific adjustments needed
-- [ ] Update workflow with fixes
-- [ ] Re-run until all 17 tests pass
+### 阶段 3c 故障排查
+- [ ] 如果测试在 CI 中失败但本地通过：
+  - 检查环境变量配置
+  - 确认 API 密钥已正确设置
+  - 审阅 CI 特有的资源限制
+  - 检查是否存在超时问题
+- [ ] 记录所需的任何 CI 特定调整
+- [ ] 更新工作流并加入修复
+- [ ] 反复运行直至全部 17 个测试通过
 
-### Phase 3c Performance Analysis
-- [ ] Calculate total execution time
-- [ ] Identify slowest tests
-- [ ] Determine if parallel execution is needed
-- [ ] Document resource usage
+### 阶段 3c 性能分析
+- [ ] 计算总执行耗时
+- [ ] 识别最慢的测试
+- [ ] 判断是否需要并行执行
+- [ ] 记录资源使用情况
 
-### Phase 3c Completion & Commit Point
-- [ ] All 17 tests pass in GitHub Actions with Spring AI 1.0.1
-- [ ] Document execution times and resource usage
-- [ ] Commit final workflow: `git commit -m "feat: successfully validate 17 passing tests in CI"`
-- [ ] Create learnings document: `integration-testing/learnings/phase-3c-full-validation.md`
-- [ ] Review Phase 4 and determine if matrix testing is viable with current execution times
+### 阶段 3c 完成与提交节点
+- [ ] 全部 17 个测试在 GitHub Actions 中使用 Spring AI 1.0.1 通过
+- [ ] 记录执行耗时与资源使用情况
+- [ ] 提交最终工作流：`git commit -m "feat: successfully validate 17 passing tests in CI"`
+- [ ] 创建经验总结文档：`integration-testing/learnings/phase-3c-full-validation.md`
+- [ ] 审阅阶段 4，并根据当前执行耗时判断矩阵测试是否可行
 
 ---
 
-## Phase 3b: Workflow Optimization & AI Validation Support
+## 阶段 3b：工作流优化与 AI 校验支持
 
-*Critical optimization to support AI validation and improve CI performance*
+*为支持 AI 校验并提升 CI 性能而进行的关键优化*
 
-### Phase 3b Pre-Conditions
-- [x] Read learnings from Phase 3 (especially regarding AI validation failures)
-- [x] Understand Python requirements for AI validation
-- [x] Review JBang installation best practices
-- [x] Confirm basic workflow is functional
+### 阶段 3b 前置条件
+- [x] 阅读阶段 3 的经验总结（尤其是关于 AI 校验失败的部分）
+- [x] 理解 AI 校验所需的 Python 依赖
+- [x] 查阅 JBang 安装的最佳实践
+- [x] 确认基础工作流可正常运行
 
-### Phase 3b Implementation - Setup Optimization
-- [x] Replace manual JBang installation with official action:
+### 阶段 3b 实施 —— 配置优化
+- [x] 用官方 action 替换手动安装 JBang：
   ```yaml
   - name: Set up JBang
     uses: jbangdev/setup-jbang@v0.119.0
   ```
-- [x] Update test execution to only run known passing tests
-  - Excluding 7 tests that consistently fail or timeout:
-    - kotlin/rag-with-kotlin (needs Docker)
-    - misc/openai-streaming-response (web server timeout)
-    - model-context-protocol/weather/starter-webmvc-server (web server timeout)
-    - prompt-engineering/prompt-engineering-patterns (long running timeout)
-    - model-context-protocol/client-starter/starter-webflux-client (connection issue)
-    - model-context-protocol/dynamic-tool-update/client (needs paired server)
-    - model-context-protocol/dynamic-tool-update/server (needs paired client)
-- [x] Add Python setup for AI validation:
+- [x] 更新测试执行逻辑，仅运行已知通过的测试
+  - 排除 7 个持续失败或超时的测试：
+    - kotlin/rag-with-kotlin（需要 Docker）
+    - misc/openai-streaming-response（Web 服务器超时）
+    - model-context-protocol/weather/starter-webmvc-server（Web 服务器超时）
+    - prompt-engineering/prompt-engineering-patterns（长时间运行超时）
+    - model-context-protocol/client-starter/starter-webflux-client（连接问题）
+    - model-context-protocol/dynamic-tool-update/client（需要配对的服务器）
+    - model-context-protocol/dynamic-tool-update/server（需要配对的客户端）
+- [x] 为 AI 校验添加 Python 环境配置：
   ```yaml
   - name: Set up Python
     uses: actions/setup-python@v5
@@ -361,7 +361,7 @@ Note: Our implementation will use simpler patterns suitable for examples reposit
       python-version: '3.11'
       cache: 'pip'
   ```
-- [x] Install Claude Code CLI for AI validation:
+- [x] 为 AI 校验安装 Claude Code CLI：
   ```yaml
   - name: Install Claude Code CLI
     run: |
@@ -370,12 +370,12 @@ Note: Our implementation will use simpler patterns suitable for examples reposit
       which claude || echo "❌ Claude CLI not found"
       claude --version || echo "⚠️ Claude CLI version check failed"
   ```
-  Note: Alternative approach using anthropics/claude-code-action@beta may be needed
-- [x] Configure Claude API key:
-  - Add ANTHROPIC_API_KEY to test steps environment
-  - Claude CLI will use ANTHROPIC_API_KEY from environment
-  - Created TODO for optimization with anthropics/claude-code-action@beta
-- [x] Add JBang cache to speed up subsequent runs:
+  注意：可能需要改用 anthropics/claude-code-action@beta 的替代方案
+- [x] 配置 Claude API 密钥：
+  - 在测试步骤的环境变量中添加 ANTHROPIC_API_KEY
+  - Claude CLI 将从环境中读取 ANTHROPIC_API_KEY
+  - 已创建 TODO，计划用 anthropics/claude-code-action@beta 进行优化
+- [x] 添加 JBang 缓存以加速后续运行：
   ```yaml
   - name: Cache JBang
     uses: actions/cache@v4
@@ -386,53 +386,53 @@ Note: Our implementation will use simpler patterns suitable for examples reposit
         ${{ runner.os }}-jbang-
   ```
 
-### Phase 3b Implementation - Re-enable AI Validation
-- [x] Re-enable AI validation in `models/chat/helloworld/integration-tests/ExampleInfo.json`
-- [x] Re-enable AI validation in `kotlin/kotlin-hello-world/integration-tests/ExampleInfo.json`
-- [ ] Configure ANTHROPIC_API_KEY in GitHub Secrets (user needs to add)
-- [ ] Test AI validation with Claude Code CLI in workflow
-- [ ] Verify AI validation prompts are appropriate
-- [ ] Ensure Claude CLI has proper permissions
+### 阶段 3b 实施 —— 重新启用 AI 校验
+- [x] 在 `models/chat/helloworld/integration-tests/ExampleInfo.json` 中重新启用 AI 校验
+- [x] 在 `kotlin/kotlin-hello-world/integration-tests/ExampleInfo.json` 中重新启用 AI 校验
+- [ ] 在 GitHub Secrets 中配置 ANTHROPIC_API_KEY（需用户添加）
+- [ ] 在工作流中使用 Claude Code CLI 测试 AI 校验
+- [ ] 确认 AI 校验提示词是否合适
+- [ ] 确保 Claude CLI 拥有正确的权限
 
-### Phase 3b Testing
-- [ ] Test workflow with optimized setup
-- [ ] Verify JBang action works correctly
-- [ ] Confirm Python environment is properly configured
-- [ ] Test AI validation with all 3 examples
-- [ ] Measure performance improvement from caching
+### 阶段 3b 测试
+- [ ] 使用优化后的配置测试工作流
+- [ ] 确认 JBang action 正常工作
+- [ ] 确认 Python 环境已正确配置
+- [ ] 在全部 3 个示例上测试 AI 校验
+- [ ] 衡量缓存带来的性能提升
 
-### Phase 3b Troubleshooting
-- [ ] If AI validation fails, check Claude CLI installation and PATH
-- [ ] Verify ANTHROPIC_API_KEY is properly configured in GitHub Secrets
-- [ ] Check Claude CLI permissions with --dangerously-skip-permissions flag if needed
-- [ ] If JBang action fails, check version compatibility
-- [ ] Document Claude API key requirements for AI validation
-- [ ] Test with both ANTHROPIC_API_KEY and fallback options
+### 阶段 3b 故障排查
+- [ ] 如 AI 校验失败，检查 Claude CLI 的安装情况与 PATH
+- [ ] 确认 ANTHROPIC_API_KEY 已在 GitHub Secrets 中正确配置
+- [ ] 如需，使用 --dangerously-skip-permissions 标志检查 Claude CLI 权限
+- [ ] 如 JBang action 失败，检查版本兼容性
+- [ ] 记录 AI 校验所需的 Claude API 密钥要求
+- [ ] 分别使用 ANTHROPIC_API_KEY 与备选方案进行测试
 
-### Phase 3b Completion & Commit Point
-- [x] Commit optimizations: `git commit -m "feat: optimize workflow with official actions and AI validation support"`
-- [x] Create learnings document: `integration-testing/learnings/phase-3b-workflow-optimization.md`
-- [x] Document performance improvements
-- [x] Note any issues with AI validation (Claude CLI installation)
-- [x] Update documentation on Python requirements
-- [x] Review Phase 4 and adjust based on learnings
+### 阶段 3b 完成与提交节点
+- [x] 提交优化：`git commit -m "feat: optimize workflow with official actions and AI validation support"`
+- [x] 创建经验总结文档：`integration-testing/learnings/phase-3b-workflow-optimization.md`
+- [x] 记录性能提升情况
+- [x] 记录 AI 校验相关的任何问题（Claude CLI 安装）
+- [x] 更新关于 Python 依赖的文档
+- [x] 审阅阶段 4 并根据经验总结进行调整
 
 ---
 
-## Phase 4: Multi-Version Matrix Testing (HIGH PRIORITY)
+## 阶段 4：多版本矩阵测试（高优先级）
 
-*Test the version management system with matrix execution - higher risk than full coverage*
+*用矩阵执行验证版本管理系统 —— 风险高于全量覆盖*
 
-### Phase 4 Pre-Conditions
-- [ ] Read ALL previous learnings documents (phases 1-3)
-- [ ] Reflect on cumulative learnings and assess if Phase 4 plan needs significant adjustment
-- [ ] Review execution times and resource usage from Phase 3
-- [ ] Confirm single-version workflow passes 3 examples reliably
-- [ ] Understand GitHub Actions matrix strategies
+### 阶段 4 前置条件
+- [ ] 阅读所有先前经验总结文档（阶段 1-3）
+- [ ] 反思累积经验，评估阶段 4 的计划是否需要大幅调整
+- [ ] 审阅阶段 3 的执行耗时与资源使用情况
+- [ ] 确认单版本工作流可稳定通过 3 个示例
+- [ ] 理解 GitHub Actions 的矩阵策略
 
-### Phase 4 Implementation
-- [ ] Create new workflow file: `.github/workflows/test-spring-ai-versions.yml`
-- [ ] Add matrix strategy for Spring AI versions:
+### 阶段 4 实施
+- [ ] 创建新的工作流文件：`.github/workflows/test-spring-ai-versions.yml`
+- [ ] 为 Spring AI 版本添加矩阵策略：
   ```yaml
   name: Test Spring AI Versions
   on:
@@ -447,59 +447,59 @@ Note: Our implementation will use simpler patterns suitable for examples reposit
         matrix:
           spring-ai-version: ['1.0.1', '1.1.0-SNAPSHOT']
   ```
-- [ ] Add job name with version for clarity: `name: Test with Spring AI ${{ matrix.spring-ai-version }}`
-- [ ] Copy steps from Phase 3 workflow including:
-  - JDK 17 setup
-  - JBang setup via official action
-  - Python setup
-  - Claude Code CLI installation via npm
-  - JBang caching
-  - Version update script
-  - Test execution with environment variables (OPENAI_API_KEY, ANTHROPIC_API_KEY)
-- [ ] Use matrix version: `./scripts/update-spring-ai-version.sh ${{ matrix.spring-ai-version }}`
-- [ ] Add version reporting to output: `echo "Testing with Spring AI version: ${{ matrix.spring-ai-version }}"`
-- [ ] Update artifact names to include version: `name: test-logs-${{ matrix.spring-ai-version }}`
+- [ ] 在任务名称中体现版本以便辨识：`name: Test with Spring AI ${{ matrix.spring-ai-version }}`
+- [ ] 复制阶段 3 工作流的步骤，包括：
+  - JDK 17 配置
+  - 通过官方 action 配置 JBang
+  - Python 环境配置
+  - 通过 npm 安装 Claude Code CLI
+  - JBang 缓存
+  - 版本更新脚本
+  - 带环境变量（OPENAI_API_KEY、ANTHROPIC_API_KEY）的测试执行
+- [ ] 使用矩阵版本：`./scripts/update-spring-ai-version.sh ${{ matrix.spring-ai-version }}`
+- [ ] 在输出中报告版本：`echo "Testing with Spring AI version: ${{ matrix.spring-ai-version }}"`
+- [ ] 更新产物名称以包含版本：`name: test-logs-${{ matrix.spring-ai-version }}`
 
-### Phase 4 Validation
-- [ ] Commit matrix workflow: `git commit -m "feat: add multi-version matrix testing"`
-- [ ] Push to GitHub: `git push`
-- [ ] Trigger matrix workflow execution
-- [ ] Monitor parallel execution of both versions
-- [ ] Verify version isolation (each job uses correct version)
-- [ ] Check both versions pass the 3 examples
-- [ ] Download and compare artifacts from both versions
-- [ ] Document any version-specific differences
+### 阶段 4 验证
+- [ ] 提交矩阵工作流：`git commit -m "feat: add multi-version matrix testing"`
+- [ ] 推送到 GitHub：`git push`
+- [ ] 触发矩阵工作流执行
+- [ ] 监控两个版本的并行执行
+- [ ] 确认版本隔离（每个任务使用正确的版本）
+- [ ] 检查两个版本都能通过这 3 个示例
+- [ ] 下载并比较两个版本的产物
+- [ ] 记录任何版本特定的差异
 
-### Phase 4 Troubleshooting
-- [ ] If version-specific failures occur, identify root cause
-- [ ] Document which examples fail with which versions
-- [ ] Update compatibility matrix
-- [ ] Fix issues or mark as version-incompatible
-- [ ] Re-run matrix to verify fixes
+### 阶段 4 故障排查
+- [ ] 如出现版本特定失败，定位根本原因
+- [ ] 记录哪些示例在哪些版本下失败
+- [ ] 更新兼容性矩阵
+- [ ] 修复问题，或标记为版本不兼容
+- [ ] 重新运行矩阵以验证修复
 
-### Phase 4 Completion & Commit Point
-- [ ] Commit matrix testing: `git commit -m "feat: add multi-version matrix testing workflow"`
-- [ ] Create learnings document: `integration-testing/learnings/phase-4-matrix-testing.md`
-- [ ] Create version compatibility matrix
-- [ ] Document parallel execution insights
-- [ ] Note resource usage for matrix builds
-- [ ] Review Phase 5 and adjust based on learnings
+### 阶段 4 完成与提交节点
+- [ ] 提交矩阵测试：`git commit -m "feat: add multi-version matrix testing workflow"`
+- [ ] 创建经验总结文档：`integration-testing/learnings/phase-4-matrix-testing.md`
+- [ ] 创建版本兼容性矩阵
+- [ ] 记录并行执行的洞察
+- [ ] 记录矩阵构建的资源使用情况
+- [ ] 审阅阶段 5 并根据经验总结进行调整
 
 ---
 
-## Phase 5: Automated Triggers & Path Filtering
+## 阶段 5：自动触发与路径过滤
 
-### Phase 5 Pre-Conditions
-- [ ] Read ALL previous learnings documents (phases 1-4)
-- [ ] Reflect on learnings and assess if Phase 5 plan needs significant adjustment
-- [ ] Review any version-specific issues discovered in Phase 4
-- [ ] Confirm matrix testing runs reliably
-- [ ] Understand GitHub Actions trigger types
-- [ ] Plan path filtering strategy
+### 阶段 5 前置条件
+- [ ] 阅读所有先前经验总结文档（阶段 1-4）
+- [ ] 反思经验总结，评估阶段 5 的计划是否需要大幅调整
+- [ ] 审阅阶段 4 中发现的任何版本特定问题
+- [ ] 确认矩阵测试可稳定运行
+- [ ] 理解 GitHub Actions 的触发类型
+- [ ] 规划路径过滤策略
 
-### Phase 5 Implementation
-- [ ] Open `.github/workflows/integration-tests-manual.yml`
-- [ ] Add push event trigger:
+### 阶段 5 实施
+- [ ] 打开 `.github/workflows/integration-tests-manual.yml`
+- [ ] 添加 push 事件触发：
   ```yaml
   push:
     branches: [main]
@@ -510,273 +510,273 @@ Note: Our implementation will use simpler patterns suitable for examples reposit
       - '.gitignore'
       - 'CLAUDE.md'
   ```
-- [ ] Add pull_request event trigger with same path filters
-- [ ] Keep workflow_dispatch for manual runs
-- [ ] Save workflow file
+- [ ] 添加带有相同路径过滤的 pull_request 事件触发
+- [ ] 保留 workflow_dispatch 以便手动运行
+- [ ] 保存工作流文件
 
-### Phase 5 Validation - Test PR 1 (Should Trigger)
-- [ ] Create new branch: `git checkout -b test-trigger-1`
-- [ ] Modify an example file (e.g., add comment to `models/chat/helloworld/src/main/java/`)
-- [ ] Commit change: `git commit -m "test: verify workflow triggers on example change"`
-- [ ] Push branch: `git push -u origin test-trigger-1`
-- [ ] Create pull request
-- [ ] Verify workflow triggers automatically
-- [ ] Close PR after verification
+### 阶段 5 验证 —— 测试 PR 1（应当触发）
+- [ ] 创建新分支：`git checkout -b test-trigger-1`
+- [ ] 修改一个示例文件（例如在 `models/chat/helloworld/src/main/java/` 中添加注释）
+- [ ] 提交变更：`git commit -m "test: verify workflow triggers on example change"`
+- [ ] 推送分支：`git push -u origin test-trigger-1`
+- [ ] 创建 pull request
+- [ ] 确认工作流被自动触发
+- [ ] 验证后关闭 PR
 
-### Phase 5 Validation - Test PR 2 (Should NOT Trigger)
-- [ ] Create new branch: `git checkout -b test-trigger-2`
-- [ ] Modify only README.md
-- [ ] Commit change: `git commit -m "docs: update README"`
-- [ ] Push branch and create PR
-- [ ] Verify workflow does NOT trigger
-- [ ] Close PR after verification
+### 阶段 5 验证 —— 测试 PR 2（不应触发）
+- [ ] 创建新分支：`git checkout -b test-trigger-2`
+- [ ] 仅修改 README.md
+- [ ] 提交变更：`git commit -m "docs: update README"`
+- [ ] 推送分支并创建 PR
+- [ ] 确认工作流未被触发
+- [ ] 验证后关闭 PR
 
-### Phase 5 Validation - Test PR 3 (Should NOT Trigger)
-- [ ] Create new branch: `git checkout -b test-trigger-3`
-- [ ] Modify integration-testing files only
-- [ ] Commit and push
-- [ ] Create PR
-- [ ] Verify workflow does NOT trigger
-- [ ] Close PR after verification
+### 阶段 5 验证 —— 测试 PR 3（不应触发）
+- [ ] 创建新分支：`git checkout -b test-trigger-3`
+- [ ] 仅修改 integration-testing 中的文件
+- [ ] 提交并推送
+- [ ] 创建 PR
+- [ ] 确认工作流未被触发
+- [ ] 验证后关闭 PR
 
-### Phase 5 Completion & Commit Point
-- [ ] Commit trigger configuration: `git commit -m "feat: add automated triggers with path filtering"`
-- [ ] Create learnings document: `integration-testing/learnings/phase-5-automated-triggers.md`
-- [ ] Document trigger behavior
-- [ ] Note any edge cases
-- [ ] Document path filtering effectiveness
-- [ ] Review Phase 6 and adjust based on learnings
-
----
-
-## Phase 6: Full Coverage Rollout (32 Examples)
-
-### Phase 6 Pre-Conditions
-- [ ] Read ALL previous learnings documents (phases 1-5)
-- [ ] Reflect on cumulative learnings and assess if Phase 6 plan needs significant adjustment
-- [ ] Review any performance bottlenecks identified in previous phases
-- [ ] Review total execution time for examples tested so far
-- [ ] Calculate estimated time for 32 examples
-- [ ] Ensure sufficient GitHub Actions minutes available
-
-### Phase 6 Batch 1: Simple Examples (10 additional)
-- [ ] Identify 10 simple examples without special requirements
-- [ ] Add to workflow test execution
-- [ ] Commit and push: `git commit -m "feat: add batch 1 simple examples"`
-- [ ] Trigger workflow
-- [ ] Monitor execution
-- [ ] Fix any issues found
-- [ ] Document results
-
-### Phase 6 Batch 2: MCP Examples (15 additional)
-- [ ] Configure BRAVE_API_KEY in GitHub secrets (if needed)
-- [ ] Add 15 MCP examples to workflow
-- [ ] Update timeout to 60 minutes if needed
-- [ ] Commit and push: `git commit -m "feat: add batch 2 MCP examples"`
-- [ ] Trigger workflow
-- [ ] Monitor execution
-- [ ] Fix any MCP-specific issues
-- [ ] Document MCP requirements
-
-### Phase 6 Batch 3: Remaining Complex Examples
-- [ ] Add all remaining examples
-- [ ] Optimize execution order for efficiency
-- [ ] Commit and push: `git commit -m "feat: complete full coverage with all examples"`
-- [ ] Trigger complete suite
-- [ ] Monitor full execution
-- [ ] Calculate final pass rate
-- [ ] Verify 97% pass rate achieved
-
-### Phase 6 Performance Optimization
-- [ ] If execution exceeds 60 minutes, consider:
-  - [ ] Splitting into multiple jobs
-  - [ ] Parallel execution strategies
-  - [ ] Caching optimizations
-- [ ] Document optimization decisions
-
-### Phase 6 Completion & Commit Point
-- [ ] Final commit: `git commit -m "feat: complete full integration test coverage (32 examples)"`
-- [ ] Create learnings document: `integration-testing/learnings/phase-6-full-coverage.md`
-- [ ] Document final metrics (pass rate, execution time)
-- [ ] List any persistently failing tests
-- [ ] Document resource usage
-- [ ] Review Phase 7 and adjust based on learnings
+### 阶段 5 完成与提交节点
+- [ ] 提交触发配置：`git commit -m "feat: add automated triggers with path filtering"`
+- [ ] 创建经验总结文档：`integration-testing/learnings/phase-5-automated-triggers.md`
+- [ ] 记录触发行为
+- [ ] 记录任何边界情况
+- [ ] 记录路径过滤的有效性
+- [ ] 审阅阶段 6 并根据经验总结进行调整
 
 ---
 
-## Phase 7: Multi-Version Testing Matrix
+## 阶段 6：全量覆盖推广（32 个示例）
 
-### Phase 7 Pre-Conditions
-- [ ] Read ALL previous learnings documents (phases 1-6)
-- [ ] Reflect on learnings and assess if Phase 7 plan needs significant adjustment
-- [ ] Review performance metrics from Phase 6 full coverage
-- [ ] Confirm full suite runs successfully
-- [ ] Define target Spring AI versions to test
-- [ ] Understand GitHub Actions matrix strategies
+### 阶段 6 前置条件
+- [ ] 阅读所有先前经验总结文档（阶段 1-5）
+- [ ] 反思累积经验，评估阶段 6 的计划是否需要大幅调整
+- [ ] 审阅先前阶段发现的任何性能瓶颈
+- [ ] 审阅截至目前已测试示例的总执行耗时
+- [ ] 估算 32 个示例的预计耗时
+- [ ] 确保有充足的 GitHub Actions 分钟数
 
-### Phase 7 Implementation
-- [ ] Create new workflow file: `.github/workflows/test-spring-ai-versions.yml`
-- [ ] Add matrix strategy:
+### 阶段 6 批次 1：简单示例（新增 10 个）
+- [ ] 找出 10 个无特殊要求的简单示例
+- [ ] 加入工作流的测试执行
+- [ ] 提交并推送：`git commit -m "feat: add batch 1 simple examples"`
+- [ ] 触发工作流
+- [ ] 监控执行
+- [ ] 修复发现的任何问题
+- [ ] 记录结果
+
+### 阶段 6 批次 2：MCP 示例（新增 15 个）
+- [ ] 在 GitHub 密钥中配置 BRAVE_API_KEY（如需要）
+- [ ] 向工作流添加 15 个 MCP 示例
+- [ ] 如需要，将超时时间延长到 60 分钟
+- [ ] 提交并推送：`git commit -m "feat: add batch 2 MCP examples"`
+- [ ] 触发工作流
+- [ ] 监控执行
+- [ ] 修复任何 MCP 特有问题
+- [ ] 记录 MCP 相关要求
+
+### 阶段 6 批次 3：剩余复杂示例
+- [ ] 添加所有剩余示例
+- [ ] 优化执行顺序以提升效率
+- [ ] 提交并推送：`git commit -m "feat: complete full coverage with all examples"`
+- [ ] 触发完整测试套件
+- [ ] 监控完整执行过程
+- [ ] 计算最终通过率
+- [ ] 确认达到 97% 的通过率
+
+### 阶段 6 性能优化
+- [ ] 如果执行超过 60 分钟，考虑：
+  - [ ] 拆分为多个任务
+  - [ ] 并行执行策略
+  - [ ] 缓存优化
+- [ ] 记录优化决策
+
+### 阶段 6 完成与提交节点
+- [ ] 最终提交：`git commit -m "feat: complete full integration test coverage (32 examples)"`
+- [ ] 创建经验总结文档：`integration-testing/learnings/phase-6-full-coverage.md`
+- [ ] 记录最终指标（通过率、执行耗时）
+- [ ] 列出持续失败的测试
+- [ ] 记录资源使用情况
+- [ ] 审阅阶段 7 并根据经验总结进行调整
+
+---
+
+## 阶段 7：多版本测试矩阵
+
+### 阶段 7 前置条件
+- [ ] 阅读所有先前经验总结文档（阶段 1-6）
+- [ ] 反思经验总结，评估阶段 7 的计划是否需要大幅调整
+- [ ] 审阅阶段 6 全量覆盖的性能指标
+- [ ] 确认完整测试套件可成功运行
+- [ ] 确定要测试的目标 Spring AI 版本
+- [ ] 理解 GitHub Actions 的矩阵策略
+
+### 阶段 7 实施
+- [ ] 创建新的工作流文件：`.github/workflows/test-spring-ai-versions.yml`
+- [ ] 添加矩阵策略：
   ```yaml
   strategy:
     fail-fast: false
     matrix:
       spring-ai-version: ['1.0.0', '1.0.1', '1.1.0-SNAPSHOT']
   ```
-- [ ] Configure job to use matrix version
-- [ ] Add version to job name for clarity
-- [ ] Add version reporting in test output
+- [ ] 配置任务使用矩阵版本
+- [ ] 在任务名称中体现版本以便辨识
+- [ ] 在测试输出中报告版本
 
-### Phase 7 Small-Scale Testing
-- [ ] Limit initial matrix test to 3 examples only
-- [ ] Push workflow: `git commit -m "feat: add multi-version testing matrix"`
-- [ ] Trigger workflow
-- [ ] Verify parallel execution works
-- [ ] Check version isolation
-- [ ] Review logs for each version
+### 阶段 7 小规模测试
+- [ ] 初始矩阵测试仅限 3 个示例
+- [ ] 推送工作流：`git commit -m "feat: add multi-version testing matrix"`
+- [ ] 触发工作流
+- [ ] 确认并行执行正常工作
+- [ ] 检查版本隔离
+- [ ] 审阅每个版本的日志
 
-### Phase 7 Full-Scale Testing
-- [ ] Expand to all 32 examples
-- [ ] Trigger full matrix workflow
-- [ ] Monitor parallel execution (3 versions × 32 examples)
-- [ ] Document version-specific failures
-- [ ] Create compatibility matrix
+### 阶段 7 全规模测试
+- [ ] 扩展到全部 32 个示例
+- [ ] 触发完整矩阵工作流
+- [ ] 监控并行执行（3 个版本 × 32 个示例）
+- [ ] 记录版本特定的失败
+- [ ] 创建兼容性矩阵
 
-### Phase 7 Completion & Commit Point
-- [ ] Commit multi-version testing: `git commit -m "feat: add multi-version testing matrix for all examples"`
-- [ ] Create learnings document: `integration-testing/learnings/phase-7-multi-version.md`
-- [ ] Create version compatibility matrix document
-- [ ] Document version-specific issues
-- [ ] Note execution time for matrix builds
-- [ ] Review Phase 8 and adjust based on learnings
+### 阶段 7 完成与提交节点
+- [ ] 提交多版本测试：`git commit -m "feat: add multi-version testing matrix for all examples"`
+- [ ] 创建经验总结文档：`integration-testing/learnings/phase-7-multi-version.md`
+- [ ] 创建版本兼容性矩阵文档
+- [ ] 记录版本特定问题
+- [ ] 记录矩阵构建的执行耗时
+- [ ] 审阅阶段 8 并根据经验总结进行调整
 
 ---
 
-## Phase 8: Enhanced CI Features
+## 阶段 8：增强 CI 功能
 
-### Phase 8 Pre-Conditions
-- [ ] Read ALL previous learnings documents (phases 1-7)
-- [ ] Reflect on learnings and assess if Phase 8 plan needs significant adjustment
-- [ ] Review resource usage and cost implications from Phase 7
-- [ ] Prioritize enhancement features based on actual needs discovered
-- [ ] Confirm core functionality is stable
-- [ ] Review GitHub Actions advanced features
+### 阶段 8 前置条件
+- [ ] 阅读所有先前经验总结文档（阶段 1-7）
+- [ ] 反思经验总结，评估阶段 8 的计划是否需要大幅调整
+- [ ] 审阅阶段 7 的资源使用与成本影响
+- [ ] 根据实际发现的需求确定增强功能的优先级
+- [ ] 确认核心功能已稳定
+- [ ] 审阅 GitHub Actions 的高级功能
 
-### Phase 8 JSON Output Implementation
-- [ ] Modify `run-integration-tests.sh` to add `--json` flag
-- [ ] Implement JSON output format for test results
-- [ ] Test JSON output locally
-- [ ] Integrate JSON parsing in workflow
+### 阶段 8 JSON 输出实现
+- [ ] 修改 `run-integration-tests.sh`，添加 `--json` 标志
+- [ ] 实现测试结果的 JSON 输出格式
+- [ ] 在本地测试 JSON 输出
+- [ ] 在工作流中集成 JSON 解析
 
-### Phase 8 GitHub Annotations
-- [ ] Add problem matchers for test failures
-- [ ] Implement workflow annotations
-- [ ] Test annotation display in PR
+### 阶段 8 GitHub 注解
+- [ ] 为测试失败添加 problem matchers
+- [ ] 实现工作流注解
+- [ ] 测试 PR 中的注解展示
 
-### Phase 8 PR Comments
-- [ ] Add action to comment test results on PRs
-- [ ] Format results as markdown table
-- [ ] Test with sample PR
+### 阶段 8 PR 评论
+- [ ] 添加 action，在 PR 上评论测试结果
+- [ ] 将结果格式化为 Markdown 表格
+- [ ] 用示例 PR 进行测试
 
-### Phase 8 Caching
-- [ ] Add Maven dependency caching
-- [ ] Add JBang caching if applicable
-- [ ] Measure performance improvement
-- [ ] Document cache hit rates
+### 阶段 8 缓存
+- [ ] 添加 Maven 依赖缓存
+- [ ] 如适用，添加 JBang 缓存
+- [ ] 衡量性能提升
+- [ ] 记录缓存命中率
 
-### Phase 8 Scheduled Runs
-- [ ] Add nightly schedule trigger:
+### 阶段 8 定时运行
+- [ ] 添加每夜定时触发：
   ```yaml
   schedule:
     - cron: '0 2 * * *'  # 2 AM UTC daily
   ```
-- [ ] Configure to run against multiple versions
-- [ ] Set up failure notifications
+- [ ] 配置为针对多个版本运行
+- [ ] 设置失败通知
 
-### Phase 8 Completion & Commit Point
-- [ ] Commit enhancements: `git commit -m "feat: add CI enhancements (JSON output, annotations, caching)"`
-- [ ] Create learnings document: `integration-testing/learnings/phase-8-enhancements.md`
-- [ ] Document feature effectiveness
-- [ ] Note performance improvements
-- [ ] List any features deferred
-- [ ] Review Phase 9 and adjust based on learnings
-
----
-
-## Phase 9: Documentation & Finalization
-
-### Phase 9 Pre-Conditions
-- [ ] Read ALL learnings documents (phases 1-8)
-- [ ] Reflect on entire journey and identify key success factors
-- [ ] Document any technical debt or future improvements needed
-- [ ] Compile list of key insights
-- [ ] Review original goals vs. achievements
-- [ ] Gather all configuration examples
-
-### Phase 9 Documentation Tasks
-- [ ] Update this plan with final architecture
-- [ ] Create troubleshooting guide: `integration-testing/docs/GITHUB_ACTIONS_TROUBLESHOOTING.md`
-- [ ] Create maintenance runbook: `integration-testing/docs/CI_MAINTENANCE.md`
-- [ ] Update main README.md with CI/CD section
-- [ ] Document all workflow files
-- [ ] Create secrets management guide
-- [ ] Document rollback procedures
-
-### Phase 9 Validation
-- [ ] Run full manual workflow
-- [ ] Create test PR to verify automatic triggers
-- [ ] Run multi-version matrix
-- [ ] Verify scheduled run (if implemented)
-- [ ] Test all documented procedures
-
-### Phase 9 Completion & Commit Point
-- [ ] Final documentation commit: `git commit -m "docs: complete GitHub Actions CI/CD documentation"`
-- [ ] Create final summary: `integration-testing/learnings/github-actions-implementation-summary.md`
-- [ ] Archive this plan with completion dates
-- [ ] Document future enhancement opportunities
-- [ ] Calculate total implementation time
-- [ ] Mark project complete
+### 阶段 8 完成与提交节点
+- [ ] 提交增强功能：`git commit -m "feat: add CI enhancements (JSON output, annotations, caching)"`
+- [ ] 创建经验总结文档：`integration-testing/learnings/phase-8-enhancements.md`
+- [ ] 记录功能的有效性
+- [ ] 记录性能提升情况
+- [ ] 列出暂缓的功能
+- [ ] 审阅阶段 9 并根据经验总结进行调整
 
 ---
 
-## Key Principles
+## 阶段 9：文档与收尾
 
-1. **Progressive Enhancement**: Start with 3 examples, expand gradually
-2. **Early Validation**: Test in GitHub Actions as soon as Phase 2
-3. **Continuous Learning**: Each phase reads all previous learnings
-4. **Adaptive Planning**: Adjust later phases based on discoveries
-5. **State in Documents**: Track progress via checkboxes and learnings
+### 阶段 9 前置条件
+- [ ] 阅读所有经验总结文档（阶段 1-8）
+- [ ] 回顾整个历程，识别关键成功因素
+- [ ] 记录任何技术债或未来需要改进之处
+- [ ] 汇总关键洞察清单
+- [ ] 对比原始目标与实际成果
+- [ ] 收集所有配置示例
 
-## Success Metrics
+### 阶段 9 文档任务
+- [ ] 用最终架构更新本计划
+- [ ] 创建故障排查指南：`integration-testing/docs/GITHUB_ACTIONS_TROUBLESHOOTING.md`
+- [ ] 创建维护运行手册：`integration-testing/docs/CI_MAINTENANCE.md`
+- [ ] 在主 README.md 中添加 CI/CD 章节
+- [ ] 记录所有工作流文件
+- [ ] 创建密钥管理指南
+- [ ] 记录回滚流程
 
-- **Phase 2**: First GitHub Actions run with 3 examples ✓
-- **Phase 4**: 8 examples running reliably ✓
-- **Phase 5**: Automatic triggers working ✓
-- **Phase 6**: Full 32 examples with 97% pass rate ✓
-- **Phase 7**: Multi-version testing operational ✓
-- **Phase 8**: Enhanced features implemented ✓
-- **Phase 9**: Complete documentation ✓
+### 阶段 9 验证
+- [ ] 运行完整的手动工作流
+- [ ] 创建测试 PR 以验证自动触发
+- [ ] 运行多版本矩阵
+- [ ] 验证定时运行（如已实现）
+- [ ] 测试所有已记录的流程
 
-## Risk Mitigation
+### 阶段 9 完成与提交节点
+- [ ] 最终文档提交：`git commit -m "docs: complete GitHub Actions CI/CD documentation"`
+- [ ] 创建最终总结：`integration-testing/learnings/github-actions-implementation-summary.md`
+- [ ] 归档本计划并附上完成日期
+- [ ] 记录未来的增强机会
+- [ ] 计算总实施时间
+- [ ] 标记项目完成
 
-1. **API Rate Limits**: Implement caching, limit concurrent runs
-2. **Secret Leakage**: Use GitHub secrets, never commit keys
-3. **Long Execution Times**: Optimize order, consider splitting jobs
-4. **Flaky Tests**: Add retry logic, document known issues
-5. **Version Conflicts**: Maintain compatibility matrix
+---
 
-## Maintenance Notes
+## 关键原则
 
-- Review workflow runs weekly
-- Update Spring AI versions monthly
-- Archive old logs quarterly
-- Review and update documentation semi-annually
-- Monitor GitHub Actions usage and costs
+1. **渐进增强**：从 3 个示例开始，逐步扩展
+2. **尽早验证**：早在阶段 2 就在 GitHub Actions 中测试
+3. **持续学习**：每个阶段都会阅读所有先前的经验总结
+4. **自适应规划**：根据发现调整后续阶段
+5. **状态记入文档**：通过复选框与经验总结跟踪进度
 
-## Future Enhancements (Not in Current Scope)
+## 成功指标
 
-- Parallel execution with dynamic port assignment
-- Test result trending dashboard
-- Automatic issue creation for failures
-- Integration with Spring AI release process
-- Performance regression detection
+- **阶段 2**：首次在 GitHub Actions 中运行 3 个示例 ✓
+- **阶段 4**：8 个示例稳定运行 ✓
+- **阶段 5**：自动触发正常工作 ✓
+- **阶段 6**：全部 32 个示例，通过率 97% ✓
+- **阶段 7**：多版本测试投入运行 ✓
+- **阶段 8**：增强功能已实施 ✓
+- **阶段 9**：文档完整 ✓
+
+## 风险缓解
+
+1. **API 速率限制**：实施缓存，限制并发运行
+2. **密钥泄露**：使用 GitHub 密钥，绝不提交密钥
+3. **执行耗时过长**：优化顺序，考虑拆分任务
+4. **不稳定测试**：添加重试逻辑，记录已知问题
+5. **版本冲突**：维护兼容性矩阵
+
+## 维护说明
+
+- 每周审阅工作流运行情况
+- 每月更新 Spring AI 版本
+- 每季度归档旧日志
+- 每半年审阅并更新文档
+- 监控 GitHub Actions 的使用量与成本
+
+## 未来增强（不在当前范围内）
+
+- 带动态端口分配的并行执行
+- 测试结果趋势看板
+- 失败时自动创建 issue
+- 与 Spring AI 发布流程集成
+- 性能回归检测

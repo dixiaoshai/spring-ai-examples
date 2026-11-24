@@ -1,26 +1,26 @@
 #!/bin/bash
 
-# Check Spring AI versions across all pom.xml files
-# Usage: ./scripts/check-spring-ai-version.sh
+# 检查所有 pom.xml 文件中的 Spring AI 版本
+# 用法：./scripts/check-spring-ai-version.sh
 
 set -e
 
 echo "Checking Spring AI versions in all pom.xml files..."
 echo ""
 
-# Find script directory and project root
+# 查找脚本目录和项目根目录
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-# Change to project root
+# 切换到项目根目录
 cd "${PROJECT_ROOT}"
 
-# Track versions found
+# 统计发现的版本
 declare -A VERSION_COUNT
 TOTAL_WITH_VERSION=0
 TOTAL_WITHOUT_VERSION=0
 
-# Find and check all pom.xml files (excluding backups)
+# 查找并检查所有 pom.xml 文件（排除备份）
 echo "Files with spring-ai.version property:"
 echo "----------------------------------------"
 while IFS= read -r pom_file; do
@@ -29,7 +29,7 @@ while IFS= read -r pom_file; do
         relative_path="${pom_file#./}"
         echo "  $version - $relative_path"
         
-        # Count this version
+        # 统计该版本
         if [ -n "$version" ]; then
             VERSION_COUNT["$version"]=$((${VERSION_COUNT["$version"]:-0} + 1))
             TOTAL_WITH_VERSION=$((TOTAL_WITH_VERSION + 1))
@@ -53,7 +53,7 @@ echo "  Total pom.xml files: $((TOTAL_WITH_VERSION + TOTAL_WITHOUT_VERSION))"
 echo "  Files with spring-ai.version: $TOTAL_WITH_VERSION"
 echo "  Files without spring-ai.version: $TOTAL_WITHOUT_VERSION"
 
-# Check for version inconsistencies
+# 检查版本是否不一致
 if [ ${#VERSION_COUNT[@]} -gt 1 ]; then
     echo ""
     echo "⚠️  WARNING: Multiple versions detected! Consider running:"

@@ -6,8 +6,8 @@
 //SOURCES ../../../integration-testing/jbang-lib/IntegrationTestUtils.java
 
 /*
- * Integration test launcher for prompt-engineering-patterns
- * Refactored to use centralized utilities
+ * prompt-engineering-patterns 的集成测试启动器
+ * 重构为使用集中式工具类
  */
 
 public class RunPromptEngineeringPatterns {

@@ -7,8 +7,8 @@
 //SOURCES ../../../../integration-testing/jbang-lib/WebServerTestUtils.java
 
 /*
- * Integration test launcher for document-forge
- * Tests Claude Skills document generation web application
+ * document-forge 的集成测试启动器
+ * 测试 Claude Skills 文档生成 Web 应用
  */
 
 import java.util.List;
@@ -17,14 +17,14 @@ import java.util.Map;
 public class RunDocumentForge {
 
     public static void main(String... args) throws Exception {
-        // Check for required environment variable
+        // 检查必需的环境变量
         if (System.getenv("ANTHROPIC_API_KEY") == null) {
             System.err.println("❌ Missing required environment variable: ANTHROPIC_API_KEY");
             System.exit(1);
         }
 
-        // Define endpoint test for the web UI
-        // Pattern uses non-capturing group for proper alternation
+        // 定义 Web UI 的端点测试
+        // 该模式使用非捕获组以实现正确的分支选择
         var endpointTest = new WebServerTestUtils.EndpointTest(
             "http://localhost:8080/",
             "GET",
@@ -32,14 +32,14 @@ public class RunDocumentForge {
             Map.of()
         );
 
-        // Configure web server test
+        // 配置 Web 服务器测试
         var config = new WebServerTestUtils.WebServerConfig(
-            "http://localhost:8080/",  // Health check URL
-            20,  // Startup timeout in seconds
-            List.of(endpointTest)  // Endpoints to test
+            "http://localhost:8080/",  // 健康检查 URL
+            20,  // 启动超时时间（秒）
+            List.of(endpointTest)  // 要测试的端点
         );
 
-        // Run the test
+        // 运行测试
         WebServerTestUtils.runWebServerTest("document-forge", config);
     }
 }

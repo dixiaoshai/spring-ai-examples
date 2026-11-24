@@ -27,8 +27,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 /**
- * Drives the STATELESS and the STREAMABLE tickets servers with the Spring AI MCP client. The
- * interactive tools only exist on the STREAMABLE server, so they are called when present.
+ * 用 Spring AI MCP 客户端驱动 STATELESS 和 STREAMABLE 两个工单服务器。交互式工具只存在于
+ * STREAMABLE 服务器上，因此仅在存在时调用它们。
  */
 @SpringBootApplication
 public class TicketsClientApplication {
@@ -63,7 +63,7 @@ public class TicketsClientApplication {
 					.values());
 
 				if (tools.contains("delete_ticket")) {
-					// Elicitation and sampling are answered by the handlers in ClientHandlers.
+					// 引导和采样由 ClientHandlers 中的处理器应答。
 					System.out.println("delete_ticket (elicitation) -> " + client.callTool(CallToolRequest.builder("delete_ticket")
 						.arguments(Map.of("id", "t-1"))
 						.progressToken("del-1")
@@ -72,11 +72,11 @@ public class TicketsClientApplication {
 						.callTool(CallToolRequest.builder("summarize_tickets").arguments(Map.of()).build())
 						.content());
 
-					// Runtime change: the server adds a tool and notifies the session.
+					// 运行时变更：服务器添加一个工具并通知会话。
 					HttpClient.newHttpClient().send(HttpRequest.newBuilder(URI.create(adminUrl + "/admin/tools/hello"))
 						.POST(HttpRequest.BodyPublishers.noBody())
 						.build(), HttpResponse.BodyHandlers.ofString());
-					Thread.sleep(1000); // let notifications/tools/list_changed arrive
+					Thread.sleep(1000); // 等待 notifications/tools/list_changed 到达
 					System.out.println("Tools after runtime add: " + toolNames(client));
 				}
 				else {

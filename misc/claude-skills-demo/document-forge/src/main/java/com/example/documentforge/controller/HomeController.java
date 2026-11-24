@@ -8,7 +8,7 @@ import com.example.documentforge.model.DocumentType;
 import com.example.documentforge.service.DocumentGenerationService;
 
 /**
- * Controller for the home page.
+ * 首页控制器。
  */
 @Controller
 public class HomeController {

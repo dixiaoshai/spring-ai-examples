@@ -1,99 +1,99 @@
-# Spring AI Integration Testing Implementation Summary
+# Spring AI 集成测试实现总结
 
-**Project Period**: July 30 - August 2, 2025  
-**Final Status**: **97% Coverage Achieved (32/33 examples)** with revolutionary AI validation system
+**项目周期**：2025 年 7 月 30 日 - 8 月 2 日  
+**最终状态**：**已达成 97% 覆盖率（33 个示例中覆盖 32 个）**，并具备革命性的 AI 校验系统
 
-## Executive Summary
+## 执行摘要
 
-Successfully implemented a comprehensive integration testing framework for Spring AI examples, achieving near-complete coverage while pioneering AI-powered validation for non-deterministic applications. The project evolved from basic regex pattern matching to an intelligent validation system capable of testing interactive AI applications.
+成功为 Spring AI 示例实现了完善的集成测试框架，在达成近乎完整覆盖的同时，开创性地为非确定性应用引入 AI 驱动的校验。项目从基础的正则模式匹配演进为能够测试交互式 AI 应用的智能校验系统。
 
-## Achievement Metrics
+## 成果指标
 
-| Metric | Initial | Final | Improvement |
+| 指标 | 初始 | 最终 | 提升 |
 |--------|---------|-------|-------------|
-| **Coverage** | 0% (0/33) | **97% (32/33)** | +3200% |
-| **Test Reliability** | N/A | **~92%** | Robust with known issues |
-| **AI Validation** | N/A | **5 applications** | Revolutionary capability |
-| **Code Efficiency** | N/A | **84% reduction** | JBang centralization |
-| **Interactive Apps** | Untestable | **100% testable** | Major breakthrough |
+| **覆盖率** | 0% (0/33) | **97% (32/33)** | +3200% |
+| **测试可靠性** | N/A | **~92%** | 稳定，存在已知问题 |
+| **AI 校验** | N/A | **5 个应用** | 革命性能力 |
+| **代码效率** | N/A | **缩减 84%** | JBang 集中化 |
+| **交互式应用** | 无法测试 | **100% 可测试** | 重大突破 |
 
-## Major Innovations
+## 主要创新
 
-### 1. AI-Powered Validation System
-- **Innovation**: Claude Code CLI integration for intelligent log analysis
-- **Impact**: Enables testing of interactive applications with variable outputs
-- **Cost**: ~$0.002 per validation (400 tokens)
-- **Accuracy**: 85-100% confidence scores
-- **Applications**: 5 interactive examples successfully validated
+### 1. AI 驱动的校验系统
+- **创新点**：集成 Claude Code CLI 进行智能日志分析
+- **影响**：使输出多变的交互式应用可被测试
+- **成本**：每次校验约 $0.002（400 tokens）
+- **准确度**：置信度评分 85-100%
+- **应用**：5 个交互式示例成功通过校验
 
-### 2. Interactive Application Testing Breakthrough
-- **Problem Solved**: Scanner-based applications failing with NoSuchElementException
-- **Solution**: Allow non-zero exit codes for applications marked `requiresUserInteraction: true`
-- **Impact**: Previously untestable applications now fully testable
-- **Examples**: agents/reflection, sqlite/chatbot, brave-chatbot
+### 2. 交互式应用测试突破
+- **解决的问题**：基于 Scanner 的应用因 NoSuchElementException 而失败
+- **方案**：对标记为 `requiresUserInteraction: true` 的应用允许非零退出码
+- **影响**：此前无法测试的应用现在完全可测
+- **示例**：agents/reflection、sqlite/chatbot、brave-chatbot
 
-### 3. Centralized Architecture with 84% Code Reduction
-- **Achievement**: All 32 JBang scripts use centralized `IntegrationTestUtils.java`
-- **Efficiency**: Reduced from ~110-130 lines to ~18 lines per script
-- **Maintenance**: Single point of truth for all test logic
-- **Deployment**: AI validation added once, benefits all tests
+### 3. 集中式架构，代码缩减 84%
+- **成果**：全部 32 个 JBang 脚本都使用集中式的 `IntegrationTestUtils.java`
+- **效率**：每个脚本从约 110-130 行缩减到约 18 行
+- **维护**：所有测试逻辑的单一事实来源
+- **部署**：AI 校验只需添加一次，所有测试均受益
 
-## Phase-by-Phase Evolution
+## 分阶段演进
 
-### Phase 1: Infrastructure Foundation ✅ **COMPLETED**
-- **Duration**: 1 day
-- **Deliverables**: Python CI runner, scaffolding tools, GitHub Actions workflow
-- **Key Learning**: Tool effectiveness validated, rapid scaffolding essential
-- **Foundation**: Established base for all subsequent phases
+### 第 1 阶段：基础设施奠基 ✅ **已完成**
+- **时长**：1 天
+- **交付物**：Python CI 运行器、脚手架工具、GitHub Actions 工作流
+- **关键经验**：工具有效性得到验证，快速搭建脚手架至关重要
+- **基础**：为后续所有阶段奠定基础
 
-### Phase 2: Pilot Validation ✅ **COMPLETED**  
-- **Duration**: 1 day
-- **Deliverables**: 3 pilot examples with proven patterns
-- **Key Learning**: Template effectiveness, complexity categorization needed
-- **Validation**: Patterns work across simple → complex examples
+### 第 2 阶段：试点校验 ✅ **已完成**  
+- **时长**：1 天
+- **交付物**：3 个采用已验证模式的试点示例
+- **关键经验**：模板有效，但需要复杂度分类
+- **校验**：模式从简单示例到复杂示例均可适用
 
-### Phase 3a: Infrastructure Completion ✅ **COMPLETED**
-- **Duration**: 2 days  
-- **Sub-phases**: 6 completed (3a.1 through 3a.6)
-- **Deliverables**: 100% test pass rate, centralized utilities, comprehensive logging
-- **Key Learning**: Port cleanup critical, false positive elimination essential
-- **Innovation**: JBang centralization with 84% code reduction
+### 第 3a 阶段：基础设施完善 ✅ **已完成**
+- **时长**：2 天  
+- **子阶段**：完成 6 个（3a.1 至 3a.6）
+- **交付物**：100% 测试通过率、集中式工具类、完善日志
+- **关键经验**：端口清理至关重要，消除误报必不可少
+- **创新**：JBang 集中化，代码缩减 84%
 
-### Phase 3b: Batch Conversion ✅ **COMPLETED**
-- **Duration**: 1 day
-- **Deliverables**: 14 additional examples converted (97% coverage achieved)  
-- **Key Learning**: AI validation essential for interactive applications
-- **Achievement**: Nearly complete coverage with intelligent validation
+### 第 3b 阶段：批量转换 ✅ **已完成**
+- **时长**：1 天
+- **交付物**：额外转换 14 个示例（达成 97% 覆盖率）  
+- **关键经验**：AI 校验对交互式应用至关重要
+- **成果**：借助智能校验实现近乎完整的覆盖
 
-### Phase 3c: AI Validation System ✅ **COMPLETED**
-- **Duration**: Concurrent with 3b
-- **Deliverables**: Revolutionary AI validation framework
-- **Key Learning**: AI validation superior to regex for interactive applications
-- **Innovation**: Template-based prompt system with validation modes
+### 第 3c 阶段：AI 校验系统 ✅ **已完成**
+- **时长**：与 3b 并行
+- **交付物**：革命性的 AI 校验框架
+- **关键经验**：对交互式应用而言，AI 校验优于正则
+- **创新**：基于模板的提示词系统，支持多种校验模式
 
-### Phase 3d: Scale Testing & Optimization ⚠️ **PARTIALLY COMPLETED**
-- **Duration**: In progress
-- **Status**: Major fix implemented (interactive applications), specific issues identified
-- **Key Achievement**: Interactive application testing breakthrough
-- **Remaining**: Address specific Docker Compose and application-specific issues
+### 第 3d 阶段：规模化测试与优化 ⚠️ **部分完成**
+- **时长**：进行中
+- **状态**：已实施重大修复（交互式应用），已定位具体问题
+- **关键成果**：交互式应用测试取得突破
+- **遗留**：处理具体的 Docker Compose 与应用特有问题
 
-## Technical Architecture
+## 技术架构
 
-### Core Components
+### 核心组件
 
-1. **Centralized Utilities** (`integration-testing/jbang-lib/IntegrationTestUtils.java`)
-   - Single source of truth for all test logic
-   - Dynamic path resolution for modules at different depths
-   - AI validation integration
-   - Robust error handling and logging
+1. **集中式工具类**（`integration-testing/jbang-lib/IntegrationTestUtils.java`）
+   - 所有测试逻辑的单一事实来源
+   - 针对不同深度模块的动态路径解析
+   - AI 校验集成
+   - 健壮的错误处理与日志
 
-2. **AI Validation System**
-   - **Primary Mode**: AI-only validation for unpredictable outputs
-   - **Hybrid Mode**: Regex + AI validation for mixed patterns  
-   - **Fallback Mode**: Regex primary with AI fallback for edge cases
-   - **Template System**: Standardized prompts for different application types
+2. **AI 校验系统**
+   - **Primary 模式**：对不可预测的输出仅使用 AI 校验
+   - **Hybrid 模式**：正则 + AI 校验，适用于混合模式  
+   - **Fallback 模式**：以正则为主、AI 兜底，处理边界情况
+   - **模板系统**：针对不同应用类型的标准化提示词
 
-3. **Configuration Schema** (`ExampleInfo.json`)
+3. **配置 Schema**（`ExampleInfo.json`）
    ```json
    {
      "timeoutSec": 20,
@@ -111,152 +111,152 @@ Successfully implemented a comprehensive integration testing framework for Sprin
    }
    ```
 
-4. **Scaffolding Tools**
-   - `scaffold_integration_test.py`: Rapid test creation with complexity-based defaults
-   - Template system for different application types
-   - Intelligent AI validation configuration based on application characteristics
+4. **脚手架工具**
+   - `scaffold_integration_test.py`：基于复杂度默认值的快速测试创建
+   - 针对不同应用类型的模板系统
+   - 根据应用特征智能配置 AI 校验
 
-## Proven Patterns & Anti-Patterns
+## 已验证模式与反模式
 
-### ✅ **Proven Effective Patterns**
+### ✅ **经验证的有效模式**
 
-1. **Fallback AI Validation for Interactive Apps**
-   - Use regex for startup validation, AI for readiness assessment
-   - Allow non-zero exit codes with `requiresUserInteraction: true`
-   - Focus on application readiness rather than full interaction simulation
+1. **交互式应用使用 Fallback AI 校验**
+   - 使用正则校验启动，使用 AI 评估就绪状态
+   - 通过 `requiresUserInteraction: true` 允许非零退出码
+   - 关注应用就绪状态，而不是模拟完整交互
 
-2. **Centralized Utility Architecture**
-   - Single source of truth eliminates code duplication
-   - Features added once benefit all tests
-   - Dynamic path resolution handles varying module depths
+2. **集中式工具类架构**
+   - 单一事实来源消除代码重复
+   - 添加一次功能即可惠及所有测试
+   - 动态路径解析处理不同的模块深度
 
-3. **Complexity-Based Configuration**
-   - Simple examples: regex validation with unit tests
-   - Complex examples: AI validation with comprehensive logging
-   - Interactive examples: fallback validation with timeout tolerance
+3. **基于复杂度的配置**
+   - 简单示例：正则校验 + 单元测试
+   - 复杂示例：AI 校验 + 完善日志
+   - 交互式示例：兜底校验 + 超时容忍
 
-4. **Comprehensive Logging Strategy**
-   - Preserve all log files in `integration-testing/logs/integration-tests/`
-   - Display full raw application output (no filtering)
-   - Normalized path display for clean presentation
+4. **完善的日志策略**
+   - 将所有日志文件保留在 `integration-testing/logs/integration-tests/`
+   - 展示完整的原始应用输出（不做过滤）
+   - 对路径展示进行归一化，保持整洁
 
-### ❌ **Anti-Patterns to Avoid**
+### ❌ **应避免的反模式**
 
-1. **Complex Shell Commands in Setup**
-   - `zt-exec` library doesn't support shell operators (`cd`, `&&`)
-   - Use individual commands or bash wrappers instead
+1. **安装阶段使用复杂 Shell 命令**
+   - `zt-exec` 库不支持 shell 操作符（`cd`、`&&`）
+   - 请改用独立命令或 bash 包装脚本
 
-2. **Rigid Regex for Variable AI Output**
-   - Interactive AI applications produce unpredictable output
-   - Use AI validation for applications with Scanner.nextLine() or variable responses
+2. **对多变的 AI 输出使用僵硬正则**
+   - 交互式 AI 应用会产生不可预测的输出
+   - 对使用 Scanner.nextLine() 或响应多变的应使用 AI 校验
 
-3. **Exit Code Rigidity for Interactive Apps**
-   - NoSuchElementException is expected and acceptable for Scanner-based applications
-   - Configure tolerance rather than failing on expected exit codes
+3. **对交互式应用严格限制退出码**
+   - 对基于 Scanner 的应用而言，NoSuchElementException 是预期且可接受的
+   - 应配置容忍度，而不是因预期的退出码而失败
 
-4. **False Positive Tolerance**
-   - Never accept tests that pass for wrong reasons
-   - Always validate actual functionality, not just startup patterns
+4. **容忍误报**
+   - 绝不接受因错误原因而通过的测试
+   - 始终校验实际功能，而不仅是启动模式
 
-## Outstanding Issues & Solutions
+## 遗留问题与解决方案
 
-### 1. Docker Compose Path Resolution (kotlin/rag-with-kotlin)
-- **Issue**: Application looks for compose.yaml from wrong working directory
-- **Impact**: 1 test failing (3% of total)
-- **Solution Options**:
-  - Fix Docker Compose configuration in application
-  - Add setup commands to adjust working directory
-  - Use relative path configuration
+### 1. Docker Compose 路径解析（kotlin/rag-with-kotlin）
+- **问题**：应用从错误的工作目录查找 compose.yaml
+- **影响**：1 个测试失败（占总数 3%）
+- **可选方案**：
+  - 修正应用中的 Docker Compose 配置
+  - 添加安装命令以调整工作目录
+  - 使用相对路径配置
 
-### 2. Application-Specific Failures
-- **Issue**: Some applications may have specific configuration requirements
-- **Impact**: 1-2 additional tests (misc/openai-streaming-response)
-- **Solution**: Case-by-case analysis and configuration adjustment
+### 2. 应用特有问题
+- **问题**：部分应用可能有特定的配置要求
+- **影响**：额外 1-2 个测试（misc/openai-streaming-response）
+- **方案**：逐案分析并调整配置
 
-### 3. Remaining 8 MCP Modules (Optional Enhancement)
-- **Status**: 8 modules without integration tests (24% of MCP modules)
-- **Impact**: Would increase coverage from 97% to 100%
-- **Priority**: Medium (framework is proven, additional coverage is incremental)
+### 3. 剩余 8 个 MCP 模块（可选增强）
+- **状态**：8 个模块没有集成测试（占 MCP 模块的 24%）
+- **影响**：可将覆盖率从 97% 提升到 100%
+- **优先级**：中（框架已经验证，额外覆盖属于增量）
 
-## Cost-Benefit Analysis
+## 成本效益分析
 
-### Development Investment
-- **Time**: ~5 days total development
-- **Complexity**: High (multiple phases, architectural decisions)
-- **Learning Curve**: Moderate (JBang, AI validation concepts)
+### 开发投入
+- **时间**：总计约 5 天开发
+- **复杂度**：高（多个阶段、架构决策）
+- **学习曲线**：中等（JBang、AI 校验概念）
 
-### Operational Benefits
-- **Coverage**: 32/33 examples testable (97%)
-- **Reliability**: ~92% success rate with known issues
-- **AI Validation Cost**: ~$0.002 per test (sustainable)
-- **Maintenance**: Single point of truth reduces ongoing effort by ~84%
-- **Developer Experience**: Scaffolding tools enable rapid test creation
+### 运行收益
+- **覆盖率**：33 个示例中 32 个可测（97%）
+- **可靠性**：成功率约 92%，已知问题均有记录
+- **AI 校验成本**：每次测试约 $0.002（可持续）
+- **维护**：单一事实来源将日常维护工作减少约 84%
+- **开发者体验**：脚手架工具支持快速创建测试
 
-### Strategic Impact
-- **CI/CD Integration**: Robust testing for all Spring AI releases
-- **Quality Assurance**: Prevents regressions across diverse AI integration patterns
-- **Innovation Validation**: Proves AI validation feasibility for complex applications
-- **Framework Maturity**: Positions Spring AI examples as enterprise-ready
+### 战略影响
+- **CI/CD 集成**：为所有 Spring AI 版本提供可靠的测试
+- **质量保证**：防止各类 AI 集成模式出现回归
+- **创新验证**：证明 AI 校验对复杂应用切实可行
+- **框架成熟度**：使 Spring AI 示例达到企业级就绪水平
 
-## Future Enhancement Roadmap
+## 未来增强路线图
 
-### Short-term (Next 3 months)
-1. **Complete Coverage**: Address remaining Docker Compose and specific application issues
-2. **Performance Optimization**: Implement dynamic port assignment for parallel execution
-3. **Real-time Feedback**: Stream Spring Boot logs during test execution
+### 短期（未来 3 个月）
+1. **完整覆盖**：解决剩余的 Docker Compose 与特定应用问题
+2. **性能优化**：为并行执行实现动态端口分配
+3. **实时反馈**：在测试执行期间流式输出 Spring Boot 日志
 
-### Medium-term (3-6 months)  
-1. **Self-Healing Tests**: AI-powered pattern updates based on application changes
-2. **Enhanced Scaffolding**: Template recognition and intelligent configuration
-3. **Cross-Platform Validation**: Windows/Mac compatibility testing
+### 中期（3-6 个月）  
+1. **自愈测试**：基于应用变化由 AI 驱动更新模式
+2. **增强脚手架**：模板识别与智能配置
+3. **跨平台校验**：Windows/Mac 兼容性测试
 
-### Long-term (6+ months)
-1. **Framework Integration**: Contribute patterns back to Spring AI core framework
-2. **Enterprise Features**: Multi-environment testing, load testing integration
-3. **AI-Powered Test Generation**: Automatic integration test creation from README files
+### 长期（6 个月以上）
+1. **框架集成**：将模式回馈到 Spring AI 核心框架
+2. **企业特性**：多环境测试、负载测试集成
+3. **AI 驱动的测试生成**：根据 README 文件自动创建集成测试
 
-## Knowledge Transfer & Maintenance
+## 知识传递与维护
 
-### Key Maintainer Knowledge
-1. **AI Validation Configuration**: Understanding validation modes and prompt templates
-2. **Interactive Application Patterns**: Exit code handling and timeout configuration
-3. **JBang Architecture**: Centralized utility system and dynamic path resolution
-4. **Troubleshooting Methodology**: Systematic failure analysis and pattern repair
+### 维护者核心知识
+1. **AI 校验配置**：理解校验模式与提示词模板
+2. **交互式应用模式**：退出码处理与超时配置
+3. **JBang 架构**：集中式工具类系统与动态路径解析
+4. **故障排查方法论**：系统性失败分析与模式修复
 
-### Documentation Assets
-- **Developer Guide**: `integration-testing/README.md` with comprehensive framework overview
-- **Learning Documents**: Phase-by-phase insights with technical details
-- **Template Library**: Proven configurations for different application types
-- **Troubleshooting Guide**: Common issues and solutions
+### 文档资产
+- **开发者指南**：包含框架完整概览的 `integration-testing/README.md`
+- **经验文档**：分阶段的技术细节与洞见
+- **模板库**：针对不同应用类型的已验证配置
+- **故障排查指南**：常见问题与解决方案
 
-### Maintenance Procedures
-1. **Monthly**: Run full test suite to identify any regressions
-2. **Per Release**: Validate all tests pass with new Spring AI versions
-3. **Per New Example**: Use scaffolding tools with appropriate complexity classification
-4. **Annual**: Review AI validation costs and optimize prompt efficiency
+### 维护流程
+1. **每月**：运行完整测试套件以发现任何回归
+2. **每个版本**：校验所有测试在 Spring AI 新版本下通过
+3. **每个新示例**：使用脚手架工具并做合适的复杂度分类
+4. **每年**：审查 AI 校验成本并优化提示词效率
 
-## Conclusion
+## 结论
 
-The Spring AI integration testing implementation represents a successful evolution from basic pattern matching to intelligent AI-powered validation. With 97% coverage achieved and revolutionary capabilities for testing interactive applications, the framework provides a robust foundation for Spring AI quality assurance.
+Spring AI 集成测试的实现成功地从基础模式匹配演进为智能 AI 驱动的校验。凭借已实现的 97% 覆盖率以及测试交互式应用的革命性能力，该框架为 Spring AI 的质量保证提供了坚实基础。
 
-The key innovation—AI validation for non-deterministic applications—opens new possibilities for testing complex AI systems while maintaining cost efficiency and reliability. The centralized architecture ensures maintainability and rapid feature deployment across all tests.
+关键创新——针对非确定性应用的 AI 校验——为测试复杂 AI 系统开辟了新的可能，同时兼顾成本效率与可靠性。集中式架构确保了可维护性以及跨所有测试的快速功能交付。
 
-While minor issues remain (Docker Compose configuration, specific application requirements), the core framework is production-ready and provides exceptional value for comprehensive Spring AI testing.
+尽管仍有少量问题（Docker Compose 配置、特定应用要求），核心框架已达到生产就绪，为全面的 Spring AI 测试提供了卓越价值。
 
-## Critical Framework Learnings
+## 框架关键经验
 
-### Development Strategy Insights
-- **Pattern Testing Strategy**: Expect 2-3 iterations to get success patterns right for each new example type
-- **Phased Validation Approach**: Scale testing reveals real constraints - infrastructure → samples → batch conversion works
-- **Port Conflict Management**: Critical for any future parallel execution work - systematic port 8080 cleanup prevents cascading failures
+### 开发策略洞见
+- **模式测试策略**：每种新示例类型预计需要 2-3 次迭代才能确定正确的成功模式
+- **分阶段校验方法**：规模化测试会揭示真实约束 - 基础设施 → 样例 → 批量转换的路径可行
+- **端口冲突管理**：对任何未来的并行执行工作都至关重要 - 系统性清理 8080 端口可防止级联失败
 
-### Performance & Cost Baselines
-- **Execution Time Expectations**: 30s (simple), 2-3min (complex), 5min+ (very complex) - essential for timeout configuration
-- **AI Validation Cost**: ~$0.002 per validation (~400 tokens), ~$6/month for 100 daily runs - extremely cost-effective
-- **Success Rate**: ~92% reliability with known issues documented
+### 性能与成本基线
+- **执行时间预期**：30 秒（简单）、2-3 分钟（复杂）、5 分钟以上（非常复杂） - 对超时配置至关重要
+- **AI 校验成本**：每次校验约 $0.002（约 400 tokens），每天 100 次运行约 $6/月 - 极具成本效益
+- **成功率**：可靠性约 92%，已知问题均有文档记录
 
-### AI Validation Configuration Patterns
-**Interactive Applications (Scanner-based):**
+### AI 校验配置模式
+**交互式应用（基于 Scanner）：**
 ```json
 {
   "validationMode": "fallback",
@@ -268,7 +268,7 @@ While minor issues remain (Docker Compose configuration, specific application re
 }
 ```
 
-**Client-Server Applications:**
+**客户端—服务器应用：**
 ```json
 {
   "validationMode": "hybrid", 
@@ -279,14 +279,14 @@ While minor issues remain (Docker Compose configuration, specific application re
 }
 ```
 
-### Special Case Knowledge
-- **Database Examples** (kotlin/rag-with-kotlin): Require database setup complexity and extended timeouts
-- **Interactive AI Examples** (agents/reflection): Complex AI interaction patterns need specialized validation
-- **MCP Examples**: Longer execution times due to external service dependencies, document resource requirements
-- **Agentic Patterns**: Extended timeouts needed, complex workflow validation techniques required
+### 特殊场景知识
+- **数据库示例**（kotlin/rag-with-kotlin）：需要复杂的数据库配置与更长的超时
+- **交互式 AI 示例**（agents/reflection）：复杂的 AI 交互模式需要专门校验
+- **MCP 示例**：由于外部服务依赖，执行时间较长，需记录资源要求
+- **智能体模式**：需要更长的超时，且需要复杂的工作流校验技术
 
-### Technical Solutions Library
-- **ProcessExecutor API**: Specific fixes documented for Maven integration and application lifecycle management
-- **Output Capture**: JBang output display fixes critical for debugging - affects 8/12 scripts initially
-- **Interactive App Testing**: Scanner-based applications fail with NoSuchElementException - solved with timeout and AI validation approach
-- **Framework Architecture**: Python orchestration + JBang execution provides excellent cross-platform compatibility
+### 技术方案库
+- **ProcessExecutor API**：记录了针对 Maven 集成与应用生命周期管理的具体修复
+- **输出捕获**：JBang 输出展示的修复对调试至关重要 - 最初影响 8/12 个脚本
+- **交互式应用测试**：基于 Scanner 的应用会因 NoSuchElementException 失败 - 已通过超时与 AI 校验方案解决
+- **框架架构**：Python 编排 + JBang 执行提供了出色的跨平台兼容性

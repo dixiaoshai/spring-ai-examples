@@ -22,39 +22,39 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 /**
- * Cross-platform Spring AI MCP Filesystem Demo Application.
+ * 跨平台的 Spring AI MCP 文件系统演示应用。
  *
- * <p>This application demonstrates integration with the MCP Filesystem server and works
- * on both Windows and Linux/Mac platforms with automatic OS detection.
+ * <p>本应用演示与 MCP Filesystem 服务器的集成，可在 Windows 与 Linux/Mac 平台上运行，
+ * 并自动检测操作系统。
  *
- * <h2>Configuration Approaches</h2>
+ * <h2>配置方式</h2>
  *
- * <h3>Option 1: Programmatic Configuration (Default)</h3>
- * If no JSON configuration is specified in application.properties, the {@link #mcpClient()}
- * bean creates the MCP client programmatically with automatic OS detection:
+ * <h3>方式一：编程式配置（默认）</h3>
+ * 如果 application.properties 中未指定 JSON 配置，{@link #mcpClient()} Bean 会以编程方式
+ * 创建 MCP 客户端，并自动检测操作系统：
  * <ul>
- *   <li><b>Windows:</b> Uses {@code cmd.exe /c npx} wrapper (required for npx to execute)</li>
- *   <li><b>Linux/Mac:</b> Uses {@code npx} directly</li>
+ *   <li><b>Windows：</b>使用 {@code cmd.exe /c npx} 包装器（npx 执行所必需）</li>
+ *   <li><b>Linux/Mac：</b>直接使用 {@code npx}</li>
  * </ul>
  *
- * <h3>Option 2: JSON Configuration (Auto-Config)</h3>
- * Enable in application.properties:
+ * <h3>方式二：JSON 配置（自动配置）</h3>
+ * 在 application.properties 中启用：
  * <pre>
- * # For Windows:
+ * # Windows 平台：
  * spring.ai.mcp.client.stdio.servers-configuration=classpath:/mcp-servers-config-windows.json
  *
- * # For Linux/Mac:
+ * # Linux/Mac 平台：
  * spring.ai.mcp.client.stdio.servers-configuration=classpath:/mcp-servers-config-linux.json
  * </pre>
  *
- * When JSON configuration is enabled, Spring Boot auto-configuration creates the MCP client,
- * and the {@link #mcpClient()} bean is skipped via {@code @ConditionalOnMissingBean}.
+ * 启用 JSON 配置后，由 Spring Boot 自动配置创建 MCP 客户端，
+ * 而 {@link #mcpClient()} Bean 会通过 {@code @ConditionalOnMissingBean} 跳过。
  *
- * <h2>Why Windows Requires cmd.exe Wrapper</h2>
+ * <h2>为什么 Windows 需要 cmd.exe 包装器</h2>
  *
- * On Windows, {@code npx} is not a native executable but a batch file. Java's
- * {@code ProcessBuilder} (used by {@code StdioClientTransport}) cannot execute batch files
- * directly and requires the {@code cmd.exe /c} wrapper to spawn such processes.
+ * 在 Windows 上，{@code npx} 并非原生可执行文件，而是批处理文件。Java 的
+ * {@code ProcessBuilder}（由 {@code StdioClientTransport} 使用）无法直接执行批处理文件，
+ * 需要借助 {@code cmd.exe /c} 包装器来启动这类进程。
  *
  * @see <a href="https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem">
  *      MCP Filesystem Server</a>
@@ -67,12 +67,12 @@ public class Application {
 	}
 
 	/**
-	 * Runs predefined questions against the MCP filesystem server.
+	 * 针对 MCP 文件系统服务器运行预定义问题。
 	 *
-	 * <p>This bean works with both programmatic and JSON-based client configurations:
+	 * <p>该 Bean 同时适用于编程式与基于 JSON 的客户端配置：
 	 * <ul>
-	 *   <li>Programmatic: Single {@code McpSyncClient} bean</li>
-	 *   <li>JSON Config: List of {@code McpSyncClient} beans from auto-configuration</li>
+	 *   <li>编程式：单个 {@code McpSyncClient} Bean</li>
+	 *   <li>JSON 配置：由自动配置提供的 {@code McpSyncClient} Bean 列表</li>
 	 * </ul>
 	 */
 	@Bean
@@ -82,7 +82,7 @@ public class Application {
 			ConfigurableApplicationContext context) {
 
 		return args -> {
-			// Determine which client(s) to use: auto-configured list or programmatic single
+			// 确定使用哪些客户端：自动配置的列表，或编程式的单个客户端
 			List<McpSyncClient> clients = (mcpSyncClients != null && !mcpSyncClients.isEmpty())
 					? mcpSyncClients
 					: (mcpClient != null ? List.of(mcpClient) : List.of());
@@ -99,12 +99,12 @@ public class Application {
 
 			System.out.println("Running predefined questions with AI model responses:\n");
 
-			// Question 1
+			// 问题 1
 			String question1 = "Can you explain the content of the target/spring-ai-mcp-overview.txt file?";
 			System.out.println("QUESTION: " + question1);
 			System.out.println("ASSISTANT: " + chatClient.prompt(question1).call().content());
 
-			// Question 2
+			// 问题 2
 			String question2 = "Please summarize the content of the target/spring-ai-mcp-overview.txt file and store it in a new target/summary.md as Markdown format?";
 			System.out.println("\nQUESTION: " + question2);
 			System.out.println("ASSISTANT: " +
@@ -115,22 +115,22 @@ public class Application {
 	}
 
 	/**
-	 * Creates an MCP client with automatic OS detection for cross-platform compatibility.
+	 * 创建带自动操作系统检测的 MCP 客户端，以兼容跨平台。
 	 *
-	 * <p>This bean is only created when no MCP client is provided by auto-configuration
-	 * (i.e., when JSON configuration is not enabled). When JSON config is present,
-	 * Spring Boot auto-configuration takes precedence.
+	 * <p>仅当自动配置未提供 MCP 客户端时才会创建该 Bean
+	 * （即未启用 JSON 配置时）。若存在 JSON 配置，
+	 * 则以 Spring Boot 自动配置优先。
 	 *
-	 * <h3>Platform-Specific Behavior:</h3>
+	 * <h3>平台相关行为：</h3>
 	 * <ul>
-	 *   <li><b>Windows:</b> Command: {@code cmd.exe}, Args: {@code /c npx -y @modelcontextprotocol/server-filesystem target}</li>
-	 *   <li><b>Linux/Mac:</b> Command: {@code npx}, Args: {@code -y @modelcontextprotocol/server-filesystem target}</li>
+	 *   <li><b>Windows：</b>命令：{@code cmd.exe}，参数：{@code /c npx -y @modelcontextprotocol/server-filesystem target}</li>
+	 *   <li><b>Linux/Mac：</b>命令：{@code npx}，参数：{@code -y @modelcontextprotocol/server-filesystem target}</li>
 	 * </ul>
 	 *
-	 * <p><b>Path Handling:</b> Uses relative path {@code "target"} for cross-platform compatibility.
-	 * The MCP server resolves this relative to the current working directory.
+	 * <p><b>路径处理：</b>使用相对路径 {@code "target"}，以兼容跨平台。
+	 * MCP 服务器会基于当前工作目录解析该路径。
 	 *
-	 * @return configured MCP sync client
+	 * @return 已配置的 MCP 同步客户端
 	 * @see <a href="https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem">
 	 *      MCP Filesystem Server Documentation</a>
 	 */
@@ -141,7 +141,7 @@ public class Application {
 		ServerParameters stdioParams;
 
 		if (isWindows()) {
-			// Windows: npx is a batch file and requires cmd.exe to execute
+			// Windows：npx 是批处理文件，需要 cmd.exe 才能执行
 			System.out.println("Detected Windows OS - using cmd.exe wrapper for npx");
 			var winArgs = new ArrayList<>(Arrays.asList(
 					"/c", "npx", "-y", "@modelcontextprotocol/server-filesystem", "target"));
@@ -149,7 +149,7 @@ public class Application {
 					.args(winArgs)
 					.build();
 		} else {
-			// Linux/Mac: npx can be executed directly
+			// Linux/Mac：npx 可以直接执行
 			System.out.println("Detected Unix-like OS - using npx directly");
 			stdioParams = ServerParameters.builder("npx")
 					.args("-y", "@modelcontextprotocol/server-filesystem", "target")
@@ -167,9 +167,9 @@ public class Application {
 	}
 
 	/**
-	 * Detects if the current operating system is Windows.
+	 * 检测当前操作系统是否为 Windows。
 	 *
-	 * @return true if running on Windows, false otherwise
+	 * @return 若运行在 Windows 上则返回 true，否则返回 false
 	 */
 	private static boolean isWindows() {
 		return System.getProperty("os.name").toLowerCase().contains("win");

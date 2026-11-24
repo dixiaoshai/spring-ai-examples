@@ -1,10 +1,10 @@
-# Spring AI Recursive Advisors Demo
+# Spring AI 递归顾问演示
 
-Demonstrates the **Recursive Advisors** pattern in Spring AI 2.0, using `ToolCallingAdvisor` to handle tool-calling loops within the advisor chain.
+演示 Spring AI 2.0 中的 **递归顾问（Recursive Advisors）** 模式，使用 `ToolCallingAdvisor` 在顾问链内部处理工具调用循环。
 
-## Overview
+## 概述
 
-`ToolCallingAdvisor` is a built-in recursive advisor that iterates through the advisor chain until all tool calls are completed. It is **auto-registered** by default — you only need to add it explicitly when customizing its configuration or controlling its position in the chain.
+`ToolCallingAdvisor` 是一个内置的递归顾问，会迭代遍历顾问链，直到所有工具调用完成。它默认**自动注册** —— 只有在需要自定义其配置或控制其在链中的位置时，才需要显式添加。
 
 ```java
 ChatClient chatClient = chatClientBuilder
@@ -15,7 +15,7 @@ ChatClient chatClient = chatClientBuilder
     .build();
 ```
 
-`MyLogAdvisor` implements `BaseAdvisor` and logs requests/responses at each recursive iteration, providing visibility into the tool-calling loop:
+`MyLogAdvisor` 实现了 `BaseAdvisor`，在每次递归迭代时记录请求/响应，从而可观察工具调用循环的过程：
 
 ```
 REQUEST: [user: "What is current weather in Paris?"]
@@ -25,20 +25,20 @@ REQUEST: [user + assistant tool call + tool result]
 RESPONSE: [assistant: "The current weather in Paris is sunny with a temperature of 25°C."]
 ```
 
-## Prerequisites
+## 前置条件
 
 - Java 17+
 - Maven 3.6+
-- Anthropic API key (`ANTHROPIC_API_KEY`)
+- Anthropic API 密钥（`ANTHROPIC_API_KEY`）
 
-## Run
+## 运行
 
 ```bash
 export ANTHROPIC_API_KEY=your-key
 ./mvnw spring-boot:run
 ```
 
-## Reference
+## 参考
 
 - [Spring AI Advisors](https://docs.spring.io/spring-ai/reference/api/advisors.html)
-- [Spring AI Tool Calling](https://docs.spring.io/spring-ai/reference/api/tools.html)
+- [Spring AI 工具调用](https://docs.spring.io/spring-ai/reference/api/tools.html)

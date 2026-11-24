@@ -13,14 +13,13 @@ import org.springframework.ai.mcp.annotation.McpToolParam;
 import org.springframework.stereotype.Component;
 
 /**
- * Tools, resources and a prompt that need nothing from the session. These methods are
- * byte-for-byte the same on every protocol; only the annotation attributes marked below
- * differ on the modern server.
+ * 不需要会话的工具、资源和提示词。这些方法在每个协议上都逐字节相同；
+ * 只有下面标注的注解属性在 modern 服务器上有所不同。
  */
 @Component
 public class TicketProvider {
 
-	/** The people the daily summary is written for; tickets have no owner of their own. */
+	/** 每日摘要所面向的人员；工单本身没有所有者。 */
 	private static final List<String> OWNERS = List.of("Ana", "Andrei", "Ben", "Chloe");
 
 	private final TicketService tickets;
@@ -56,8 +55,8 @@ public class TicketProvider {
 		return this.tickets.find(id).map(ticket -> this.tickets.toJson(List.of(ticket))).orElse("null");
 	}
 
-	// Completes the {id} variable of tickets://{id}. On the modern server the handler travels
-	// with that template, so it must name an @McpResource template of this application.
+	// 补全 tickets://{id} 的 {id} 变量。在 modern 服务器上，处理器随该模板一起提供，
+	// 因此它必须指定本应用的一个 @McpResource 模板。
 	@McpComplete(uri = "tickets://{id}")
 	public List<String> completeTicketId(String prefix) {
 		return this.tickets.list().stream().map(ticket -> ticket.id()).filter(id -> id.startsWith(prefix)).toList();
@@ -68,7 +67,7 @@ public class TicketProvider {
 		return "Summarise the open tickets for " + owner + " in two sentences: " + this.tickets.toJson(this.tickets.list());
 	}
 
-	// Completes the owner argument of daily-summary, which a modern server attaches to that prompt.
+	// 补全 daily-summary 的 owner 参数，modern 服务器会将它附加到该提示词上。
 	@McpComplete(prompt = "daily-summary")
 	public List<String> completeOwner(String prefix) {
 		return OWNERS.stream().filter(owner -> owner.toLowerCase().startsWith(prefix.toLowerCase())).toList();

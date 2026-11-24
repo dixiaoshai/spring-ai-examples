@@ -14,7 +14,7 @@ public class JinferDemoApplication {
         SpringApplication.run(JinferDemoApplication.class, args);
     }
 
-    /** In-memory session store for the chat memory demo; sessions are lost on restart. */
+    /** 用于聊天记忆演示的内存会话存储；会话在重启后会丢失。 */
     @Bean
     SessionService sessionService() {
         return DefaultSessionService.builder()

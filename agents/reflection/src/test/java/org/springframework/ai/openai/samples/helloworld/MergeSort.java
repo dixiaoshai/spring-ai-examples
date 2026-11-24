@@ -29,24 +29,24 @@ public class MergeSort {
         if (start < end) {
             int mid = (start + end) / 2;
 
-            // Recursively sort the two halves
+            // 递归地对两半排序
             mergeSort(array, tempArray, start, mid);
             mergeSort(array, tempArray, mid + 1, end);
 
-            // Merge the sorted halves
+            // 合并已排序的两半
             merge(array, tempArray, start, mid, end);
         }
     }
 
     private static void merge(int[] array, int[] tempArray, int start, int mid, int end) {
-        // Copy data to temporary array for merging
+        // 将数据复制到临时数组以便合并
         System.arraycopy(array, start, tempArray, start, end - start + 1);
 
         int leftIndex = start;
         int rightIndex = mid + 1;
         int currentIndex = start;
 
-        // Merge the temp arrays back into the original array
+        // 将临时数组中的内容合并回原数组
         while (leftIndex <= mid && rightIndex <= end) {
             if (tempArray[leftIndex] <= tempArray[rightIndex]) {
                 array[currentIndex] = tempArray[leftIndex];
@@ -58,14 +58,14 @@ public class MergeSort {
             currentIndex++;
         }
 
-        // Copy remaining elements of left half, if any
+        // 复制左半部分剩余元素（如果有）
         while (leftIndex <= mid) {
             array[currentIndex] = tempArray[leftIndex];
             leftIndex++;
             currentIndex++;
         }
 
-        // No need to copy the right half because it's already in place
+        // 无需复制右半部分，因为它已在正确位置
     }
 
     public static void main(String[] args) {

@@ -16,26 +16,24 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * What a modern connection of the asynchronous client type needs next to the reactive
- * handlers of {@link ClientHandlers}: the caller of each request, the header that carries
- * it, the tools to hide, and a scope that keeps a client for each role.
+ * 异步客户端类型的 modern 连接在 {@link ClientHandlers} 的响应式处理器之外还需要的内容：
+ * 每个请求的调用者、携带调用者的请求头、要隐藏的工具，以及为每个角色保留一个客户端的
+ * scope。
  */
 @Configuration(proxyBeanMethods = false)
 class ModernClientConfiguration {
 
-	/** The key of the caller's role in the transport context. */
+	/** 调用者角色在传输上下文中的键。 */
 	static final String ROLE = "role";
 
 	private static final Logger logger = LoggerFactory.getLogger(ModernClientConfiguration.class);
 
 	/**
-	 * Supplies the caller of each request. An asynchronous client holds no caller, so the
-	 * synchronous sample's client customizer has no counterpart: this bean is asked each
-	 * time the tools are resolved, on the thread that resolves them. The tool listing goes
-	 * out for that caller, and the tool callbacks of that resolution keep it, so a tool call
-	 * that runs later, or on another thread, is still made for that caller. It is the only
-	 * source of the caller: a transport context in the Reactor context of a chat call is not
-	 * used. The listen stream belongs to the application and does not ask it.
+	 * 提供每个请求的调用者。异步客户端不持有调用者，因此同步示例中的客户端定制器没有
+	 * 对应物：每次解析工具时都会在解析它们的线程上询问该 Bean。工具列表会按该调用者
+	 * 发出，那次解析产生的工具回调会保留它，因此之后或在其他线程上运行的调用仍然以该
+	 * 调用者的身份发出。它是调用者的唯一来源：聊天调用 Reactor 上下文中的传输上下文
+	 * 不会被使用。监听流属于应用，不会询问它。
 	 */
 	@Bean
 	AsyncModernMcpTransportContextProvider callerProvider() {
@@ -46,10 +44,9 @@ class ModernClientConfiguration {
 	}
 
 	/**
-	 * Used only when the connection sets {@code client-scope=CUSTOM}: keeps one client for
-	 * each role, so that the tool listing a server marks as private is kept for that role
-	 * for as long as the server allows. One scope serves all connections, so the key
-	 * contains the name of the connection.
+	 * 仅在连接设置 {@code client-scope=CUSTOM} 时使用：为每个角色保留一个客户端，
+	 * 从而使服务器标记为私有的工具列表在该角色下保留服务器允许的时长。
+	 * 一个 scope 服务于所有连接，因此键中包含连接名。
 	 */
 	@Bean
 	AsyncModernMcpClientScope perRoleClientScope() {
@@ -61,7 +58,7 @@ class ModernClientConfiguration {
 				});
 	}
 
-	/** Sends the role of the caller to the server, as an access token would be sent. */
+	/** 将调用者的角色发送给服务器，就像发送访问令牌那样。 */
 	@Bean
 	McpHttpRequestCustomizer roleHeader() {
 		return McpHttpRequestCustomizer.fromSync((request, headers, context) -> {
@@ -83,9 +80,8 @@ class ModernClientConfiguration {
 	}
 
 	/**
-	 * Hides the tool that needs sampling, which the modern SDK client does not support; the
-	 * server would refuse the call with {@code -32021}. The legacy {@code McpToolFilter} does
-	 * not apply to modern connections.
+	 * 隐藏需要采样的工具，modern SDK 客户端不支持采样；服务器会以 {@code -32021} 拒绝该调用。
+	 * 旧版的 {@code McpToolFilter} 不适用于 modern 连接。
 	 */
 	@Bean
 	McpModernToolFilter modernToolFilter() {

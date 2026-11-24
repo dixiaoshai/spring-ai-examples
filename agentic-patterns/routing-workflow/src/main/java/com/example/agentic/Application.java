@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 // ------------------------------------------------------------
-// ROUTER WORKFLOW
+// 路由工作流
 // ------------------------------------------------------------
 @SpringBootApplication
 public class Application {

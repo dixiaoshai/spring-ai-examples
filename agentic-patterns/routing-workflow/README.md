@@ -1,28 +1,28 @@
-# Routing Workflow Pattern
+# 路由工作流模式
 
-This project implements the Routing workflow pattern as described in [Building Effective Agents](https://www.anthropic.com/research/building-effective-agents) by Anthropic. The pattern enables intelligent routing of inputs to specialized handlers based on content classification.
+本项目实现了 Anthropic 在 [Building Effective Agents](https://www.anthropic.com/research/building-effective-agents) 中描述的路由工作流模式。该模式基于内容分类，将输入智能地路由到专门的处理程序。
 
-![Routing Workflow](https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F5c0c0e9fe4def0b584c04d37849941da55e5e71c-2401x1000.png&w=3840&q=75)
+![路由工作流](https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F5c0c0e9fe4def0b584c04d37849941da55e5e71c-2401x1000.png&w=3840&q=75)
 
-## Overview
+## 概述
 
-The Routing workflow pattern is designed for complex tasks where different types of inputs are better handled by specialized processes. It uses an LLM to analyze input content and route it to the most appropriate specialized prompt or handler.
+路由工作流模式专为复杂任务而设计，其中不同类型的输入更适合由专门化的流程处理。它使用 LLM 分析输入内容，并将其路由到最合适的专门化提示词或处理程序。
 
-### Key Benefits
+### 主要优势
 
-- **Separation of Concerns**: Each route can be optimized for specific types of input
-- **Improved Accuracy**: Specialized prompts handle what they do best
-- **Scalable Architecture**: Easy to add new routes and specialized handlers
-- **Better Resource Utilization**: Route simpler tasks to lighter models
+- **关注点分离**：每条路由都可以针对特定类型的输入进行优化
+- **提升准确度**：专门化的提示词可以发挥其最佳能力
+- **可扩展架构**：易于添加新的路由与专门化处理程序
+- **更好的资源利用**：将较简单的任务路由到更轻量的模型
 
-### When to Use
+### 使用场景
 
-This workflow is particularly effective when:
-- You have distinct categories of input that require different handling
-- Classification can be handled accurately by an LLM
-- Different types of input require different expertise or processing approaches
+该工作流在以下情况下特别有效：
+- 存在需要不同处理方式的明确输入类别
+- 分类可以由 LLM 准确完成
+- 不同类型的输入需要不同的专业知识或处理方法
 
-## Usage Example
+## 用法示例
 
 ```java
 @Autowired
@@ -43,37 +43,37 @@ String input = "My account was charged twice last week";
 String response = workflow.route(input, routes);
 ```
 
-## Common Use Cases
+## 常见用例
 
-1. **Customer Support**
-   - Route queries to appropriate departments (billing, technical, general)
-   - Direct urgent issues to priority handling
-   - Forward complex cases to specialist teams
+1. **客户支持**
+   - 将查询路由到相应部门（计费、技术、综合）
+   - 将紧急问题转交优先处理
+   - 将复杂案例转交专家团队
 
-2. **Content Moderation**
-   - Route content to appropriate review processes
-   - Direct sensitive content to human moderators
-   - Send routine content through automated checks
+2. **内容审核**
+   - 将内容路由到相应的审核流程
+   - 将敏感内容转交人工审核员
+   - 将常规内容送入自动检查
 
-3. **Query Optimization**
-   - Route simple questions to smaller, faster models
-   - Direct complex queries to more capable models
-   - Forward specialized topics to domain-specific handlers
+3. **查询优化**
+   - 将简单问题路由到更小、更快的模型
+   - 将复杂查询转交能力更强的模型
+   - 将专业主题转交领域特定的处理程序
 
-## Implementation Details
+## 实现细节
 
-The implementation consists of two main components:
+该实现包含两个主要组件：
 
-1. `RoutingWorkflow`: The main class that implements the routing logic
-   - Analyzes input using LLM
-   - Selects appropriate route
-   - Processes input with specialized prompt
+1. `RoutingWorkflow`：实现路由逻辑的主类
+   - 使用 LLM 分析输入
+   - 选择适当的路由
+   - 使用专门化提示词处理输入
 
-2. `RouteResponse`: Record class that encapsulates routing decisions
-   - Stores reasoning behind route selection
-   - Maintains selected route information
+2. `RouteResponse`：封装路由决策的 record 类
+   - 存储路由选择背后的推理
+   - 维护所选路由的信息
 
-## References
+## 参考资料
 
 - [Building Effective Agents](https://www.anthropic.com/research/building-effective-agents) - Anthropic Research
-- [Spring AI Documentation](https://docs.spring.io/spring-ai/reference/api/chatclient.html)
+- [Spring AI 文档](https://docs.spring.io/spring-ai/reference/api/chatclient.html)

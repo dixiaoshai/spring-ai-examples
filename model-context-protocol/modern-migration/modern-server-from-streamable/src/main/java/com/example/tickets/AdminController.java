@@ -17,17 +17,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Adds a tool at runtime. On the modern server there is no {@code McpSyncServer}; tools live
- * in a repository, and {@link InMemorySyncToolRepository#add} broadcasts
- * {@code notifications/tools/list_changed} to every open {@code subscriptions/listen} stream.
- * The tool itself is the SDK's {@link McpSyncTool}: a definition plus a handler.
+ * 在运行时添加工具。modern 服务器没有 {@code McpSyncServer}；工具位于仓库中，
+ * 而 {@link InMemorySyncToolRepository#add} 会向每条打开的 {@code subscriptions/listen} 流
+ * 广播 {@code notifications/tools/list_changed}。工具本身是 SDK 的 {@link McpSyncTool}：
+ * 一个定义加上一个处理器。
  */
 @RestController
 public class AdminController {
 
-	// Resolved lazily, once: injecting the repository directly would create it while this
-	// controller is being wired, before the @McpTool beans have been scanned, and it would
-	// start empty. The ObjectProvider defers the lookup; the SingletonSupplier caches its result.
+	// 延迟解析且只解析一次：直接注入仓库会在装配该控制器时、在 @McpTool Bean 被扫描之前
+	// 就创建它，从而以空仓库启动。
+	// ObjectProvider 推迟查找；SingletonSupplier 缓存其结果。
 	private final Supplier<InMemorySyncToolRepository> tools;
 
 	public AdminController(ObjectProvider<InMemorySyncToolRepository> tools) {

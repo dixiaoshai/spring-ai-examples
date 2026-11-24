@@ -55,7 +55,7 @@ public class SampleClient {
 
 		client.ping();
 
-		// List and demonstrate tools
+		// 列出并演示工具
 		ListToolsResult toolsList = client.listTools();
 		System.out.println("Available Tools = " + toolsList);
 		toolsList.tools().stream().forEach(tool -> {
@@ -72,18 +72,18 @@ public class SampleClient {
 		System.out.println("Weather Forcast: " + weatherForcastResult2);
 
 
-		// // Resources
+		// // 资源
 		ReadResourceResult resource = client.readResource(new ReadResourceRequest("user-status://alice"));
 
 		System.out.println("Resource = " + resource);
 
-		// Prompts
+		// 提示词
 		GetPromptResult prompt = client.getPrompt(
 				new GetPromptRequest("personalized-message", Map.of("name", "Alice", "age", "14", "interests", "AI")));
 
 		System.out.println("Prompt = " + prompt);
 
-		// Completions
+		// 补全
 		CompleteResult completion = client.completeCompletion(new CompleteRequest(new ResourceReference("user-status://{username}"),
 				new CompleteRequest.CompleteArgument("username", "a")));
 

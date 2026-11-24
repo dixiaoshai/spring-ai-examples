@@ -1,58 +1,58 @@
-# Phase 3: Minimal GitHub Actions Workflow - Learnings
+# 第 3 阶段：最小化 GitHub Actions 工作流 - 经验总结
 
-## Summary
-Successfully created a manual GitHub Actions workflow for integration testing with Spring AI version management. The workflow is ready for deployment to GitHub.
+## 摘要
+成功创建了带 Spring AI 版本管理的手动 GitHub Actions 集成测试工作流。该工作流已可部署到 GitHub。
 
-## Workflow Created
-- **File**: `.github/workflows/integration-tests-manual.yml`
-- **Type**: Manual trigger (workflow_dispatch)
-- **Inputs**: 
-  - `spring_ai_version`: Configurable Spring AI version (default: 1.0.1)
-  - `test_filter`: Optional test filter for running specific tests
+## 创建的工作流
+- **文件**：`.github/workflows/integration-tests-manual.yml`
+- **类型**：手动触发（workflow_dispatch）
+- **输入**： 
+  - `spring_ai_version`：可配置的 Spring AI 版本（默认：1.0.1）
+  - `test_filter`：可选的测试过滤器，用于运行指定测试
 
-## Key Features Implemented
-1. **JDK 17 Setup**: Using temurin distribution with Maven caching
-2. **Version Management**: Integrated Phase 2 scripts for dynamic version updates
-3. **Test Execution**: Tests 3 representative examples:
-   - models/chat/helloworld (simple example)
-   - kotlin/kotlin-hello-world (Kotlin example)
-   - misc/spring-ai-java-function-callback (function calling)
-4. **Environment Variables**: Proper OPENAI_API_KEY configuration
-5. **Artifact Upload**: Test logs preserved for debugging
-6. **GitHub Summary**: Job summary with test details
+## 已实现的关键特性
+1. **JDK 17 准备**：使用 temurin 发行版并启用 Maven 缓存
+2. **版本管理**：集成第 2 阶段的脚本以动态更新版本
+3. **测试执行**：测试 3 个具有代表性的示例：
+   - models/chat/helloworld（简单示例）
+   - kotlin/kotlin-hello-world（Kotlin 示例）
+   - misc/spring-ai-java-function-callback（函数调用）
+4. **环境变量**：正确配置 OPENAI_API_KEY
+5. **产物上传**：保留测试日志以便调试
+6. **GitHub 摘要**：任务摘要包含测试详情
 
-## Local Testing
-- ✅ YAML syntax validated successfully
-- ✅ Test commands verified locally:
-  - `chat/helloworld` - works
-  - `kotlin-hello-world` - works
-  - `spring-ai-java-function-callback` - ready to test
+## 本地测试
+- ✅ YAML 语法校验成功
+- ✅ 测试命令已在本地核实：
+  - `chat/helloworld` - 正常
+  - `kotlin-hello-world` - 正常
+  - `spring-ai-java-function-callback` - 待测试
 
-## Issues Encountered and Resolved
-1. **Test name case sensitivity**: Initially used "helloworld" but needed "chat/helloworld" for precise filtering
-   - **Fix**: Updated to use path-based filter for accuracy
+## 遇到并解决的问题
+1. **测试名称大小写敏感**：最初使用“helloworld”，但精确过滤需要“chat/helloworld”
+   - **修复**：改为基于路径的过滤器以确保准确
 
-## Workflow Patterns from Reference
-Successfully incorporated patterns from Spring AI's workflow:
-- JDK setup with Temurin and Maven cache
-- Environment variable management
-- Artifact upload for logs
-- Structured test execution
+## 借鉴的工作流模式
+成功借鉴了 Spring AI 工作流的以下模式：
+- 使用 Temurin 与 Maven 缓存的 JDK 准备
+- 环境变量管理
+- 日志产物上传
+- 结构化的测试执行
 
-## Ready for GitHub Deployment
-- Workflow file is complete and tested locally
-- Version management integration verified
-- Test commands validated
-- Ready to push and test in GitHub Actions
+## 已可部署到 GitHub
+- 工作流文件完整，且已在本地测试
+- 版本管理集成已核实
+- 测试命令已校验
+- 可以推送并在 GitHub Actions 中测试
 
-## Next Steps for GitHub
-1. Configure OPENAI_API_KEY secret in repository settings
-2. Push workflow to GitHub
-3. Trigger manual workflow to verify
-4. Test with both 1.0.1 and 1.1.0-SNAPSHOT versions
+## GitHub 后续步骤
+1. 在仓库设置中配置 OPENAI_API_KEY 密钥
+2. 将工作流推送到 GitHub
+3. 触发手动工作流进行验证
+4. 分别用 1.0.1 和 1.1.0-SNAPSHOT 版本测试
 
-## Improvements for Future Phases
-- Add timeout configuration per test
-- Consider adding retry logic for flaky tests
-- Add cost tracking comments
-- Consider parallel job execution for performance
+## 后续阶段的改进
+- 为每个测试添加超时配置
+- 考虑为不稳定测试添加重试逻辑
+- 添加成本跟踪注释
+- 考虑并行作业执行以提升性能

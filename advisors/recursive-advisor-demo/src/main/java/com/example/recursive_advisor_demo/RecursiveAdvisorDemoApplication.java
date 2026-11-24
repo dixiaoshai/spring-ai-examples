@@ -28,7 +28,7 @@ public class RecursiveAdvisorDemoApplication {
 			ChatClient chatClient = chatClientBuilder // @formatter:off
 					.defaultTools(new MyTools())
 					.defaultAdvisors(
-						// This is optional. the DeafultChatClient will auto-register a ToolCallingAdvisor if one is not already registered.
+						// 这是可选的。如果尚未注册 ToolCallingAdvisor，DefaultChatClient 会自动注册一个。
 						ToolCallingAdvisor.builder().build(),
 						new MyLogAdvisor())
 				.build();

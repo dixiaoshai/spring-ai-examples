@@ -1,62 +1,62 @@
-# MCP Sampling — Annotation-Based
+# MCP Sampling — 基于注解
 
-Two-module example showing MCP Sampling with Spring AI annotations. The server exposes a weather tool that uses MCP Sampling to request poems from the client's LLMs; the client routes those sampling requests to OpenAI or Anthropic based on model hints.
+包含两个模块的示例，展示如何使用 Spring AI 注解实现 MCP Sampling。服务器暴露一个天气工具，它通过 MCP Sampling 向客户端的 LLM 索取诗歌；客户端则根据模型提示将这些 sampling 请求路由到 OpenAI 或 Anthropic。
 
 ```
 mcp-sampling-server-annotations/   # MCP server — weather tool + sampling
 mcp-sampling-client-annotations/   # MCP client — sampling handler + chat entry point
 ```
 
-## How it works
+## 工作方式
 
-1. The client sends: *"What is the weather in Amsterdam right now?"*
-2. The server's `@McpTool` fetches live weather from Open-Meteo, then calls `exchange.createMessage()` twice — once hinting `openai`, once hinting `anthropic`.
-3. The client's `@McpSampling` handler receives each request, picks the matching `ChatClient`, and returns a poem.
-4. The server combines both poems with the raw weather data and returns the result to the client.
+1. 客户端发送提示词：*"What is the weather in Amsterdam right now?"*
+2. 服务器的 `@McpTool` 从 Open-Meteo 获取实时天气，然后调用 `exchange.createMessage()` 两次 —— 一次提示 `openai`，一次提示 `anthropic`。
+3. 客户端的 `@McpSampling` 处理器接收每个请求，选择匹配的 `ChatClient`，并返回一首诗。
+4. 服务器将两首诗与原始天气数据结合，并把结果返回给客户端。
 
-## Key annotations
+## 关键注解
 
-| Annotation | Side | Purpose |
+| 注解 | 端 | 用途 |
 |---|---|---|
-| `@McpTool` | Server | Registers a method as an MCP tool |
-| `@McpSampling` | Client | Handles sampling requests from the server |
-| `@McpLogging` | Client | Receives log notifications from the server |
-| `@McpProgress` | Client | Receives progress notifications from the server |
+| `@McpTool` | 服务器 | 将方法注册为 MCP 工具 |
+| `@McpSampling` | 客户端 | 处理来自服务器的 sampling 请求 |
+| `@McpLogging` | 客户端 | 接收服务器的日志通知 |
+| `@McpProgress` | 客户端 | 接收服务器的进度通知 |
 
-## Prerequisites
+## 前置条件
 
 - Java 17+
-- OpenAI API key
-- Anthropic API key
+- OpenAI API 密钥
+- Anthropic API 密钥
 
-## Run
+## 运行
 
-**1. Start the server**
+**1. 启动服务器**
 
 ```bash
 cd mcp-sampling-server-annotations
 ./mvnw spring-boot:run
 ```
 
-Starts on `http://localhost:8080` using Streamable HTTP transport.
+使用 Streamable HTTP 传输，在 `http://localhost:8080` 上启动。
 
-**2. Set API keys**
+**2. 设置 API 密钥**
 
 ```bash
 export OPENAI_API_KEY=your-openai-key
 export ANTHROPIC_API_KEY=your-anthropic-key
 ```
 
-**3. Run the client**
+**3. 运行客户端**
 
 ```bash
 cd mcp-sampling-client-annotations
 ./mvnw spring-boot:run
 ```
 
-## Configuration
+## 配置
 
-**Server** (`application.properties`):
+**服务器**（`application.properties`）：
 ```properties
 spring.ai.mcp.server.name=mcp-sampling-server-annotations
 spring.ai.mcp.server.version=0.0.1
@@ -64,7 +64,7 @@ spring.ai.mcp.server.protocol=STREAMABLE
 spring.main.banner-mode=off
 ```
 
-**Client** (`application.properties`):
+**客户端**（`application.properties`）：
 ```properties
 spring.main.web-application-type=none
 spring.ai.chat.client.enabled=false
@@ -73,9 +73,9 @@ spring.ai.anthropic.api-key=${ANTHROPIC_API_KEY}
 spring.ai.mcp.client.streamable-http.connections.server1.url=http://localhost:8080
 ```
 
-## Key implementation snippets
+## 关键实现片段
 
-**Server — weather tool with sampling:**
+**服务器 —— 带 sampling 的天气工具：**
 ```java
 @Service
 public class WeatherService {
@@ -97,7 +97,7 @@ public class WeatherService {
 }
 ```
 
-**Client — sampling handler:**
+**客户端 —— sampling 处理器：**
 ```java
 @Service
 public class McpClientHandlers {
@@ -119,7 +119,7 @@ public class McpClientHandlers {
 }
 ```
 
-**Client — entry point:**
+**客户端 —— 入口：**
 ```java
 @Bean
 public CommandLineRunner predefinedQuestions(OpenAiChatModel openAiChatModel,

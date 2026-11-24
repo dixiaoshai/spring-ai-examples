@@ -67,7 +67,7 @@ public class ClientApplication {
 
 			logger.info(toolDescriptions.stream().map(td -> td.toString()).collect(Collectors.joining("\n")));
 
-			// signal the server to update the tools
+			// 通知服务器更新工具
 			String signal = RestClient.builder()
 				.build()
 				.get()

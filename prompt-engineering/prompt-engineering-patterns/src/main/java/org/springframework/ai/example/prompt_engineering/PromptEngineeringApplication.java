@@ -29,7 +29,7 @@ public class PromptEngineeringApplication {
 			try {
 				ChatClient chatClient = chatClientBuilder.build();
 
-				// Check if specific pattern is requested via command line argument
+				// 检查是否通过命令行参数请求了特定模式
 				String pattern = args.length > 0 ? args[0] : "all";
 
 				switch (pattern.toLowerCase()) {
@@ -61,84 +61,84 @@ public class PromptEngineeringApplication {
 
 	private void runBasicPatterns(ChatClient chatClient) {
 		System.out.println("=== Running Basic Patterns ===");
-		// 2.1 General prompting / zero shot
+		// 2.1 通用提示 / 零样本
 		pt_zero_shot(chatClient);
-		// 2.2 One-shot & few-shot
+		// 2.2 单样本与少样本
 		pt_ones_shot_few_shots(chatClient);
 	}
 
 	private void runSystemPatterns(ChatClient chatClient) {
 		System.out.println("=== Running System/Role Patterns ===");
-		// 2.3.1 System prompting
+		// 2.3.1 系统提示
 		pt_system_prompting_1(chatClient);
 		pt_system_prompting_2_springai_style(chatClient);
-		// 2.3.2 Role prompting
+		// 2.3.2 角色提示
 		pt_role_prompting_1(chatClient);
 	}
 
 	private void runAdvancedPatterns(ChatClient chatClient) {
 		System.out.println("=== Running Advanced Patterns ===");
-		// 2.6 Self-consistency (simplified - just one iteration)
+		// 2.6 自洽性（简化版 - 仅一次迭代）
 		pt_self_consistency_simple(chatClient);
 	}
 
 	private void runAllPatterns(ChatClient chatClient) {
 		//@formatter:off
-		// 2. Prompting techniques (page 13)
+		// 2. 提示技术（第 13 页）
 
-			// 2.1 General prompting / zero shot (page 15)
+			// 2.1 通用提示 / 零样本（第 15 页）
 			pt_zero_shot(chatClient);
 
-			// 2.2 One-shot & few-shot
+			// 2.2 单样本与少样本
 			pt_ones_shot_few_shots(chatClient);
 
-			// 2.3 System, contextual and role prompting
+			// 2.3 系统提示、上下文提示与角色提示
 
-				// 2.3.1 System prompting
+				// 2.3.1 系统提示
 				pt_system_prompting_1(chatClient);
 				pt_system_prompting_2(chatClient);
 				pt_system_prompting_2_springai_style(chatClient);
 
-				// 2.3.2 Role prompting
+				// 2.3.2 角色提示
 				pt_role_prompting_1(chatClient);
-				pt_role_prompting_2(chatClient); // in a humorous style.
+				pt_role_prompting_2(chatClient); // 以幽默风格。
 
-				// 2.3.3 Contextual prompting
+				// 2.3.3 上下文提示
 				pt_contextual_prompting(chatClient);
 
-			// 2.4 Step-back prompting
+			// 2.4 退步提示
 			pt_step_back_prompting(chatClient.mutate());
 
-			// 2.5 Chain of Thought (CoT)
+			// 2.5 思维链（CoT）
 			pt_chain_of_thought_zero_shot(chatClient);
 			pt_chain_of_thought_singleshot_fewshots(chatClient);
 
-			// 2.6 Self-consistency
+			// 2.6 自洽性
 			pt_self_consistency(chatClient);
 
-			// 2.7 Tree of Thoughts (ToT)
+			// 2.7 思维树（ToT）
 			pt_tree_of_thoughts_game(chatClient);
 			pt_tree_of_thoughts_problem(chatClient);
 
-			// 2.8 Automatic Prompt Engineering
+			// 2.8 自动提示词工程
 			pt_automatic_prompt_engineering(chatClient);
 
-			// 2.9 Code prompting
+			// 2.9 代码提示
 
-				// 2.9.1 Prompts for writing code
+				// 2.9.1 用于编写代码的提示
 				pt_code_prompting_writing_code(chatClient);
 
-				// 2.9.2 Prompts for explaining code
+				// 2.9.2 用于解释代码的提示
 				pt_code_prompting_explaining_code(chatClient);
 
-				// 2.9.3 Prompts for translating code
+				// 2.9.3 用于翻译代码的提示
 				pt_code_prompting_translating_code(chatClient);
 		//@formatter:on
 	}
 
-	// 2.1 General prompting / zero shot (page 15)
+	// 2.1 通用提示 / 零样本（第 15 页）
 	public void pt_zero_shot(ChatClient chatClient) {
-		// General prompting / zero shot (page 15)
+		// 通用提示 / 零样本（第 15 页）
 
 		enum Sentiment {
 
@@ -160,19 +160,19 @@ public class PromptEngineeringApplication {
 		System.out.println("Output: " + reviewSentiment);
 	}
 
-	// 2.2 One-shot & few-shot
+	// 2.2 单样本与少样本
 	public void pt_ones_shot_few_shots(ChatClient chatClient) {
 
-		// One-shot & few-shot
-		// When creating prompts for AI models, it is helpful to provide examples.
-		// These examples can help the model understand what you are asking for.
-		// - one-shot prompt: provides a single example to the model.
-		// - few-shot prompt: provides multiple examples to the model.
+		// 单样本与少样本
+		// 为 AI 模型编写提示词时，提供示例会很有帮助。
+		// 这些示例有助于模型理解你的需求。
+		// - one-shot 提示：向模型提供单个示例。
+		// - few-shot 提示：向模型提供多个示例。
 
-		// A few-shot prompt example, let's use the same gemini-pro model
-		// configuration settings as before, other than increasing the token limit to
-		// accommodate the
-		// need for a longer response. (page 16)
+		// 一个 few-shot 提示示例：沿用之前相同的 gemini-pro 模型
+		// 配置，只是提高 token 上限以
+		// 满足
+		// 更长响应的需求。（第 16 页）
 
 		String pizzaOrder = chatClient.prompt("""
 				Parse a customer's pizza order into valid JSON
@@ -205,8 +205,8 @@ public class PromptEngineeringApplication {
 				""")
 			.options(ChatOptions.builder()
 				.temperature(0.1)
-				// Increasing the token limit to accommodate the need for a longer
-				// response.
+				// 提高 token 上限，以满足
+				// 生成更长响应的需求。
 				.maxTokens(250)
 				)
 			.call()
@@ -214,25 +214,25 @@ public class PromptEngineeringApplication {
 
 		System.out.println("Output: " + pizzaOrder);
 
-		// NOTE: The number of examples you need for few-shot prompting depends on a few
-		// factors,
-		// including the complexity of the task, the quality of the examples, and the
-		// capabilities of the
-		// generative AI (gen AI) model you are using. As a general rule of thumb, you
-		// should use at
-		// least three to five examples for few-shot prompting.
+		// 注意：few-shot 提示所需的示例数量取决于多个
+		// 因素，
+		// 包括任务的复杂度、示例的质量，以及
+		// 你所用生成式 AI
+		// （gen AI）模型的能力。一般经验法则是，
+		// 对于 few-shot 提示，
+		// 至少使用三到五个示例。
 		//
-		// To generate output that is robust to a variety of inputs, it is important to
-		// include edge
-		// cases in your examples. Edge cases are inputs that are unusual or unexpected,
-		// but that the model should still be able to handle.
+		// 要生成对各种输入都稳健的输出，重要的一点是
+		// 在示例中包含
+		// 边界情况。边界情况是不寻常或意外的输入，
+		// 但模型仍应能够处理。
 	}
 
-	// Sets the overall context and purpose for the language model. It
-	// defines the 'big picture' of what the model should be doing, like translating
-	// a language, classifying a review etc.
+	// 设置语言模型的整体上下文和目的。它
+	// 定义模型应完成的"大图景"，例如翻译
+	// 一门语言、对评论进行分类等。
 
-	// 2.3.1 System prompting (1)
+	// 2.3.1 系统提示（1）
 	public void pt_system_prompting_1(ChatClient chatClient) {
 
 		String movieReview = chatClient.prompt()
@@ -250,16 +250,16 @@ public class PromptEngineeringApplication {
 
 		System.out.println("Output: " + movieReview);
 
-		// We increased the temperature to get a higher creativity level, and I
-		// specified a higher token limit. However, because of my clear instruction on
-		// how to return the output the model didn't return extra text
+		// 我们提高了 temperature 以获得更高的创造性，并
+		// 指定了更高的 token 上限。不过，由于我对
+		// 输出格式有明确指令，模型没有返回多余文本
 	}
 
-	// You could use a system prompt to generate a code snippet that is compatible
-	// with a specific programming language, or you could use a system prompt to
-	// return a certain structure like output in JSON format.
+	// 你可以使用系统提示生成与特定编程语言兼容的
+	// 代码片段，也可以使用系统提示
+	// 返回某种结构，例如 JSON 格式的输出。
 
-	// 2.3.1 System prompting (2)
+	// 2.3.1 系统提示（2）
 	public void pt_system_prompting_2(ChatClient chatClient) {
 
 		String movieReview = chatClient.prompt().system("""
@@ -291,7 +291,7 @@ public class PromptEngineeringApplication {
 
 	}
 
-	// 2.3.1 (3) spring-ai System prompting - SpringAI style
+	// 2.3.1（3）spring-ai 系统提示 - SpringAI 风格
 	public void pt_system_prompting_2_springai_style(ChatClient chatClient) {
 
 		record MovieReviews(Movie[] movie_reviews) {
@@ -324,10 +324,10 @@ public class PromptEngineeringApplication {
 		System.out.println("Output: " + jsonMapper.writeValueAsString(movieReviews));
 	}
 
-	// 2.3.2 Role prompting (1)
+	// 2.3.2 角色提示（1）
 	public void pt_role_prompting_1(ChatClient chatClient) {
 
-		// Goal Act as travel guide and provide 3 travel suggestions
+		// 目标：充当旅行指南并提供 3 条旅行建议
 
 		String movieReview = chatClient.prompt().system("""
 				I want you to act as a travel guide. I will write to you
@@ -343,12 +343,12 @@ public class PromptEngineeringApplication {
 
 	}
 
-	// 2.3.2 Role prompting (2)
+	// 2.3.2 角色提示（2）
 	public void pt_role_prompting_2(ChatClient chatClient) {
 
-		// Goal Act as travel guide and provide 3 travel suggestions
+		// 目标：充当旅行指南并提供 3 条旅行建议
 		//
-		// In a humorous style.
+		// 以幽默风格。
 
 		String movieReview = chatClient.prompt().system("""
 				I want you to act as a travel guide. I will write to you about
@@ -362,10 +362,10 @@ public class PromptEngineeringApplication {
 		System.out.println("Output: " + movieReview);
 	}
 
-	// 2.3.3 Contextual prompting
+	// 2.3.3 上下文提示
 	public void pt_contextual_prompting(ChatClient chatClient) {
 
-		// Goal: Suggest articles for a blog about retro games
+		// 目标：为关于复古游戏的博客建议文章主题
 
 		String movieReview = chatClient.prompt()
 			.user(u -> u.text("""
@@ -382,15 +382,15 @@ public class PromptEngineeringApplication {
 
 	}
 
-	// 2.4 Step-back prompting
+	// 2.4 退步提示
 	public void pt_step_back_prompting(ChatClient.Builder chatClientBuilder) {
 
-		// (SpringAI tip) Set common options for the chat client.
+		// （SpringAI 提示）为聊天客户端设置通用选项。
 		var chatClient = chatClientBuilder
 			.defaultOptions(ChatOptions.builder().temperature(1.0).topK(40).maxTokens(1024))
 			.build();
 
-		// Goal: Write a storyline for a level of a first-person shooter video game.
+		// 目标：为第一人称射击游戏的某一关卡编写故事情节。
 
 		String stepBack = chatClient.prompt("""
 				Based on popular first-person shooter action games, what are
@@ -411,9 +411,9 @@ public class PromptEngineeringApplication {
 
 	}
 
-	// 2.5 Chain of Thought (CoT)
+	// 2.5 思维链（CoT）
 
-	// 'zero-shot' Chain of thought.
+	// “零样本”思维链。
 	public void pt_chain_of_thought_zero_shot(ChatClient chatClient) {
 
 		String output = chatClient.prompt("""
@@ -447,7 +447,7 @@ public class PromptEngineeringApplication {
 
 	}
 
-	// 2.6 Self-consistency (simplified for basic testing)
+	// 2.6 自洽性（为基础测试简化）
 	public void pt_self_consistency_simple(ChatClient chatClient) {
 		String email = """
 				Hi,
@@ -474,7 +474,7 @@ public class PromptEngineeringApplication {
 			}
 		}
 
-		// Simplified version - only one classification for basic testing
+		// 简化版本 - 基础测试仅做一次分类
 		EmailClassification output = chatClient.prompt()
 			.user(u -> u.text("""
 					Email: {email}
@@ -489,7 +489,7 @@ public class PromptEngineeringApplication {
 		System.out.println("The email is " + output.classification() + ".");
 	}
 
-	// 2.6 Self-consistency (full version)
+	// 2.6 自洽性（完整版本）
 	public void pt_self_consistency(ChatClient chatClient) {
 
 		String email = """
@@ -552,10 +552,10 @@ public class PromptEngineeringApplication {
 
 	}
 
-	// 2.7 Tree of Thoughts (ToT)
-	// Implementation of Section 2.7: Tree of Thoughts (ToT) - Game solving example
+	// 2.7 思维树（ToT）
+	// 第 2.7 节实现：思维树（ToT）- 游戏求解示例
 	public void pt_tree_of_thoughts_game(ChatClient chatClient) {
-		// Step 1: Generate multiple initial moves
+		// 步骤 1：生成多个初始走法
 		String initialMoves = chatClient.prompt("""
 				You are playing a game of chess. The board is in the starting position.
 				Generate 3 different possible opening moves. For each move:
@@ -566,7 +566,7 @@ public class PromptEngineeringApplication {
 
 		System.out.println("Initial Moves: " + initialMoves + "\n");
 
-		// Step 2: Evaluate and select the most promising move
+		// 步骤 2：评估并选出最有希望的走法
 		String bestMove = chatClient.prompt().user(u -> u.text("""
 				Analyze these opening moves and select the strongest one:
 				{moves}
@@ -581,7 +581,7 @@ public class PromptEngineeringApplication {
 
 		System.out.println("Best Move: " + bestMove + "\n");
 
-		// Step 3: Explore future game states from the best move
+		// 步骤 3：从最佳走法出发探索未来的对局状态
 		String gameProjection = chatClient.prompt().user(u -> u.text("""
 				Based on this selected opening move:
 				{best_move}
@@ -597,11 +597,11 @@ public class PromptEngineeringApplication {
 		System.out.println("Game Projection: " + gameProjection + "\n");
 	}
 
-	// Implementation of Section 2.7: Tree of Thoughts (ToT) - Problem solving
+	// 第 2.7 节实现：思维树（ToT）- 问题求解
 	public void pt_tree_of_thoughts_problem(ChatClient chatClient) {
 		String problem = "Design a system to recommend movies to users based on their viewing history.";
 
-		// Step 1: Generate multiple solution approaches
+		// 步骤 1：生成多种解决方案思路
 		String approaches = chatClient.prompt().user(u -> u.text("""
 				Problem: {problem}
 
@@ -618,7 +618,7 @@ public class PromptEngineeringApplication {
 
 		System.out.println("Approaches: " + approaches + "\n");
 
-		// Step 2: Evaluate approaches and select the most promising
+		// 步骤 2：评估各方案并选出最有希望的
 		String bestApproach = chatClient.prompt().user(u -> u.text("""
 				Evaluate these solution approaches:
 				{approaches}
@@ -634,7 +634,7 @@ public class PromptEngineeringApplication {
 
 		System.out.println("Best Approach: " + bestApproach + "\n");
 
-		// Step 3: Refine and elaborate on the selected approach
+		// 步骤 3：细化并展开所选方案
 		String refinedSolution = chatClient.prompt().user(u -> u.text("""
 				Based on the selected approach:
 				{best_approach}
@@ -650,7 +650,7 @@ public class PromptEngineeringApplication {
 
 		System.out.println("Refined Solution: " + refinedSolution + "\n");
 	}
-	// 2.8 Automatic Prompt Engineering
+	// 2.8 自动提示词工程
 
 	public void pt_automatic_prompt_engineering(ChatClient chatClient) {
 
@@ -680,10 +680,10 @@ public class PromptEngineeringApplication {
 
 	}
 
-	// 2.9.1 Prompts for writing code
+	// 2.9.1 用于编写代码的提示
 	public void pt_code_prompting_writing_code(ChatClient chatClient) {
 
-		// Goal: Write a prompt to write code in Bash to rename files in a folder.
+		// 目标：编写一个提示，用 Bash 重命名文件夹中的文件。
 
 		String output = chatClient.prompt("""
 				Write a code snippet in Bash, which asks for a folder name.
@@ -695,10 +695,10 @@ public class PromptEngineeringApplication {
 
 	}
 
-	// 2.9.2 Prompts for explaining code
+	// 2.9.2 用于解释代码的提示
 	public void pt_code_prompting_explaining_code(ChatClient chatClient) {
 
-		// Goal: Write a prompt to explain Bash code.
+		// 目标：编写一个用于解释 Bash 代码的提示。
 
 		String code = """
 				#!/bin/bash
@@ -731,10 +731,10 @@ public class PromptEngineeringApplication {
 
 	}
 
-	// 2.9.3 Prompts for translating code
+	// 2.9.3 用于翻译代码的提示
 	public void pt_code_prompting_translating_code(ChatClient chatClient) {
 
-		// Goal: Write a prompt to translate Bash code to Python
+		// 目标：编写一个把 Bash 代码翻译为 Python 的提示
 
 		String bashCode = """
 				```bash

@@ -50,7 +50,7 @@ public class McpClientApplication {
 			for (McpSyncClient mcpClient : mcpClients) {
 				System.out.println(">>> MCP Client: " + mcpClient.getClientInfo());
 
-				// Call a tool that sends progress notifications
+				// 调用一个会发送进度通知的工具
 				CallToolRequest toolRequest = CallToolRequest.builder("tool1")
 					.arguments(Map.of("input", "test input"))
 					.progressToken(666)

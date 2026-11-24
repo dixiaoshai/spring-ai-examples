@@ -41,13 +41,13 @@ import org.springframework.util.Assert;
 
 /**
  * 
- * An Recursive Advisor that evaluates the LLM responses (e.g. Point-wise
- * Scoring ) based on a predefined evaluation criteria. If the evaluation rating
- * is below a certain threshold, it retries the request by providing feedback to
- * the model on how to improve the response. The evaluation is performed by an
- * inner ChatClient instance, which can be customized with different models and
- * settings. The advisor supports a maximum number of retry attempts to avoid
- * infinite loops.
+ * 一个递归顾问，用于评估 LLM 响应（例如
+ * 逐点打分），依据预定义的评估标准。如果评估评分
+ * 低于某个阈值，则通过向模型提供如何改进响应的
+ * 反馈来重试请求。评估由一个内部的 ChatClient
+ * 实例执行，该实例可以使用不同的模型和设置
+ * 进行自定义。该顾问支持设置最大重试次数，
+ * 以避免无限循环。
  * 
  * @author Christian Tzolov
  */
@@ -134,55 +134,55 @@ public final class SelfRefineEvaluationAdvisor implements CallAdvisor, StreamAdv
 
 		ChatClientResponse response;
 
-		// Improved loop structure with better attempt counting and clearer logic
+		// 改进的循环结构，具有更好的尝试计数和更清晰的逻辑
 		for (int attempt = 1; attempt <= maxRepeatAttempts + 1; attempt++) {
 
-			// Make the inner call (e.g., to the evaluation LLM model)
+			// 发起内部调用（例如调用评估 LLM 模型）
 			response = callAdvisorChain.copy(this).nextCall(request);
 
-			// Early exit - no evaluation needed (e.g., tool call)
+			// 提前退出——无需评估（例如工具调用）
 			if (this.skipEvaluationPredicate.test(chatClientRequest, response)) {
 				logger.debug("Skipping evaluation because skipEvaluationPredicate returned true.");
 				return response;
 			}
 
-			// Perform evaluation
+			// 执行评估
 			EvaluationResponse evaluation = this.evaluate(chatClientRequest, response);
 
-			// If evaluation passes, return the response
+			// 如果评估通过，则返回响应
 			if (evaluation.rating() >= this.successRating) {
 				logger.info("Evaluation passed on attempt {}, evaluation: {}", attempt, evaluation);
 				return response;
 			}
 
-			// If this is the last attempt, return the response regardless
+			// 如果这是最后一次尝试，则无论如何都返回响应
 			if (attempt > maxRepeatAttempts) {
 				logger.warn(
 						"Maximum attempts ({}) reached. Returning last response despite failed evaluation. Use the following feedback to improve: {}",
 						maxRepeatAttempts, evaluation.feedback());
 
-				// TODO : Perhaps we should throw an exception here instead of returning the
-				// last response? A pluggable strategy could be useful.
+				// TODO：也许这里应抛出异常，而不是返回
+				// 最后一次响应？可插拔策略可能会很有用。
 				return response;
 			}
 
-			// Retry with evaluation feedback
+			// 带上评估反馈进行重试
 			logger.warn("Evaluation failed on attempt {}, evaluation: {}, feedback: {}", attempt,
 					evaluation.evaluation(), evaluation.feedback());
 
-			// TODO: We could consider a pluggable backoff strategy here (e.g., exponential
-			// backoff).
-			// It would allow to either refine/repeat strategy or return the response with
-			// evaluation feedback as metadata.
+			// TODO：这里可以考虑可插拔的退避策略（例如指数
+			// 退避）。
+			// 这样可以采用精炼/重复策略，或返回带有
+			// 评估反馈作为元数据的响应。
 			request = this.addEvaluationFeedback(chatClientRequest, evaluation);
 		}
 
-		// This should never be reached due to the loop logic above
+		// 由于上面的循环逻辑，此处理应不会到达
 		throw new IllegalStateException("Unexpected loop exit in adviseCall");
 	}
 
 	/**
-	 * Performs the evaluation using the LLM-as-a-Judge and returns the result.
+	 * 使用 LLM-as-a-Judge 执行评估并返回结果。
 	 */
 	private EvaluationResponse evaluate(ChatClientRequest request, ChatClientResponse response) {
 
@@ -212,7 +212,7 @@ public final class SelfRefineEvaluationAdvisor implements CallAdvisor, StreamAdv
 	}
 
 	/**
-	 * Creates a new request with evaluation feedback for retry.
+	 * 创建带有评估反馈的新请求以进行重试。
 	 */
 	private ChatClientRequest addEvaluationFeedback(ChatClientRequest originalRequest,
 			EvaluationResponse evaluationResponse) {
@@ -235,14 +235,14 @@ public final class SelfRefineEvaluationAdvisor implements CallAdvisor, StreamAdv
 	}
 
 	/**
-	 * Creates a new Builder for EvaluationAdvisor_Improved.
+	 * 为 EvaluationAdvisor_Improved 创建一个新的 Builder。
 	 */
 	public static Builder builder() {
 		return new Builder();
 	}
 
 	/**
-	 * Builder class for EvaluationAdvisor_Improved.
+	 * EvaluationAdvisor_Improved 的 Builder 类。
 	 */
 	public final static class Builder {
 		private int successRating = 3;

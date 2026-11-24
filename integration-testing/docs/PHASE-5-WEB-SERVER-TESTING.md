@@ -1,32 +1,32 @@
-# Phase 5: Web Server Testing Infrastructure
+# 第 5 阶段：Web 服务器测试基础设施
 
-**Date**: December 2024  
-**Status**: ✅ COMPLETED  
-**Impact**: Enabled testing of streaming web servers and SSE endpoints
+**日期**：2024 年 12 月  
+**状态**：✅ 已完成  
+**影响**：实现了对流式 Web 服务器与 SSE 端点的测试支持
 
-## Overview
+## 概览
 
-Successfully implemented infrastructure for testing Spring Boot web servers that don't naturally exit, including streaming response servers and MCP servers with SSE transports.
+成功实现了用于测试不会自然退出的 Spring Boot Web 服务器的基础设施，涵盖流式响应服务器以及使用 SSE 传输的 MCP 服务器。
 
-## Problem Solved
+## 解决的问题
 
-Several Spring AI examples are web servers that expose HTTP endpoints rather than batch applications. These servers violated the original testing assumption that applications would:
-1. Start up
-2. Perform some work  
-3. Exit with a status code
+部分 Spring AI 示例是暴露 HTTP 端点的 Web 服务器，而不是批处理应用。这些服务器违背了原有的测试假设，即应用会：
+1. 启动
+2. 执行一些工作  
+3. 以状态码退出
 
-Web servers start and run indefinitely, waiting for HTTP requests, which caused timeouts in the original framework.
+Web 服务器启动后会持续运行，等待 HTTP 请求，这在原框架中导致了超时。
 
-## Solution Implemented
+## 已实现的解决方案
 
 ### 1. WebServerTestUtils.java
 
-Created centralized utility for web server testing with:
-- Background process management
-- HTTP client for endpoint testing
-- SSE (Server-Sent Events) support
-- Graceful shutdown handling
-- Local log directory management
+创建了用于 Web 服务器测试的集中式工具类，包含：
+- 后台进程管理
+- 用于端点测试的 HTTP 客户端
+- SSE（Server-Sent Events）支持
+- 优雅关闭处理
+- 本地日志目录管理
 
 ```java
 public static void runWebServerTest(String moduleName, WebServerConfig config) {
@@ -46,9 +46,9 @@ public static void runWebServerTest(String moduleName, WebServerConfig config) {
 }
 ```
 
-### 2. Test Configuration Structure
+### 2. 测试配置结构
 
-Extended ExampleInfo.json with web server configuration:
+扩展 ExampleInfo.json，增加 Web 服务器配置：
 
 ```json
 {
@@ -69,62 +69,62 @@ Extended ExampleInfo.json with web server configuration:
 }
 ```
 
-## Examples Successfully Tested
+## 已成功测试的示例
 
 ### 1. openai-streaming-response
-- **Type**: Streaming AI response server
-- **Endpoint**: `/ai/generateStream`
-- **Challenge**: SSE stream doesn't close naturally
-- **Solution**: HTTP client with SSE headers and pattern matching
+- **类型**：流式 AI 响应服务器
+- **端点**：`/ai/generateStream`
+- **挑战**：SSE 流不会自然关闭
+- **方案**：带 SSE 请求头与模式匹配的 HTTP 客户端
 
 ### 2. weather/starter-webmvc-server
-- **Type**: MCP server with SSE transport
-- **Endpoint**: `/mcp/message`
-- **Challenge**: MCP protocol over SSE
-- **Solution**: Proper SSE request handling
+- **类型**：使用 SSE 传输的 MCP 服务器
+- **端点**：`/mcp/message`
+- **挑战**：基于 SSE 的 MCP 协议
+- **方案**：正确处理 SSE 请求
 
-## CI Integration
+## CI 集成
 
-Created separate workflow for web server tests:
+为 Web 服务器测试创建了独立工作流：
 - `.github/workflows/web-server-tests.yml`
-- Manual trigger with Spring AI version selection
-- Isolated testing for web servers
-- Background process management in CI environment
+- 手动触发，可选择 Spring AI 版本
+- 对 Web 服务器进行隔离测试
+- CI 环境中的后台进程管理
 
-## Key Achievements
+## 关键成果
 
-1. **Background Process Management**: Servers run in background with proper lifecycle management
-2. **HTTP Testing**: Full HTTP client implementation for endpoint validation
-3. **SSE Support**: Proper handling of Server-Sent Events streams
-4. **Log Capture**: Server logs captured to local directory for debugging
-5. **Graceful Shutdown**: Clean termination with SIGTERM/SIGKILL fallback
-6. **CI Ready**: Workflow ready for GitHub Actions integration
+1. **后台进程管理**：服务器在后台运行，并具备完善的生命周期管理
+2. **HTTP 测试**：完整的 HTTP 客户端实现，用于端点校验
+3. **SSE 支持**：正确处理 Server-Sent Events 流
+4. **日志捕获**：服务器日志捕获到本地目录以便调试
+5. **优雅关闭**：干净终止，并提供 SIGTERM/SIGKILL 兜底
+6. **CI 就绪**：工作流可接入 GitHub Actions
 
-## Fixed Issues
+## 修复的问题
 
-### prompt-engineering-patterns Timeout
-- **Problem**: Complex example making multiple AI API calls
-- **Solution**: Increased timeout from 120s to 300s
-- **Result**: Test now passes successfully
+### prompt-engineering-patterns 超时
+- **问题**：复杂示例会发起多次 AI API 调用
+- **方案**：将超时时间从 120 秒增加到 300 秒
+- **结果**：测试现在可以成功通过
 
-## Metrics
+## 指标
 
-- **Tests Added**: 2 web server tests
-- **Coverage Increase**: From 71% to 75% (18/24 tests passing)
-- **Code Reuse**: WebServerTestUtils shared across all web server tests
-- **Lines of Code**: ~200 lines for complete infrastructure
+- **新增测试**：2 个 Web 服务器测试
+- **覆盖率提升**：从 71% 提升到 75%（24 个测试中 18 个通过）
+- **代码复用**：WebServerTestUtils 在所有 Web 服务器测试中共享
+- **代码行数**：完整基础设施约 200 行
 
-## Future Enhancements
+## 未来增强
 
-1. **Health Check Endpoints**: Add actuator endpoints to servers for better readiness detection
-2. **Multiple Port Support**: Handle servers on different ports
-3. **WebSocket Support**: Extend to WebSocket-based servers
-4. **Load Testing**: Add performance testing capabilities
-5. **Client-Server Orchestration**: Test MCP client-server pairs together
+1. **健康检查端点**：为服务器添加 actuator 端点，以便更好地检测就绪状态
+2. **多端口支持**：支持运行在不同端口上的服务器
+3. **WebSocket 支持**：扩展到基于 WebSocket 的服务器
+4. **负载测试**：增加性能测试能力
+5. **客户端—服务器编排**：同时测试 MCP 客户端—服务器配对
 
-## Technical Details
+## 技术细节
 
-### Process Management
+### 进程管理
 ```java
 // Start server with log redirection
 ProcessBuilder pb = new ProcessBuilder("./mvnw", "spring-boot:run", "-q");
@@ -138,7 +138,7 @@ if (!terminated) {
 }
 ```
 
-### HTTP Client Configuration
+### HTTP 客户端配置
 ```java
 HttpClient httpClient = HttpClient.newBuilder()
     .connectTimeout(Duration.ofSeconds(5))
@@ -151,27 +151,27 @@ HttpRequest request = HttpRequest.newBuilder()
     .build();
 ```
 
-## Lessons Learned
+## 经验教训
 
-1. **SSE Complexity**: SSE streams require special handling as they don't close naturally
-2. **Process Lifecycle**: Proper process management crucial for CI environments
-3. **Log Management**: Local log directories better than complex path resolution
-4. **Timeout Tuning**: Different examples need different timeout values
-5. **Health Checks**: Optional health checks provide flexibility
+1. **SSE 的复杂性**：SSE 流不会自然关闭，需要特殊处理
+2. **进程生命周期**：在 CI 环境中，完善的进程管理至关重要
+3. **日志管理**：本地日志目录优于复杂的路径解析
+4. **超时调优**：不同示例需要不同的超时值
+5. **健康检查**：可选的健康检查提供了灵活性
 
-## Files Created/Modified
+## 创建/修改的文件
 
-### New Files
+### 新增文件
 - `integration-testing/jbang-lib/WebServerTestUtils.java`
 - `misc/openai-streaming-response/integration-tests/RunOpenaiStreamingResponseWebServer.java`
 - `model-context-protocol/weather/starter-webmvc-server/integration-tests/RunWeatherStarterWebmvcServerWebServer.java`
 - `.github/workflows/web-server-tests.yml`
 
-### Modified Files
+### 修改的文件
 - `misc/openai-streaming-response/integration-tests/ExampleInfo.json`
 - `model-context-protocol/weather/starter-webmvc-server/integration-tests/ExampleInfo.json`
 - `prompt-engineering/prompt-engineering-patterns/integration-tests/ExampleInfo.json`
 
-## Conclusion
+## 结论
 
-Phase 5 successfully extends the integration testing framework to handle web servers, streaming responses, and SSE endpoints. This infrastructure provides a foundation for testing more complex distributed systems and client-server architectures in future phases.
+第 5 阶段成功扩展了集成测试框架，使其能够处理 Web 服务器、流式响应与 SSE 端点。该基础设施为将来测试更复杂的分布式系统与客户端—服务器架构奠定了基础。

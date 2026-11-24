@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 // ------------------------------------------------------------
-// ORCHESTRATOR WORKERS
+// 编排器—工作者
 // ------------------------------------------------------------
 
 @SpringBootApplication

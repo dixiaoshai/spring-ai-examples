@@ -1,70 +1,70 @@
-# Tickets client, 2026-07-28, on the Spring AI starter, asynchronous
+# 工单客户端，2026-07-28，基于 Spring AI starter，异步
 
-[modern-client-from-legacy](../modern-client-from-legacy/) with the asynchronous client type, `spring.ai.mcp.client.type=ASYNC`.
-The connection, the listen stream and the tool filter are configured the same way.
-What changes is how the caller reaches the server, and that the handler methods return a `Mono`.
-Works against every modern server of this set.
+[modern-client-from-legacy](../modern-client-from-legacy/) 采用异步客户端类型，即 `spring.ai.mcp.client.type=ASYNC`。
+连接、监听流和工具过滤器都以相同方式配置。
+变化的是调用者如何到达服务器，以及处理器方法返回 `Mono`。
+适用于本集合中的每个 modern 服务器。
 
-The tools of the connection arrive as `ToolCallback`s from the `AsyncMcpToolCallbackProvider` bean, the same bean that serves legacy asynchronous clients.
-An application with a model registers it with `ChatClient.builder(chatModel).defaultToolCallbacks(provider)`; this sample has no model and calls the callbacks itself.
-`WireLog` prints every request the connection sends, as `[http] <method>` lines, and `ListenLog` prints what the listen stream reports, as `[listen]` lines.
+连接的工具以 `ToolCallback` 的形式从 `AsyncMcpToolCallbackProvider` Bean 到达，该 Bean 与为旧版异步客户端提供服务的是同一个。
+带有模型的应用通过 `ChatClient.builder(chatModel).defaultToolCallbacks(provider)` 注册它；本示例没有模型，因此自己调用这些回调。
+`WireLog` 以 `[http] <method>` 行打印连接发送的每个请求，`ListenLog` 以 `[listen]` 行打印监听流报告的内容。
 
-`AsyncTicketsClientApplication` runs a common walk and then the scenarios that the server allows:
+`AsyncTicketsClientApplication` 会先执行一遍通用流程，然后执行服务器允许的场景：
 
-* **Every server** - resolve the tool callbacks (`tickets_open_ticket`, named `<connection>_<tool>`), call one, and resolve them again to see whether the server was asked again. The asynchronous SDK client of the connection then sends `server/discover`, a resource read, the prompt and the completions as one reactive pipeline, at the same time.
-* **Every server** - resolve the tool callbacks on a thread that may not block, `Schedulers.parallel()`, which fails at once with a message that says what to do, and then on `Schedulers.boundedElastic()`, which works.
-* **modern-server-from-streamable** and **modern-server-async** - `tickets_delete_ticket`, whose elicitation and progress reach the reactive `@McpElicitation` and `@McpProgress` methods of `ClientHandlers`, and a runtime tool addition that the listen stream reports to the reactive `@McpToolListChanged` method.
-* **modern-server-repositories** - the tool callbacks resolved for a caller with the `admin` role and for one without. The caller provider bean reads the role when the tools are resolved, `roleHeader` sends it as `X-Role`, and the admin callbacks still call as admin after the role has left the thread.
+* **每个服务器** - 解析工具回调（`tickets_open_ticket`，命名为 `<connection>_<tool>`），调用其中一个，然后再次解析以查看服务器是否被再次询问。连接的异步 SDK 客户端随后以一条响应式管线同时发送 `server/discover`、一次资源读取、提示词以及各项补全。
+* **每个服务器** - 在可能阻塞的线程 `Schedulers.parallel()` 上解析工具回调，这会立即失败并给出说明该如何做的消息；然后在 `Schedulers.boundedElastic()` 上解析，可以正常工作。
+* **modern-server-from-streamable** 和 **modern-server-async** - `tickets_delete_ticket`，其引导和进度会到达响应式的 `@McpElicitation` 和 `@McpProgress` 方法（`ClientHandlers` 的）；另有一个运行时工具添加，监听流会将其报告给响应式的 `@McpToolListChanged` 方法。
+* **modern-server-repositories** - 分别为具有 `admin` 角色和不具有该角色的调用者解析工具回调。调用者提供者 Bean 在解析工具时读取角色，`roleHeader` 将其作为 `X-Role` 发送，管理员回调在角色离开线程后仍然以管理员身份调用。
 
-The classes of the sample:
+示例中的类：
 
-* **`ClientHandlers`** - the methods of the legacy client, still on the legacy schema types, but each returns a `Mono`. With the asynchronous client type only reactive methods are called, and a synchronous method that names a connection is reported with a warning at startup. A connection has one `@McpElicitation` method with this type.
-* **`ModernClientConfiguration`** - an `AsyncModernMcpTransportContextProvider` that supplies the caller of each request, a `McpHttpRequestCustomizer` that adds the header, the tool filter, and an `AsyncModernMcpClientScope` that keeps one client for each role.
-* **`ListenLog`** - an `AsyncModernMcpChangeListener` bean, which hears what the listen stream reports next to the tool callback provider and the annotated methods. Its methods return a `Mono`, and the next listener is told when it completes.
+* **`ClientHandlers`** - 旧版客户端的各个方法，仍然使用旧版 schema 类型，但每个方法都返回 `Mono`。使用异步客户端类型时只会调用响应式方法，而一个指定了连接的同步方法会在启动时被报告为警告。一个连接只能有一个此类型的 `@McpElicitation` 方法。
+* **`ModernClientConfiguration`** - 一个 `AsyncModernMcpTransportContextProvider`，为每个请求提供调用者；一个添加请求头的 `McpHttpRequestCustomizer`；工具过滤器；以及一个为每个角色保留一个客户端的 `AsyncModernMcpClientScope`。
+* **`ListenLog`** - 一个 `AsyncModernMcpChangeListener` Bean，它会监听监听流在工具回调提供者和注解方法之外报告的内容。它的方法返回 `Mono`，并在完成时通知下一个监听器。
 
-## What changes from the synchronous client
+## 与同步客户端相比有哪些变化
 
-| Synchronous client type | Asynchronous client type |
+| 同步客户端类型 | 异步客户端类型 |
 |---|---|
 | `SyncMcpToolCallbackProvider` | `AsyncMcpToolCallbackProvider` |
-| `McpClientCustomizer<McpClient.SyncBuilder>` that binds the caller to each client | `AsyncModernMcpTransportContextProvider` bean, asked when the tools are resolved |
+| 将调用者绑定到每个客户端的 `McpClientCustomizer<McpClient.SyncBuilder>` | 在解析工具时被询问的 `AsyncModernMcpTransportContextProvider` Bean |
 | `SyncModernMcpClientScope` | `AsyncModernMcpClientScope` |
 | `SyncModernMcpChangeListener` | `AsyncModernMcpChangeListener` |
-| Handler methods return their result, or `void` | Handler methods return `Mono<...>`, or `Mono<Void>` |
+| 处理器方法返回其结果或 `void` | 处理器方法返回 `Mono<...>` 或 `Mono<Void>` |
 
-`McpModernToolFilter`, `McpModernToolNamePrefixGenerator` and the `McpHttpRequestCustomizer` beans serve both types.
+`McpModernToolFilter`、`McpModernToolNamePrefixGenerator` 和 `McpHttpRequestCustomizer` Bean 对两种类型都适用。
 
-## The caller of a request
+## 请求的调用者
 
-An asynchronous client holds no caller, so the `AsyncModernMcpTransportContextProvider` bean supplies it.
-It is asked each time the tools are resolved, on the thread that resolves them, which a `ChatClient` does once for each request.
-The tool listing goes out for that caller, and the tool callbacks keep it, so a tool call that runs later, or on the thread of a streaming response, is still made for that caller.
+异步客户端不持有调用者，因此由 `AsyncModernMcpTransportContextProvider` Bean 提供。
+每次解析工具时都会在解析它们的线程上询问它，而 `ChatClient` 会在每个请求时询问一次。
+工具列表会按该调用者列出，工具回调会保留它，因此之后运行的调用，或在流式响应线程上运行的调用，仍然以该调用者的身份发出。
 
-The bean is the only source of the caller.
-A `McpTransportContext` in the Reactor context of the chat call is not used, because it may belong to someone else, such as the request that an MCP server of the same application is serving.
+该 Bean 是调用者的唯一来源。
+聊天调用 Reactor 上下文中的 `McpTransportContext` 不会被使用，因为它可能属于其他人，例如同一应用的某个 MCP 服务器正在服务的请求。
 
-## Blocking calls
+## 阻塞调用
 
-The tool callback contract is blocking with either client type: resolving the tools lists them from the server, and a tool call waits for the result.
-A reactive application must therefore start its chat call on a thread that may block:
+无论哪种客户端类型，工具回调约定都是阻塞式的：解析工具会从服务器列出工具，而工具调用会等待结果。
+因此，响应式应用必须在可能阻塞的线程上发起其聊天调用：
 
 ```java
 Flux<String> answer = Flux.defer(() -> chatClient.prompt(question).stream().content())
     .subscribeOn(Schedulers.boundedElastic());
 ```
 
-On a non-blocking thread, such as an event loop of WebFlux, resolving the tools fails at once with an `IllegalStateException`, and nothing is sent.
+在非阻塞线程上（例如 WebFlux 的事件循环），解析工具会立即失败并抛出 `IllegalStateException`，且不会发送任何内容。
 
-## The listen stream
+## 监听流
 
-`spring.ai.mcp.client.streamable-http.connections.tickets.listen=true` keeps a listen stream open to the server, as in the synchronous sample.
-The stream is opened when the application starts, in the background, for the application and not for a caller: the caller provider bean is not asked, and the request carries no `X-Role` header.
-A reported tool change drops a kept tool listing at once and calls the reactive `@McpToolListChanged` methods with the tools as the application sees them.
-The reports of a connection are told in the order they arrive, so a listener or a method whose `Mono` never completes holds up the later ones: give a call that may hang a timeout.
+`spring.ai.mcp.client.streamable-http.connections.tickets.listen=true` 会与服务器保持一条监听流打开，与同步示例中一样。
+该流在应用启动时于后台打开，面向应用而不是某个调用者：不会询问调用者提供者 Bean，请求也不携带 `X-Role` 请求头。
+当服务器报告工具变更时，已保留的工具列表会立即被丢弃，并以应用所见的工具调用响应式的 `@McpToolListChanged` 方法。
+一个连接的报告会按到达顺序处理，因此某个监听器或方法的 `Mono` 若永不完成，会阻塞后面的报告：请为可能挂起的调用设置超时。
 
-## Things to try
+## 可以尝试的事情
 
-* **A legacy and a modern server together.** Run a legacy server on port 8081, a modern server on 8080, and the client with the `mixed` profile, which adds a connection without the `protocol` property. With `type=ASYNC` the legacy connection gets the legacy asynchronous client, one provider returns `open_ticket` of the legacy server and `tickets_open_ticket` of the modern one, and the methods of `ClientHandlers` serve both connections.
+* **同时运行旧版服务器和 modern 服务器。** 在 8081 端口运行旧版服务器，在 8080 端口运行 modern 服务器，并用 `mixed` profile 启动客户端，该 profile 会添加一个不带 `protocol` 属性的连接。使用 `type=ASYNC` 时，旧版连接获得旧版异步客户端，一个提供者同时返回旧版服务器的 `open_ticket` 和 modern 服务器的 `tickets_open_ticket`，而 `ClientHandlers` 的方法同时服务于两个连接。
 
   ```bash
   (cd ../stateless-server             && ./mvnw spring-boot:run -Dspring-boot.run.arguments=--server.port=8081)
@@ -72,8 +72,8 @@ The reports of a connection are told in the order they arrive, so a listener or 
   ./mvnw spring-boot:run -Dspring-boot.run.profiles=mixed
   ```
 
-* **An unreachable modern server.** Run the `mixed` profile with only the legacy server up. The listen stream and the provider each log a warning, the `tickets_*` tools are left out, and the server is not asked for its tools again for the `unreachable-cool-down` time; the legacy tools stay usable.
-* **A client for each role.** Set `spring.ai.mcp.client.streamable-http.connections.tickets.client-scope=CUSTOM` in `application.properties`. The `AsyncModernMcpClientScope` bean keeps one client for each role, and each client keeps the private listing of its role: the second resolution sends nothing, and against `modern-server-repositories` the admin still gets the admin tools.
-* **A shared client.** Set `client-scope=SHARED` instead. A warning is logged at startup, because a shared client keeps a private tool listing for every caller, whoever the caller provider bean returns. Against `modern-server-repositories` the admin tools no longer appear: the listing kept from the first request, which had no role, serves the admin as well.
+* **无法访问的 modern 服务器。** 只在旧版服务器运行的情况下启动 `mixed` profile。监听流和提供者各记录一条警告，`tickets_*` 工具被排除，并且在 `unreachable-cool-down` 时间内不会再次向该服务器请求其工具；旧版工具仍然可用。
+* **每个角色一个客户端。** 设置 `spring.ai.mcp.client.streamable-http.connections.tickets.client-scope=CUSTOM`（在 `application.properties` 中）。`AsyncModernMcpClientScope` Bean 为每个角色保留一个客户端，每个客户端保留其角色的私有列表：第二次解析不会发送任何内容，并且针对 `modern-server-repositories` 时管理员仍然能获得管理员工具。
+* **共享客户端。** 改为设置 `client-scope=SHARED`。启动时会记录一条警告，因为共享客户端会为每个调用者保留私有工具列表，无论调用者提供者 Bean 返回什么。针对 `modern-server-repositories` 时，管理员工具不再出现：从第一个请求（没有角色）保留的列表也会为管理员使用。
 
-Part of [modern-migration](../README.md). Run with `./mvnw spring-boot:run` while one of the modern servers is running.
+属于 [modern-migration](../README.md)。在某个 modern 服务器运行时用 `./mvnw spring-boot:run` 运行。

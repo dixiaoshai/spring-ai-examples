@@ -17,24 +17,22 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * What a modern connection needs next to the annotated handlers of {@link ClientHandlers}:
- * the caller of each request, the header that carries it, the tools to hide, and a scope
- * that keeps a client for each role.
+ * modern 连接在 {@link ClientHandlers} 的注解处理器之外还需要的内容：每个请求的调用者、
+ * 携带调用者的请求头、要隐藏的工具，以及为每个角色保留一个客户端的 scope。
  */
 @Configuration(proxyBeanMethods = false)
 class ModernClientConfiguration {
 
-	/** The key of the caller's role in the transport context. */
+	/** 调用者角色在传输上下文中的键。 */
 	static final String ROLE = "role";
 
 	private static final Logger logger = LoggerFactory.getLogger(ModernClientConfiguration.class);
 
 	/**
-	 * Customizes each modern client. With the default {@code PER_REQUEST} client scope a
-	 * client is created each time the tools are resolved, on the thread that resolves them,
-	 * so the caller is read here once and bound to the client. A tool call that runs later,
-	 * or on another thread, is still made for that caller. The client of the listen stream
-	 * is built at startup, outside of any request, so it has no caller.
+	 * 定制每个 modern 客户端。使用默认的 {@code PER_REQUEST} 客户端 scope 时，每次解析工具
+	 * 都会在解析它们的线程上创建一个客户端，因此调用者在这里被读取一次并绑定到该客户端。
+	 * 之后或在其他线程上运行的调用仍然以该调用者的身份发出。监听流的客户端在启动时构建，
+	 * 不在任何请求内，因此它没有调用者。
 	 */
 	@Bean
 	McpClientCustomizer<McpClient.SyncBuilder> modernClientCustomizer() {
@@ -46,11 +44,10 @@ class ModernClientConfiguration {
 	}
 
 	/**
-	 * Used only when the connection sets {@code client-scope=CUSTOM}: keeps one client for
-	 * each role, so that the tool listing a server marks as private is kept for that role
-	 * for as long as the server allows. The factory builds a client as the customizer above
-	 * configures it, on the thread of the caller. One scope serves all connections, so the
-	 * key contains the name of the connection.
+	 * 仅在连接设置 {@code client-scope=CUSTOM} 时使用：为每个角色保留一个客户端，
+	 * 从而使服务器标记为私有的工具列表在该角色下保留服务器允许的时长。工厂会在调用者的
+	 * 线程上构建客户端，配置方式与上面的定制器相同。一个 scope 服务于所有连接，
+	 * 因此键中包含连接名。
 	 */
 	@Bean
 	SyncModernMcpClientScope perRoleClientScope() {
@@ -62,7 +59,7 @@ class ModernClientConfiguration {
 				});
 	}
 
-	/** Sends the role of the caller to the server, as an access token would be sent. */
+	/** 将调用者的角色发送给服务器，就像发送访问令牌那样。 */
 	@Bean
 	McpHttpRequestCustomizer roleHeader() {
 		return McpHttpRequestCustomizer.fromSync((request, headers, context) -> {
@@ -84,9 +81,8 @@ class ModernClientConfiguration {
 	}
 
 	/**
-	 * Hides the tool that needs sampling, which the modern SDK client does not support; the
-	 * server would refuse the call with {@code -32021}. The legacy {@code McpToolFilter} does
-	 * not apply to modern connections.
+	 * 隐藏需要采样的工具，modern SDK 客户端不支持采样；服务器会以 {@code -32021} 拒绝该调用。
+	 * 旧版的 {@code McpToolFilter} 不适用于 modern 连接。
 	 */
 	@Bean
 	McpModernToolFilter modernToolFilter() {

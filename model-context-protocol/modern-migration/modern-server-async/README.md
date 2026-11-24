@@ -1,15 +1,15 @@
-# Tickets server, MODERN with the asynchronous API type
+# 工单服务器，MODERN，使用异步 API 类型
 
-`spring.ai.mcp.server.protocol=MODERN` and `spring.ai.mcp.server.type=ASYNC` on the WebFlux starter: [modern-server-from-streamable](../modern-server-from-streamable/) written against the asynchronous programming model.
-The tools, resources, prompt and completion, and what the client sees, are the same; only the method signatures change.
+在 WebFlux starter 上使用 `spring.ai.mcp.server.protocol=MODERN` 和 `spring.ai.mcp.server.type=ASYNC`：[modern-server-from-streamable](../modern-server-from-streamable/) 用异步编程模型编写。
+工具、资源、提示词和补全，以及客户端看到的内容都相同；只有方法签名发生变化。
 
-* **Return types** - `TicketProvider` returns `Mono`s from most methods and a `CompletableFuture` from `count_open_tickets`; both are single values, resolved through Spring's `ReactiveAdapterRegistry`. `resolve_ticket` keeps a plain `String`, which the server runs on Reactor's `boundedElastic` scheduler, so it may block. A `Flux` is rejected at startup, because an MCP request has one result.
-* **Multi round-trip and progress** - `InteractiveTicketProvider` is the streamable migration's, with `McpModernRequestContext` (the context for both API types) and the SDK `McpAsyncNotifier`, whose `progress(...)` returns a `Mono<Void>` that `delete_ticket` composes into its result. Declaring the notifier still makes the response a short `text/event-stream`.
-* **Completions** - `TicketProvider.completeOwner` and `completeTicketId` return a `Mono<List<String>>` and are attached to the `daily-summary` prompt and the `tickets://{id}` template they name.
-* **Runtime changes** - `AdminController` adds an `McpAsyncTool` through `InMemoryAsyncToolRepository.add` (`POST /admin/tools/{name}`), which broadcasts `notifications/tools/list_changed` to `subscriptions/listen` streams.
+* **返回类型** - `TicketProvider` 在大多数方法中返回 `Mono`，以及一个 `CompletableFuture`（来自 `count_open_tickets`）；两者都是单值，通过 Spring 的 `ReactiveAdapterRegistry` 解析。`resolve_ticket` 保留普通 `String`，服务器会在 Reactor 的 `boundedElastic` 调度器上运行它，因此它可以阻塞。`Flux` 会在启动时被拒绝，因为一个 MCP 请求只有一个结果。
+* **多轮往返与进度** - `InteractiveTicketProvider` 来自 streamable 迁移版本，使用 `McpModernRequestContext`（两种 API 类型共用的上下文）和 SDK 的 `McpAsyncNotifier`，其 `progress(...)` 返回一个 `Mono<Void>`，`delete_ticket` 会将它组合进结果。声明该通知器仍然会使响应成为一段简短的 `text/event-stream`。
+* **补全** - `TicketProvider.completeOwner` 和 `completeTicketId` 返回 `Mono<List<String>>`，并附加到它们所指名的 `daily-summary` 提示词和 `tickets://{id}` 模板上。
+* **运行时变更** - `AdminController` 添加一个 `McpAsyncTool`，通过 `InMemoryAsyncToolRepository.add`（`POST /admin/tools/{name}`），它会向 `notifications/tools/list_changed` 广播到 `subscriptions/listen` 流。
 
-On WebFlux the request is served without blocking an event loop; on the WebMvc starter the same code works, and the transport waits for the result on the container thread.
+在 WebFlux 上，请求的服务过程不会阻塞事件循环；在 WebMvc starter 上同样的代码也能工作，传输会在容器线程上等待结果。
 
-Drive it with [modern-client](../modern-client/). Compare with [modern-server-from-streamable](../modern-server-from-streamable/).
+用 [modern-client](../modern-client/) 驱动它。与 [modern-server-from-streamable](../modern-server-from-streamable/) 对比。
 
-Part of [modern-migration](../README.md). Run with `./mvnw spring-boot:run`; the server listens on `http://localhost:8080`.
+属于 [modern-migration](../README.md)。用 `./mvnw spring-boot:run` 运行；服务器监听 `http://localhost:8080`。

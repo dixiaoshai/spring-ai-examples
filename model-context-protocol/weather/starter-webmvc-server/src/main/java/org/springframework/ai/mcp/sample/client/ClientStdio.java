@@ -22,9 +22,8 @@ import io.modelcontextprotocol.client.transport.StdioClientTransport;
 import io.modelcontextprotocol.json.McpJsonDefaults;
 
 /**
- * With stdio transport, the MCP server is automatically started by the client.
- * But you
- * have to build the server jar first:
+ * 使用 stdio 传输时，MCP 服务器由客户端自动启动。
+ * 但你必须先构建服务器 jar：
  *
  * <pre>
  * ./mvnw clean install -DskipTests

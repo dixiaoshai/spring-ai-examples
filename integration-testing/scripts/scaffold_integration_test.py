@@ -16,10 +16,10 @@ def get_module_info(module_path: str) -> Dict:
     module_dir = pathlib.Path(module_path)
     module_name = module_dir.name
     
-    # Convert kebab-case to PascalCase for Java class name
+    # 将 kebab-case 转换为 PascalCase，用作 Java 类名
     class_name = ''.join(word.capitalize() for word in module_name.replace('-', ' ').replace('_', ' ').split())
     
-    # Try to determine if it's a Spring Boot app
+    # 尝试判断是否为 Spring Boot 应用
     pom_path = module_dir / "pom.xml"
     has_spring_boot = False
     if pom_path.exists():
@@ -90,12 +90,12 @@ def generate_jbang_launcher(module_info: Dict, config: Dict) -> str:
     module_name = module_info['module_name']
     module_dir = module_info['module_dir']
     
-    # Calculate the relative path to integration-testing/jbang-lib/
-    # Count how many levels deep we are from the repository root
+    # 计算指向 integration-testing/jbang-lib/ 的相对路径
+    # 统计当前目录距离仓库根目录有多少层
     path_parts = module_dir.parts
     depth = len(path_parts)
     
-    # Adjust for the fact that we're writing to integration-tests subdirectory
+    # 考虑写入 integration-tests 子目录这一情况做相应调整
     relative_path = "../" * (depth + 1) + "integration-testing/jbang-lib/"
     
     return f'''///usr/bin/env jbang "$0" "$@" ; exit $?
@@ -131,7 +131,7 @@ def create_integration_test(module_path: str, complexity: str = 'simple', force:
     
     integration_dir = module_dir / "integration-tests"
     
-    # Check if integration tests already exist
+    # 检查集成测试是否已存在
     if integration_dir.exists() and not force:
         print(f"⚠️  Integration tests already exist in {integration_dir}")
         print("Use --force to overwrite existing files")
@@ -139,25 +139,25 @@ def create_integration_test(module_path: str, complexity: str = 'simple', force:
     
     integration_dir.mkdir(exist_ok=True)
     
-    # Get module information
+    # 获取模块信息
     module_info = get_module_info(module_path)
     config = get_config_template(complexity)
     
-    # Apply AI validation options
+    # 应用 AI 校验选项
     if not ai_validation:
-        # Remove AI validation section
+        # 移除 AI 校验区段
         config.pop('aiValidation', None)
     elif ai_mode:
-        # Override validation mode if specified
+        # 如指定则覆盖校验模式
         if 'aiValidation' in config:
             config['aiValidation']['validationMode'] = ai_mode
     
-    # Create ExampleInfo.json
+    # 创建 ExampleInfo.json
     config_file = integration_dir / "ExampleInfo.json"
     with config_file.open("w") as f:
         json.dump(config, f, indent=2)
     
-    # Create JBang launcher
+    # 创建 JBang 启动器
     launcher_file = integration_dir / f"Run{module_info['class_name']}.java"
     launcher_content = generate_jbang_launcher(module_info, config)
     with launcher_file.open("w") as f:
@@ -177,7 +177,7 @@ def create_integration_test(module_path: str, complexity: str = 'simple', force:
     print(f"   cd {module_path}")
     print(f"   jbang integration-tests/Run{module_info['class_name']}.java")
     
-    # Show configuration suggestions
+    # 展示配置建议
     print(f"\n💡 Configuration suggestions:")
     print("   - The JBang script uses centralized utilities (no code duplication)")
     print("   - All configuration is done through ExampleInfo.json")

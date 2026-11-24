@@ -1,59 +1,59 @@
-# Integration Testing Framework TODO
+# 集成测试框架 TODO
 
-## High Priority
-- [x] Fix parallel execution port conflicts (changed default to sequential)
-- [ ] Implement real-time test output streaming for long-running tests
-- [ ] Add progress indicators showing test execution status
-- [x] Move integration testing docs to centralized directory (integration-testing/) - no README_INTEGRATION_TESTING.md found
+## 高优先级
+- [x] 修复并行执行时的端口冲突（默认改为串行执行）
+- [ ] 为长时间运行的测试实现实时测试输出流式展示
+- [ ] 添加显示测试执行状态的进度指示器
+- [x] 将集成测试文档迁移到集中目录（integration-testing/） - 未找到 README_INTEGRATION_TESTING.md
 
-## Medium Priority  
-- [ ] Investigate future parallel execution approaches:
-  - Dynamic port assignment (server.port=0)
-  - Test categorization (web apps vs CommandLineRunner apps)
-  - Port pool management
-- [ ] Add timeout progress bars for long tests
-- [ ] Implement test output tailing/streaming
+## 中优先级
+- [ ] 调研未来并行执行的方案：
+  - 动态端口分配（server.port=0）
+  - 测试分类（Web 应用与 CommandLineRunner 应用）
+  - 端口池管理
+- [ ] 为长时间测试添加超时进度条
+- [ ] 实现测试输出 tail/流式展示
 
-## Low Priority
-- [ ] Create test execution dashboard
-- [ ] Add performance profiling for slow tests
-- [ ] Implement test result caching
+## 低优先级
+- [ ] 创建测试执行仪表盘
+- [ ] 为慢速测试添加性能剖析
+- [ ] 实现测试结果缓存
 
-## Current Status & Completed Achievements ✅
-- [x] **97% Coverage Achieved** (32/33 examples successfully tested)
-- [x] **AI Validation System** implemented and production ready
-- [x] **Interactive Application Testing** breakthrough achieved (Scanner-based apps)
-- [x] **Port Conflict Resolution** with systematic port 8080 cleanup
-- [x] **Centralized Architecture** with 84% code reduction via JBang utilities
-- [x] **Comprehensive Documentation** with troubleshooting guides and templates
+## 当前状态与已完成成果 ✅
+- [x] **已达成 97% 覆盖率**（33 个示例中成功测试 32 个）
+- [x] **AI 校验系统**已实现并达到生产可用状态
+- [x] **交互式应用测试**取得突破（基于 Scanner 的应用）
+- [x] **端口冲突解决**，系统性清理 8080 端口
+- [x] **集中式架构**，通过 JBang 工具类减少 84% 代码
+- [x] **完善文档**，包含故障排查指南与模板
 
-## Remaining Issues
-- prompt-engineering-patterns takes long to run (~2+ minutes) - acceptable for complex AI workflows  
-- Real-time progress visibility still needed for long-running tests
-- Parallel execution disabled due to port conflicts (acceptable tradeoff for reliability)
-- Web applications that don't auto-terminate (e.g., misc/openai-streaming-response) timeout in tests
-  - Need new test category for REST API applications
-  - Consider adding CommandLineRunner for demo mode vs server mode
-  - Or implement client-based testing approach
-- AI validation false negative for kotlin/kotlin-hello-world with Spring AI 1.0.1
-  - Application runs successfully but AI validation fails
-  - Need to debug why AI validation script returns exit code 1
-- MCP client/server failures need investigation:
-  - model-context-protocol/client-starter/starter-webflux-client (exit code 2)
-  - model-context-protocol/dynamic-tool-update/client (needs server running)
-  - model-context-protocol/dynamic-tool-update/server (needs client running)
-  - Consider paired execution strategy for client/server examples
+## 遗留问题
+- prompt-engineering-patterns 运行耗时较长（约 2 分钟以上） - 对复杂 AI 工作流而言可以接受  
+- 长时间运行的测试仍需实时进度可见性
+- 由于端口冲突已禁用并行执行（为可靠性做出的可接受权衡）
+- 不会自动终止的 Web 应用（例如 misc/openai-streaming-response）在测试中会超时
+  - 需要为 REST API 应用新增测试类别
+  - 考虑添加 CommandLineRunner 以区分演示模式与服务器模式
+  - 或实现基于客户端的测试方案
+- Spring AI 1.0.1 下 kotlin/kotlin-hello-world 的 AI 校验出现误判
+  - 应用运行成功，但 AI 校验失败
+  - 需要排查 AI 校验脚本为何返回退出码 1
+- MCP 客户端/服务器失败需要调查：
+  - model-context-protocol/client-starter/starter-webflux-client（退出码 2）
+  - model-context-protocol/dynamic-tool-update/client（需要服务器正在运行）
+  - model-context-protocol/dynamic-tool-update/server（需要客户端正在运行）
+  - 考虑为客户端/服务器示例采用配对执行策略
 
-## Future Enhancement Ideas
-1. **Real-time Streaming**: `--stream` flag to show live test output
-2. **Progress Indicators**: Show dots/spinner during long test execution  
-3. **Timeout Warnings**: Alert when tests approach timeout limits
-4. **Live Log Tailing**: `tail -f` style output for active tests
-5. **Test Result Dashboard**: Web UI for viewing test results and trends
-6. **Performance Benchmarking**: Track execution time trends across releases
+## 未来改进设想
+1. **实时流式输出**：使用 `--stream` 标志显示实时测试输出
+2. **进度指示器**：长时间测试执行期间显示圆点/转圈
+3. **超时预警**：测试接近超时限制时发出提醒
+4. **实时日志跟随**：为运行中的测试提供 `tail -f` 风格的输出
+5. **测试结果仪表盘**：用于查看测试结果与趋势的 Web UI
+6. **性能基准测试**：跟踪各版本间的执行时间趋势
 
-## Framework Maintenance Notes
-- **Cost**: AI validation costs ~$0.002 per test (~$6/month for 100 daily runs)
-- **Reliability**: Current ~92% success rate with documented known issues
-- **Architecture**: Production-ready with centralized JBang utilities
-- **Coverage**: Only 1 example remaining (likely requires special handling)
+## 框架维护说明
+- **成本**：AI 校验每次测试约 $0.002（每天 100 次运行约 $6/月）
+- **可靠性**：当前成功率约 92%，已知问题均有记录
+- **架构**：生产可用，采用集中式 JBang 工具类
+- **覆盖**：仅剩 1 个示例（可能需要特殊处理）

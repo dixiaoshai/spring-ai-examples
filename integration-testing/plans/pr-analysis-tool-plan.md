@@ -1,31 +1,31 @@
-# Local Tool for PR Integration Test Setup
+# 用于 PR 集成测试搭建的本地工具
 
-## Overview
-This document outlines the plan for creating a local command-line tool that maintainers can use when reviewing PRs to automatically generate integration tests for new Spring AI example contributions.
+## 概述
+本文档规划了一个本地命令行工具：维护者在审查 PR 时可用它为新贡献的 Spring AI 示例自动生成集成测试。
 
-## Problem Statement
-When contributors submit new examples to spring-ai-examples, they typically provide:
-- Core application code (src/main/java or src/main/kotlin)
-- README.md with usage instructions
-- pom.xml with dependencies
-- application.properties for configuration
-- Basic unit tests (sometimes)
+## 问题陈述
+当贡献者向 spring-ai-examples 提交新示例时，通常会提供：
+- 核心应用代码（src/main/java 或 src/main/kotlin）
+- 含使用说明的 README.md
+- 含依赖的 pom.xml
+- 用于配置的 application.properties
+- 基础单元测试（有时提供）
 
-What's missing for integration testing:
-- Integration test configuration (ExampleInfo.json)
-- JBang launcher script (Run*.java)
-- Environment variable requirements documentation
-- Success validation patterns
-- AI validation configuration
+集成测试方面尚缺的内容：
+- 集成测试配置（ExampleInfo.json）
+- JBang 启动脚本（Run*.java）
+- 环境变量需求说明
+- 成功校验模式
+- AI 校验配置
 
-## Proposed Solution: Local Maintainer Tool
+## 建议方案：本地维护者工具
 
-### Core Concept
-Create a local command-line tool that maintainers run when reviewing PRs to automatically generate integration tests for new example contributions. This tool will analyze the contributed code and generate all necessary integration test files.
+### 核心概念
+创建一个本地命令行工具，维护者在审查 PR 时运行它，即可为新贡献的示例自动生成集成测试。该工具将分析贡献的代码并生成所有必要的集成测试文件。
 
-## Tool Design: `analyze-pr-example.py`
+## 工具设计：`analyze-pr-example.py`
 
-### Usage Workflow
+### 使用流程
 ```bash
 # When reviewing a PR with a new example
 cd spring-ai-examples
@@ -41,31 +41,31 @@ python3 integration-testing/scripts/analyze-pr-example.py path/to/new-example
 # 4. Shows results to maintainer
 ```
 
-### Key Features
+### 主要功能
 
-#### 1. Auto-Detection from Existing Files
-- **README Analysis**: Extract expected behavior, usage examples, prerequisites
-- **pom.xml Parsing**: Detect dependencies, determine complexity level
-- **application.properties**: Identify required environment variables
-- **Source Code**: Find main class, detect Spring AI components used
+#### 1. 从现有文件自动检测
+- **README 解析**：提取预期行为、用法示例与前决条件
+- **pom.xml 解析**：检测依赖，判定复杂度级别
+- **application.properties**：识别必需的环境变量
+- **源代码**：查找主类，检测所使用的 Spring AI 组件
 
-#### 2. Smart Test Generation
-- Automatically determine complexity level (simple/complex/mcp)
-- Generate appropriate ExampleInfo.json configuration
-- Create JBang launcher using centralized utilities
-- Suggest AI validation mode based on example characteristics
-- Extract success patterns from README examples
+#### 2. 智能测试生成
+- 自动判定复杂度级别（simple/complex/mcp）
+- 生成合适的 ExampleInfo.json 配置
+- 使用集中式工具类创建 JBang 启动器
+- 根据示例特征推荐 AI 校验模式
+- 从 README 示例中提取成功模式
 
-#### 3. Interactive Refinement
-- Show proposed configuration to maintainer
-- Allow quick edits before finalizing
-- Option to run test immediately for validation
-- Generate commit-ready files
+#### 3. 交互式完善
+- 向维护者展示生成的配置
+- 允许在定稿前快速编辑
+- 可选择立即运行测试以进行校验
+- 生成可直接提交的文件
 
-### Implementation Details
+### 实现细节
 
-#### Phase 1: Enhanced `scaffold_integration_test.py`
-Add new capabilities to the existing scaffolding tool:
+#### 阶段 1：增强 `scaffold_integration_test.py`
+为现有的脚手架工具增加新能力：
 ```python
 --auto-detect     # Analyze existing files to determine configuration
 --from-readme     # Extract expected behavior from README
@@ -73,38 +73,38 @@ Add new capabilities to the existing scaffolding tool:
 --suggest-patterns # Generate success patterns from README examples
 ```
 
-#### Phase 2: New Analysis Module
-Create `integration-testing/scripts/example_analyzer.py`:
+#### 阶段 2：新增分析模块
+创建 `integration-testing/scripts/example_analyzer.py`：
 
-##### README Parser
-- Extract "Expected Output" or "Example Output" sections
-- Identify key functionality descriptions
-- Pull out usage examples for pattern generation
-- Find prerequisites and environment requirements
+##### README 解析器
+- 提取 “Expected Output” 或 “Example Output” 章节
+- 识别关键功能描述
+- 提取用法示例以生成模式
+- 查找前决条件与环境要求
 
-##### POM Analyzer
-- Score complexity based on dependencies:
-  - Simple: Basic Spring Boot + one Spring AI module
-  - Complex: Multiple AI modules, workflows, or agents
-  - MCP: Model Context Protocol dependencies
-- Identify Spring AI components used
-- Detect database or external service requirements
+##### POM 分析器
+- 根据依赖评估复杂度：
+  - 简单：基础 Spring Boot + 一个 Spring AI 模块
+  - 复杂：多个 AI 模块、工作流或智能体
+  - MCP：Model Context Protocol 依赖
+- 识别所使用的 Spring AI 组件
+- 检测数据库或外部服务需求
 
-##### Pattern Suggester
-- Generate regex patterns from README examples
-- Common patterns based on Spring AI component type:
-  - Chat models: Response generation patterns
-  - Embeddings: Vector operation patterns
-  - Functions: Tool calling patterns
-  - Agents: Workflow execution patterns
+##### 模式建议器
+- 从 README 示例生成正则表达式模式
+- 基于 Spring AI 组件类型的常见模式：
+  - 聊天模型：响应生成模式
+  - 嵌入：向量操作模式
+  - 函数：工具调用模式
+  - 智能体：工作流执行模式
 
-##### Environment Detector
-- Parse application.properties/yml for placeholders
-- Identify common API key patterns
-- Detect database connection requirements
-- Find service endpoint configurations
+##### 环境检测器
+- 解析 application.properties/yml 中的占位符
+- 识别常见的 API 密钥模式
+- 检测数据库连接需求
+- 查找服务端点配置
 
-### Tool Output Example
+### 工具输出示例
 ```
 🔍 Analyzing: kotlin/new-rag-example
 📄 Found README with usage examples
@@ -125,9 +125,9 @@ Create `integration-testing/scripts/example_analyzer.py`:
 🧪 Run test now? [Y/n]
 ```
 
-### Configuration Templates
+### 配置模板
 
-#### Simple Example Template
+#### 简单示例模板
 ```json
 {
   "timeoutSec": 120,
@@ -142,7 +142,7 @@ Create `integration-testing/scripts/example_analyzer.py`:
 }
 ```
 
-#### Complex Example Template
+#### 复杂示例模板
 ```json
 {
   "timeoutSec": 300,
@@ -162,59 +162,59 @@ Create `integration-testing/scripts/example_analyzer.py`:
 }
 ```
 
-## Benefits
-1. **Immediate**: Works during PR review process, no waiting for CI
-2. **Local Control**: Maintainer has full visibility and control
-3. **Iterative**: Can refine and test immediately
-4. **Simple**: One command to analyze and generate
-5. **Educational**: Shows maintainer what makes a good test
-6. **Consistent**: Ensures all examples have integration tests
+## 优势
+1. **即时**：可在 PR 审查过程中使用，无需等待 CI
+2. **本地可控**：维护者拥有完全的可见性与控制权
+3. **迭代式**：可立即调整并测试
+4. **简单**：一条命令即可完成分析与生成
+5. **有教育意义**：让维护者了解什么样的测试才算好
+6. **一致**：确保所有示例都有集成测试
 
-## Implementation Phases
+## 实施阶段
 
-### Phase 1: Core Functionality (Week 1)
-- [ ] Create example_analyzer.py module
-- [ ] Implement README parsing for behavior extraction
-- [ ] Add POM dependency analysis
-- [ ] Basic pattern suggestion from README
+### 阶段 1：核心功能（第 1 周）
+- [ ] 创建 example_analyzer.py 模块
+- [ ] 实现 README 解析以提取行为
+- [ ] 添加 POM 依赖分析
+- [ ] 基于 README 的基础模式建议
 
-### Phase 2: Enhanced Detection (Week 2)
-- [ ] Environment variable detection from properties
-- [ ] Complexity scoring algorithm
-- [ ] AI validation mode recommendation
-- [ ] Success pattern generation
+### 阶段 2：增强检测（第 2 周）
+- [ ] 从 properties 中检测环境变量
+- [ ] 复杂度评分算法
+- [ ] AI 校验模式推荐
+- [ ] 成功模式生成
 
-### Phase 3: Integration (Week 3)
-- [ ] Integrate with scaffold_integration_test.py
-- [ ] Add interactive refinement mode
-- [ ] Create analyze-pr-example.py wrapper
-- [ ] Test with recent PR examples
+### 阶段 3：集成（第 3 周）
+- [ ] 与 scaffold_integration_test.py 集成
+- [ ] 添加交互式完善模式
+- [ ] 创建 analyze-pr-example.py 封装脚本
+- [ ] 用近期 PR 示例进行测试
 
-### Phase 4: Documentation (Week 4)
-- [ ] Create maintainer workflow guide
-- [ ] Document pattern extraction logic
-- [ ] Add troubleshooting guide
-- [ ] Create video walkthrough
+### 阶段 4：文档（第 4 周）
+- [ ] 创建维护者工作流指南
+- [ ] 记录模式提取逻辑
+- [ ] 添加故障排查指南
+- [ ] 创建视频演示
 
-## Success Criteria
-- Tool can analyze 90% of new PR examples successfully
-- Generated tests pass on first run 80% of the time
-- Time to add integration test reduced from 15 minutes to 2 minutes
-- Maintainers prefer tool over manual creation
+## 成功标准
+- 工具能够成功分析 90% 的新 PR 示例
+- 生成的测试首次运行通过率达到 80%
+- 新增集成测试的耗时从 15 分钟缩短到 2 分钟
+- 维护者更倾向于使用工具而非手动创建
 
-## Future Enhancements
-- GitHub CLI integration for direct PR checkout
-- Batch processing for multiple examples
-- Learning from previous test configurations
-- Integration with PR review comments
-- Automated PR update with generated tests
+## 未来增强
+- 集成 GitHub CLI，直接检出 PR
+- 批量处理多个示例
+- 从历史测试配置中学习
+- 与 PR 审查评论集成
+- 自动更新 PR 并附带生成的测试
 
-## Notes
-- Keep JBang as primary test execution framework
-- JUnit5 framework remains as advanced maintainer tool only
-- Focus on zero-friction contributor experience
-- Maintain backward compatibility with existing tests
+## 备注
+- 继续将 JBang 作为主要的测试执行框架
+- JUnit5 框架仅作为进阶的维护者工具保留
+- 专注于零摩擦的贡献者体验
+- 保持与现有测试的向后兼容
 
 ---
 
-*This plan was created on 2025-08-08 and should be reviewed before implementation.*
+*本计划创建于 2025-08-08，实施前应重新审阅。*

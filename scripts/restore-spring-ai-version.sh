@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Restore Spring AI version from backup
-# Usage: ./scripts/restore-spring-ai-version.sh [BACKUP_DIR]
+# 从备份恢复 Spring AI 版本
+# 用法：./scripts/restore-spring-ai-version.sh [BACKUP_DIR]
 
 set -e
 
-# Get the backup directory parameter
+# 获取备份目录参数
 BACKUP_DIR="${1}"
 
 if [ -z "$BACKUP_DIR" ]; then
@@ -24,20 +24,20 @@ fi
 
 echo "Restoring Spring AI versions from: $BACKUP_DIR"
 
-# Find script directory and project root
+# 查找脚本目录和项目根目录
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-# Change to project root
+# 切换到项目根目录
 cd "${PROJECT_ROOT}"
 
-# Counter for restored files
+# 已恢复文件的计数器
 RESTORED_COUNT=0
 
-# Restore all backed up pom.xml files
+# 恢复所有已备份的 pom.xml 文件
 echo "Restoring pom.xml files..."
 while IFS= read -r backup_file; do
-    # Calculate the original path
+    # 计算原始路径
     relative_path="${backup_file#${BACKUP_DIR}/}"
     original_file="./${relative_path}"
     
@@ -55,7 +55,7 @@ echo "Summary:"
 echo "  Files restored: $RESTORED_COUNT"
 echo ""
 
-# Verify the restore
+# 校验恢复结果
 echo "Verification - checking a sample file:"
 sample_file="./misc/openai-streaming-response/pom.xml"
 if [ -f "$sample_file" ]; then

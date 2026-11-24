@@ -16,12 +16,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 /**
- * Walks the modern tickets servers. Every server gets the common walk (discover, list, call,
- * resources, prompt, the owner completion, and the ticket id completion where the server has the template); the
- * scenarios after it run only when the server offers what they need: the asynchronous tool
- * of {@code modern-server-async}, the multi round-trip tools of
- * {@code modern-server-from-streamable} and {@code modern-server-async}, and the admin tools
- * and ticket resources of {@code modern-server-repositories}.
+ * 走查各个 modern 工单服务器。每个服务器都会执行通用流程（发现、列表、调用、资源、
+ * 提示词、owner 补全，以及服务器具有模板时的工单 id 补全）；之后的场景仅在服务器提供
+ * 它们所需的内容时运行：{@code modern-server-async} 的异步工具、
+ * {@code modern-server-from-streamable} 和 {@code modern-server-async} 的多轮往返工具，
+ * 以及 {@code modern-server-repositories} 的管理员工具和工单资源。
  */
 @SpringBootApplication
 public class ModernTicketsClientApplication {
@@ -52,7 +51,7 @@ public class ModernTicketsClientApplication {
 		};
 	}
 
-	/** What every modern server answers, whatever it was migrated from. */
+	/** 每个 modern 服务器都会应答的内容，无论它从哪种服务器迁移而来。 */
 	private static List<String> common(ModernMcpDriver mcp) throws Exception {
 		System.out.println(">>> server/discover -> " + mcp.discover());
 		Map<String, Object> tools = mcp.listTools();
@@ -75,13 +74,13 @@ public class ModernTicketsClientApplication {
 		return toolNames;
 	}
 
-	/** modern-server-async: the same walk, answered by Mono and CompletableFuture methods. */
+	/** modern-server-async：同样的走查，由 Mono 和 CompletableFuture 方法应答。 */
 	private static void asynchronous(ModernMcpDriver mcp) throws Exception {
 		System.out.println(">>> count_open_tickets (a CompletableFuture on the server) -> "
 				+ mcp.callTool("count_open_tickets", Map.of(), ModernMcpDriver.autoAnswer(), n -> { }).get("content"));
 	}
 
-	/** modern-server-from-streamable: elicitation and sampling as multi round-trip requests, runtime tools. */
+	/** modern-server-from-streamable：引导和采样作为多轮往返请求，以及运行时工具。 */
 	private static void interactive(ModernMcpDriver mcp, String adminUrl) throws Exception {
 		System.out.println(">>> delete_ticket (MRTR elicitation, with progress)");
 		Map<String, Object> deleted = mcp.callTool("delete_ticket", Map.of("id", "t-1"), ModernMcpDriver.autoAnswer(),
@@ -109,7 +108,7 @@ public class ModernTicketsClientApplication {
 		System.out.println(">>> tools/list after runtime add -> " + ModernMcpDriver.names(mcp.listTools(), "tools"));
 	}
 
-	/** modern-server-repositories: a filtering tool repository and a domain-backed resource repository. */
+	/** modern-server-repositories：一个过滤型工具仓库和一个由领域模型支撑的资源仓库。 */
 	@SuppressWarnings("unchecked")
 	private static void repositories(ModernMcpDriver mcp, ModernMcpDriver admin) throws Exception {
 		System.out.println(">>> definition attributes");

@@ -21,11 +21,10 @@ import java.util.stream.Stream;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * A minimal client for the 2026-07-28 protocol, enough to drive the sample servers. There is
- * no modern MCP Java client in the SDK yet, so this shows the wire format directly: one POST
- * per request, {@code _meta} with protocol version and client capabilities, the
- * {@code Mcp-Method}/{@code MCP-Protocol-Version}/{@code Mcp-Name} headers, JSON or SSE
- * responses, and the multi round-trip retry loop.
+ * 针对 2026-07-28 协议的最小客户端，足以驱动示例服务器。SDK 中还没有 modern MCP Java
+ * 客户端，因此这里直接展示线上格式：每个请求一个 POST，{@code _meta} 中包含协议版本和
+ * 客户端能力，使用 {@code Mcp-Method}/{@code MCP-Protocol-Version}/{@code Mcp-Name}
+ * 请求头，支持 JSON 或 SSE 响应，以及多轮往返重试循环。
  */
 public class ModernMcpDriver {
 
@@ -35,7 +34,7 @@ public class ModernMcpDriver {
 
 	private final HttpClient http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
 
-	/** What this driver declares by default: it can answer form elicitation and sampling. */
+	/** 该驱动默认声明的能力：它可以应答表单引导和采样。 */
 	public static final Map<String, Object> DEFAULT_CAPABILITIES = Map.of("elicitation", Map.of("form", Map.of()),
 			"sampling", Map.of());
 
@@ -57,7 +56,7 @@ public class ModernMcpDriver {
 		this.capabilities = capabilities;
 	}
 
-	/** A driver that sends an extra HTTP header on every request, e.g. {@code X-Role: admin}. */
+	/** 在每个请求上发送额外 HTTP 请求头的驱动，例如 {@code X-Role: admin}。 */
 	public ModernMcpDriver withHeader(String name, String value) {
 		Map<String, String> headers = new LinkedHashMap<>(this.headers);
 		headers.put(name, value);
@@ -65,9 +64,8 @@ public class ModernMcpDriver {
 	}
 
 	/**
-	 * A driver that declares other client capabilities. There is no handshake: capabilities
-	 * travel in {@code _meta} of every request, and a tool that needs one the request does not
-	 * declare is refused with {@code -32021}.
+	 * 声明其他客户端能力的驱动。没有握手：能力随每个请求的 {@code _meta} 传递，
+	 * 如果某个工具所需的能力未在请求中声明，就会被以 {@code -32021} 拒绝。
 	 */
 	public ModernMcpDriver withCapabilities(Map<String, Object> capabilities) {
 		return new ModernMcpDriver(this.endpoint, this.headers, capabilities);
@@ -93,7 +91,7 @@ public class ModernMcpDriver {
 		return call("resources/templates/list", Map.of(), null, Map.of());
 	}
 
-	/** {@code completion/complete} for one argument of a prompt or resource template reference. */
+	/** 为提示词或资源模板引用中的一个参数调用 {@code completion/complete}。 */
 	public Map<String, Object> complete(Map<String, Object> ref, String argument, String value) throws Exception {
 		return call("completion/complete", Map.of("ref", ref, "argument", Map.of("name", argument, "value", value)), null,
 				Map.of());
@@ -108,8 +106,8 @@ public class ModernMcpDriver {
 	}
 
 	/**
-	 * Calls a tool and, while the server answers {@code input_required}, answers the input
-	 * requests with {@code answers} and retries with the sealed {@code requestState}.
+	 * 调用一个工具；当服务器返回 {@code input_required} 时，用 {@code answers} 应答输入请求，
+	 * 并携带密封的 {@code requestState} 重试。
 	 */
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> callTool(String name, Map<String, Object> arguments, InputAnswerer answers,
@@ -133,9 +131,9 @@ public class ModernMcpDriver {
 	}
 
 	/**
-	 * Opens {@code subscriptions/listen} and hands every event to the consumer until the
-	 * returned handle is closed. {@code notifications} is the subscription filter, for example
-	 * {@code {"toolsListChanged": true}} or {@code {"resourceSubscriptions": ["tickets://t-1"]}}.
+	 * 打开 {@code subscriptions/listen}，并将每个事件交给消费者，直到返回的句柄被关闭。
+	 * {@code notifications} 是订阅过滤器，例如 {@code {"toolsListChanged": true}} 或
+	 * {@code {"resourceSubscriptions": ["tickets://t-1"]}}。
 	 */
 	public AutoCloseable listen(Map<String, Object> notifications, Consumer<Map<String, Object>> onEvent) {
 		AtomicReference<Stream<String>> body = new AtomicReference<>();
@@ -147,12 +145,12 @@ public class ModernMcpDriver {
 				HttpResponse<Stream<String>> response = this.http.send(request, HttpResponse.BodyHandlers.ofLines());
 				body.set(response.body());
 				if (closed.get()) {
-					response.body().close(); // closed before the stream was established
+					response.body().close(); // 在流建立之前就已关闭
 					return;
 				}
 				String contentType = response.headers().firstValue("Content-Type").orElse("");
 				if (!contentType.startsWith("text/event-stream")) {
-					// The server refused the subscription, with a JSON-RPC error or a transport status.
+					// 服务器拒绝了该订阅，可能是 JSON-RPC 错误或传输层状态码。
 					String reply = response.body().collect(Collectors.joining("\n"));
 					System.err.println("subscriptions/listen refused with HTTP " + response.statusCode() + ": " + abbreviate(reply));
 					return;
@@ -160,13 +158,13 @@ public class ModernMcpDriver {
 				response.body().forEach(sseEvents(data -> onEvent.accept(parse(data))));
 			}
 			catch (IOException | InterruptedException | UncheckedIOException ex) {
-				// stream closed
+				// 流已关闭
 			}
 		}, "mcp-listen");
 		thread.setDaemon(true);
 		thread.start();
 		return () -> {
-			// Closing the body closes the connection, which ends the server's listen stream.
+			// 关闭响应体会关闭连接，从而结束服务器的监听流。
 			closed.set(true);
 			Stream<String> stream = body.get();
 			if (stream != null) {
@@ -190,21 +188,21 @@ public class ModernMcpDriver {
 		String contentType = response.headers().firstValue("Content-Type").orElse("");
 		List<Map<String, Object>> messages = new ArrayList<>();
 		if (contentType.startsWith("text/event-stream")) {
-			// A trailing blank line flushes the last event.
+			// 末尾的空行会冲刷出最后一个事件。
 			(response.body() + "\n\n").lines().forEach(sseEvents(data -> messages.add(parse(data))));
 		}
 		else if (contentType.startsWith("application/json") && response.body().contains("\"jsonrpc\"")) {
 			messages.add(parse(response.body()));
 		}
 		else {
-			// Not a JSON-RPC answer: a wrong endpoint, a body the transport refused, a proxy page.
+			// 不是 JSON-RPC 应答：可能是端点错误、传输层拒绝了请求体，或代理页面。
 			throw new IllegalStateException(
 					"HTTP " + response.statusCode() + " for " + method + ": " + abbreviate(response.body()));
 		}
 		Map<String, Object> last = null;
 		for (Map<String, Object> message : messages) {
 			if (message.containsKey("method")) {
-				onNotification.accept(message); // a notification pushed before the response
+				onNotification.accept(message); // 在应答之前推送的通知
 			}
 			else {
 				last = message;
@@ -232,7 +230,7 @@ public class ModernMcpDriver {
 			.header("MCP-Protocol-Version", PROTOCOL_VERSION)
 			.POST(HttpRequest.BodyPublishers.ofString(JSON.writeValueAsString(body)));
 		if (mcpName != null) {
-			builder.header("Mcp-Name", mcpName); // tools/call, prompts/get, resources/read
+			builder.header("Mcp-Name", mcpName); // tools/call、prompts/get、resources/read
 		}
 		this.headers.forEach(builder::header);
 		return builder.build();
@@ -247,8 +245,8 @@ public class ModernMcpDriver {
 	}
 
 	/**
-	 * Assembles SSE events from lines: the {@code data:} lines of an event are joined, and an
-	 * empty line ends it. Other fields ({@code event:}, {@code id:}, comments) are ignored.
+	 * 从行组装 SSE 事件：一个事件的 {@code data:} 行会被拼接，空行结束该事件。
+	 * 其他字段（{@code event:}、{@code id:}、注释）会被忽略。
 	 */
 	private static Consumer<String> sseEvents(Consumer<String> onEvent) {
 		StringBuilder data = new StringBuilder();
@@ -257,7 +255,7 @@ public class ModernMcpDriver {
 				if (data.length() > 0) {
 					data.append('\n');
 				}
-				data.append(line.substring("data:".length()).trim()); // the space after the colon is optional
+				data.append(line.substring("data:".length()).trim()); // 冒号后的空格是可选的
 			}
 			else if (line.isEmpty() && data.length() > 0) {
 				onEvent.accept(data.toString());
@@ -276,7 +274,7 @@ public class ModernMcpDriver {
 		return JSON.readValue(json, Map.class);
 	}
 
-	/** A JSON-RPC error answered by the server. */
+	/** 服务器返回的 JSON-RPC 错误。 */
 	public static class McpError extends RuntimeException {
 
 		private final int code;
@@ -299,7 +297,7 @@ public class ModernMcpDriver {
 
 	}
 
-	/** Produces the {@code inputResponses[key]} value for one input request. */
+	/** 为一个输入请求生成 {@code inputResponses[key]} 的值。 */
 	public interface InputAnswerer {
 
 		Object answer(String key, Map<String, Object> inputRequest);
@@ -307,9 +305,8 @@ public class ModernMcpDriver {
 	}
 
 	/**
-	 * Answers the input requests a server may return: elicitations with an accepting form,
-	 * sampling with a canned text, roots with an empty list. Each input request carries the
-	 * method the server would have called on a session-based client.
+	 * 应答服务器可能返回的输入请求：引导用接受表单应答，采样用预置文本应答，
+	 * roots 用空列表应答。每个输入请求都携带服务器在基于会话的客户端上本会调用的方法名。
 	 */
 	public static InputAnswerer autoAnswer() {
 		return (key, request) -> {

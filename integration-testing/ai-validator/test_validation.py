@@ -6,7 +6,7 @@ Simple test for the validation system
 import sys
 from pathlib import Path
 
-# Add lib directory to path for imports
+# 将 lib 目录加入导入路径
 sys.path.insert(0, str(Path(__file__).parent / "lib"))
 
 from claude_code_wrapper import ClaudeCodeWrapper

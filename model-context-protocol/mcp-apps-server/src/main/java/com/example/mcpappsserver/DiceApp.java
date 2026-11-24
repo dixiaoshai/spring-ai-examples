@@ -16,7 +16,7 @@ import java.util.Map;
 public class DiceApp {
 
   //
-  // MCP Resource - Serves the app's UI
+  // MCP 资源 - 提供应用的 UI
   //
   @Value("classpath:/app/dice-app.html")
   private Resource diceAppResource;
@@ -40,7 +40,7 @@ public class DiceApp {
   }
 
   //
-  // MCP Tool - References the resource
+  // MCP 工具 - 引用该资源
   //
   @McpTool(
       title = "Roll the Dice",

@@ -17,7 +17,7 @@ import com.anthropic.models.beta.files.BetaFileMetadata;
 import com.example.documentforge.service.DocumentGenerationService;
 
 /**
- * Controller for file downloads.
+ * 文件下载控制器。
  */
 @Controller
 @RequestMapping("/download")
@@ -36,13 +36,13 @@ public class DownloadController {
 		logger.info("Download request for file: {}", fileId);
 
 		try {
-			// Get file metadata
+			// 获取文件元数据
 			BetaFileMetadata metadata = generationService.getFileMetadata(fileId);
 
-			// Download file content
+			// 下载文件内容
 			byte[] content = generationService.downloadFile(fileId);
 
-			// Build response with appropriate headers
+			// 构建带相应响应头的响应
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.parseMediaType(metadata.mimeType()));
 			headers.setContentDisposition(ContentDisposition.attachment()

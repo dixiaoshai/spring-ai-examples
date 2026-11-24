@@ -16,10 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Adds a tool at runtime through the asynchronous in-memory repository, which broadcasts
- * {@code notifications/tools/list_changed} to every open {@code subscriptions/listen}
- * stream. The tool is the SDK's {@link McpAsyncTool}: a definition plus a handler that
- * returns a {@code Mono}.
+ * 通过异步内存仓库在运行时添加工具，该仓库会向每条打开的 {@code subscriptions/listen} 流
+ * 广播 {@code notifications/tools/list_changed}。该工具是 SDK 的 {@link McpAsyncTool}：
+ * 一个定义加上一个返回 {@code Mono} 的处理器。
  */
 @RestController
 public class AdminController {

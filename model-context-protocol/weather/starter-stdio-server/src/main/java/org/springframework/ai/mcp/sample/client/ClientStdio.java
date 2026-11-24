@@ -26,8 +26,7 @@ import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.ListToolsResult;
 
 /**
- * With stdio transport, the MCP server is automatically started by the client. But you
- * have to build the server jar first:
+ * 使用 stdio 传输时，MCP 服务器由客户端自动启动。但你必须先构建服务器 jar：
  *
  * <pre>
  * ./mvnw clean install -DskipTests
@@ -47,7 +46,7 @@ public class ClientStdio {
 
 		client.initialize();
 
-		// List and demonstrate tools
+		// 列出并演示工具
 		ListToolsResult toolsList = client.listTools();
 		System.out.println("Available Tools = " + toolsList);
 

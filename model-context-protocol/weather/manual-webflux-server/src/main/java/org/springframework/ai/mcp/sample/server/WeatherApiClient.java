@@ -99,11 +99,11 @@ public class WeatherApiClient {
 	}
 
 	/**
-	 * Get forecast for a specific latitude/longitude
-	 * @param latitude Latitude
-	 * @param longitude Longitude
-	 * @return The forecast for the given location
-	 * @throws RestClientException if the request fails
+	 * 获取指定纬度/经度的预报
+	 * @param latitude 纬度
+	 * @param longitude 经度
+	 * @return 给定位置的预报
+	 * @throws RestClientException 请求失败时抛出
 	 */
 	@Tool(description = "Get weather forecast for a specific latitude/longitude")
 	public String getWeatherForecastByLocation(double latitude, double longitude) {
@@ -129,10 +129,10 @@ public class WeatherApiClient {
 	}
 
 	/**
-	 * Get alerts for a specific area
-	 * @param state Area code. Two-letter US state code (e.g. CA, NY)
-	 * @return Human readable alert information
-	 * @throws RestClientException if the request fails
+	 * 获取指定区域的预警
+	 * @param state 区域代码。美国两位州代码（例如 CA、NY）
+	 * @return 人类可读的预警信息
+	 * @throws RestClientException 请求失败时抛出
 	 */
 	@Tool(description = "Get weather alerts for a US state. Input is Two-letter US state code (e.g. CA, NY)")
 	public String getAlerts(String state) {

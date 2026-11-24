@@ -84,11 +84,11 @@ public class SpringAiToolProvider {
 	}
 
 	/**
-	 * Get forecast for a specific latitude/longitude
-	 * @param latitude Latitude
-	 * @param longitude Longitude
-	 * @return The forecast for the given location
-	 * @throws RestClientException if the request fails
+	 * 获取指定纬度/经度的预报
+	 * @param latitude 纬度
+	 * @param longitude 经度
+	 * @return 指定位置的预报
+	 * @throws RestClientException 请求失败时抛出
 	 */
 	@Tool(description = "Get weather forecast for a specific latitude/longitude")
 	public String getWeatherForecastByLocation(double latitude, double longitude) {
@@ -114,10 +114,10 @@ public class SpringAiToolProvider {
 	}
 
 	/**
-	 * Get alerts for a specific area
-	 * @param state Area code. Two-letter US state code (e.g. CA, NY)
-	 * @return Human readable alert information
-	 * @throws RestClientException if the request fails
+	 * 获取指定区域的警报
+	 * @param state 区域代码。美国州名两字母代码（例如 CA、NY）
+	 * @return 便于人类阅读的警报信息
+	 * @throws RestClientException 请求失败时抛出
 	 */
 	@Tool(description = "Get weather alerts for a US state. Input is Two-letter US state code (e.g. CA, NY)")
 	public String getAlerts(String state) {

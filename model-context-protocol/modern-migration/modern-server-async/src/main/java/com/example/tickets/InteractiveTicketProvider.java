@@ -23,23 +23,21 @@ import org.springframework.ai.mcp.annotation.context.McpModernRequestContext;
 import org.springframework.stereotype.Component;
 
 /**
- * The two multi round-trip tools of {@code modern-server-from-streamable}, written for
- * {@code type=ASYNC}. The flow is the same: the first call returns an
- * {@link InputRequiredResult}, and the client retries with {@code inputResponses} and the
- * sealed {@code requestState}.
+ * {@code modern-server-from-streamable} 的两个多轮往返工具，为 {@code type=ASYNC} 编写。
+ * 流程相同：第一次调用返回一个 {@link InputRequiredResult}，客户端携带
+ * {@code inputResponses} 和密封的 {@code requestState} 重试。
  * <p>
- * {@code deleteTicket} declares the SDK {@link McpAsyncNotifier}, so it answers with a
- * short {@code text/event-stream}; {@code progress(...)} returns a {@code Mono<Void>} that
- * the method composes into its result. {@code summarizeTickets} declares only the
- * context, {@link McpModernRequestContext}, which is the same for both API types, and
- * answers with plain JSON.
+ * {@code deleteTicket} 声明了 SDK 的 {@link McpAsyncNotifier}，因此以一段简短的
+ * {@code text/event-stream} 应答；{@code progress(...)} 返回一个 {@code Mono<Void>}，
+ * 方法会将它组合进结果。{@code summarizeTickets} 只声明上下文
+ * {@link McpModernRequestContext}（两种 API 类型相同），并以普通 JSON 应答。
  */
 @Component
 public class InteractiveTicketProvider {
 
 	private static final Logger logger = LoggerFactory.getLogger(InteractiveTicketProvider.class);
 
-	/** Shape of an elicitation answer in {@code inputResponses}. */
+	/** {@code inputResponses} 中引导应答的结构。 */
 	public record ElicitResponse(String action, Map<String, Object> content) {
 	}
 
@@ -59,15 +57,15 @@ public class InteractiveTicketProvider {
 		logger.info("delete_ticket called for {}", id);
 		ElicitResponse answer = ctx.inputResponse("confirm", ElicitResponse.class);
 		if (answer == null) {
-			// First round trip: ask. The ticket id travels in the sealed request state.
+			// 第一轮往返：询问。工单 id 通过密封的请求状态传递。
 			return notifier.progress(10, 100.0, "asking for confirmation")
 				.then(Mono.fromSupplier(() -> InputRequiredResult.builder()
 					.elicit("confirm", ElicitFormRequest.builder("Delete ticket " + id + "?", CONFIRM_SCHEMA).build())
 					.requestState(id)
 					.build()));
 		}
-		// Second round trip: act on the ticket that was sealed into the request state; the id
-		// argument of the retry is not trusted.
+		// 第二轮往返：对密封进请求状态的工单执行操作；
+		// 不信任重试时的 id 参数。
 		String sealedId = ctx.requestState();
 		boolean confirmed = "accept".equals(answer.action()) && answer.content() != null
 				&& Boolean.TRUE.equals(answer.content().get("confirmed"));

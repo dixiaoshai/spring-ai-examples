@@ -1,36 +1,36 @@
-# TODO: Optimize Claude Code CLI Integration in GitHub Actions
+# TODO：优化 GitHub Actions 中的 Claude Code CLI 集成
 
-## Current Implementation
-- Installing Claude Code CLI via npm: `npm install -g @anthropic-ai/claude-code`
-- AI validator expects `claude` command to be available in PATH
-- Uses ANTHROPIC_API_KEY environment variable
+## 当前实现
+- 通过 npm 安装 Claude Code CLI：`npm install -g @anthropic-ai/claude-code`
+- AI 校验器要求 `claude` 命令在 PATH 中可用
+- 使用 ANTHROPIC_API_KEY 环境变量
 
-## Potential Optimizations to Investigate
+## 待调研的潜在优化
 
-### 1. Use anthropics/claude-code-action@beta
-- Official GitHub Action from Anthropic
-- May not provide CLI in PATH (needs investigation)
-- Could potentially modify AI validator to work with action directly
+### 1. 使用 anthropics/claude-code-action@beta
+- Anthropic 官方提供的 GitHub Action
+- 可能不会在 PATH 中提供 CLI（需要调研）
+- 或许可以修改 AI 校验器，使其直接与该 action 配合工作
 
-### 2. Create Custom GitHub Action
-- Wrapper action that installs CLI and makes it available
-- Could cache installation for performance
+### 2. 创建自定义 GitHub Action
+- 一个封装 action，负责安装 CLI 并使其可用
+- 可以缓存安装结果以提升性能
 
-### 3. Modify AI Validator
-- Update claude_code_wrapper.py to work with GitHub Action
-- Or create alternate validation path for CI/CD
+### 3. 修改 AI 校验器
+- 更新 claude_code_wrapper.py，使其兼容 GitHub Action
+- 或为 CI/CD 创建另一条校验路径
 
-### 4. Performance Considerations
-- npm global install may be slow
-- Consider caching node_modules or npm cache
-- Investigate if CLI can be installed locally vs globally
+### 4. 性能考量
+- npm 全局安装可能较慢
+- 考虑缓存 node_modules 或 npm 缓存
+- 调研 CLI 能否安装在本地而非全局
 
-## Current Status
-- Working solution with npm install
-- AI validation enabled and functional
-- Can optimize later without breaking changes
+## 当前状态
+- 现有的 npm 安装方案可用
+- AI 校验已启用且可正常工作
+- 后续可以在不引入破坏性改动的前提下进行优化
 
-## Timeline
-- Revisit after Phase 6 (Full Coverage) is complete
-- Not blocking current progress
-- Document any issues encountered during testing
+## 时间安排
+- 在阶段 6（全覆盖）完成后重新审视
+- 不阻塞当前进度
+- 记录测试过程中遇到的任何问题

@@ -18,22 +18,22 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 @Configuration
 public class McpServerConfig {
 
-	// STDIO transport
+	// STDIO 传输
 	@Bean
 	@ConditionalOnProperty(prefix = "transport", name = "mode", havingValue = "stdio")
 	public StdioServerTransportProvider stdioServerTransportProvider() {
 		return new StdioServerTransportProvider(McpJsonDefaults.getMapper());
 	}
 
-	// SSE transport
+	// SSE 传输
 	@Bean
 	@ConditionalOnProperty(prefix = "transport", name = "mode", havingValue = "sse")
 	public WebFluxSseServerTransportProvider sseServerTransportProvider() {
 		return WebFluxSseServerTransportProvider.builder().messageEndpoint("/mcp/message").build();
 	}
 
-	// Router function for SSE transport used by Spring WebFlux to start an HTTP
-	// server.
+	// SSE 传输的路由函数，Spring WebFlux 用它启动 HTTP
+	// 服务器。
 	@Bean
 	@ConditionalOnProperty(prefix = "transport", name = "mode", havingValue = "sse")
 	public RouterFunction<?> mcpRouterFunction(WebFluxSseServerTransportProvider transportProvider) {
@@ -48,17 +48,17 @@ public class McpServerConfig {
 	@Bean
 	public McpSyncServer mcpServer(McpServerTransportProvider transportProvider, WeatherApiClient weatherApiClient) { // @formatter:off
 
-		// Configure server capabilities with resource support
+		// 配置服务器能力，并支持资源
 		var capabilities = McpSchema.ServerCapabilities.builder()
-			.tools(true) // Tool support with list changes notifications
-			.logging() // Logging support
+			.tools(true) // 工具支持，带列表变更通知
+			.logging() // 日志支持
 			.build();
 
-		// Create the server with both tool and resource capabilities
+		// 创建同时具有工具和资源能力的服务器
 		McpSyncServer server = McpServer.sync(transportProvider)
 			.serverInfo("MCP Demo Weather Server", "1.0.0")
 			.capabilities(capabilities)
-			.tools(McpToolUtils.toSyncToolSpecifications(ToolCallbacks.from(weatherApiClient))) // Add @Tools
+			.tools(McpToolUtils.toSyncToolSpecifications(ToolCallbacks.from(weatherApiClient))) // 添加 @Tools
 			.build();
 		
 		return server; // @formatter:on

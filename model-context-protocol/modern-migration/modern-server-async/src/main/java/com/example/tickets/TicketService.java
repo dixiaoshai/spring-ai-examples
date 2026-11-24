@@ -13,8 +13,7 @@ import org.springframework.stereotype.Service;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * In-memory ticket store shared by all the sample servers. It is deliberately tiny: the
- * samples are about the MCP protocol, not about tickets.
+ * 所有示例服务器共享的内存工单存储。它刻意保持很小：这些示例关注的是 MCP 协议，而不是工单。
  */
 @Service
 public class TicketService {
@@ -65,7 +64,7 @@ public class TicketService {
 		return JSON.writeValueAsString(tickets);
 	}
 
-	/** The number behind {@code t-}, which orders the ids and pages them. */
+	/** {@code t-} 后面的数字，用于对 id 排序和分页。 */
 	static int number(String id) {
 		if (!id.startsWith("t-")) {
 			throw new IllegalArgumentException("Not a ticket id: " + id);

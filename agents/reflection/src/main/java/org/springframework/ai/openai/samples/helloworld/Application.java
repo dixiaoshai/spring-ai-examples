@@ -20,7 +20,7 @@ public class Application {
             var scanner = new Scanner(System.in);
             System.out.println("\nLet's chat!");
 
-            // Generate a Java implementation of the Merge Sort algorithm
+            // 生成归并排序算法的 Java 实现
             while (true) {
                 System.out.print("\nUSER: ");
                 System.out.println("AGENT: " +

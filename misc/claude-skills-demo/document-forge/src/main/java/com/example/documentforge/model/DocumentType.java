@@ -3,7 +3,7 @@ package com.example.documentforge.model;
 import org.springframework.ai.anthropic.AnthropicSkill;
 
 /**
- * Supported document types for generation.
+ * 支持的文档生成类型。
  */
 public enum DocumentType {
 

@@ -1,8 +1,8 @@
-# Tool Argument Augmenter Demo
+# 工具参数增强器演示
 
-Demonstrates Spring AI's [Tool Argument Augmentation](https://docs.spring.io/spring-ai/reference/api/tools.html#tool-argument-augmentation) — a way to inject extra arguments into tool calls (e.g. LLM reasoning, confidence, memory notes) without modifying the underlying tool implementation.
+演示 Spring AI 的 [工具参数增强](https://docs.spring.io/spring-ai/reference/api/tools.html#tool-argument-augmentation) —— 一种在不修改底层工具实现的情况下，向工具调用注入额外参数（例如 LLM 推理过程、置信度、记忆笔记）的方法。
 
-## How It Works
+## 工作原理
 
 ```
 User: "What is the weather in Paris?"
@@ -21,9 +21,9 @@ LLM fills all arguments including reasoning fields
         └─► Original tool receives only: { location: "Paris" }
 ```
 
-## Key Components
+## 关键组件
 
-**`AgentThinking`** — defines the extra arguments added to every tool schema:
+**`AgentThinking`** —— 定义添加到每个工具 schema 的额外参数：
 
 ```java
 public record AgentThinking(
@@ -38,7 +38,7 @@ public record AgentThinking(
 ) {}
 ```
 
-**`AugmentedToolCallbackProvider`** — wraps tools and processes the extra arguments:
+**`AugmentedToolCallbackProvider`** —— 包装工具并处理额外参数：
 
 ```java
 AugmentedToolCallbackProvider<AgentThinking> provider = AugmentedToolCallbackProvider
@@ -56,7 +56,7 @@ AugmentedToolCallbackProvider<AgentThinking> provider = AugmentedToolCallbackPro
     .build();
 ```
 
-**Wired into `ChatClient` with session memory and logging advisors:**
+**接入 `ChatClient`，并配合会话记忆与日志顾问：**
 
 ```java
 SessionService sessionService = DefaultSessionService.builder()
@@ -77,13 +77,13 @@ chatClient.prompt("What is current weather in Paris?")
     .entity(MyResponse.class);
 ```
 
-## Prerequisites
+## 前置条件
 
 - Java 17+
 - Spring Boot 4.1.1 / Spring AI 2.1.0-SNAPSHOT
-- OpenAI API key
+- OpenAI API 密钥
 
-## Run
+## 运行
 
 ```bash
 export OPENAI_API_KEY=your-api-key
@@ -92,7 +92,7 @@ cd advisors/tool-argument-augmenter-demo
 ./mvnw spring-boot:run
 ```
 
-## Sample Output
+## 示例输出
 
 ```
 LLM Reasoning: The user wants current weather in Paris. I should call the weather tool with location=Paris.
@@ -103,8 +103,8 @@ Tool: weather
 MyResponse[result=The current weather in Paris is sunny with a temperature of 25°C., thinking=...]
 ```
 
-## Resources
+## 资源
 
-- [Tool Argument Augmentation Docs](https://docs.spring.io/spring-ai/reference/api/tools.html#tool-argument-augmentation)
-- [Explainable AI Agents Blog Post](https://spring.io/blog/2025/12/21/explainable-ai-agents-capture-llm-tool-call-reasoning-with-spring-ai)
-- [Spring AI Advisors Guide](https://docs.spring.io/spring-ai/reference/api/advisors.html)
+- [工具参数增强文档](https://docs.spring.io/spring-ai/reference/api/tools.html#tool-argument-augmentation)
+- [可解释 AI 智能体博客文章](https://spring.io/blog/2025/12/21/explainable-ai-agents-capture-llm-tool-call-reasoning-with-spring-ai)
+- [Spring AI 顾问指南](https://docs.spring.io/spring-ai/reference/api/advisors.html)

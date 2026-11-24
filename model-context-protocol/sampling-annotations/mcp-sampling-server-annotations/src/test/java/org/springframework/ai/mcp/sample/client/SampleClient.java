@@ -54,7 +54,7 @@ public class SampleClient {
 
 		client.ping();
 
-		// List and demonstrate tools
+		// 列出并演示工具
 		ListToolsResult toolsList = client.listTools();
 		System.out.println("Available Tools = " + toolsList);
 

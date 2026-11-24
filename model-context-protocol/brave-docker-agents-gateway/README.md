@@ -1,75 +1,75 @@
-# Spring AI - Model Context Protocol (MCP) Brave Search Example
+# Spring AI - 模型上下文协议（MCP）Brave 搜索示例
 
-This example demonstrates how to create a Spring AI Model Context Protocol (MCP) client that communicates with the [Brave Search MCP Server](https://github.com/modelcontextprotocol/servers/tree/main/src/brave-search). The application shows how to build an MCP client that enables natural language interactions with Brave Search, allowing you to perform internet searches through a conversational interface. This example uses Spring Boot autoconfiguration to set up the MCP client through configuration files.
+本示例演示如何创建与 [Brave Search MCP Server](https://github.com/modelcontextprotocol/servers/tree/main/src/brave-search) 通信的 Spring AI 模型上下文协议（MCP）客户端。该应用展示了如何构建 MCP 客户端，以实现与 Brave Search 的自然语言交互，让你通过对话界面执行互联网搜索。本示例使用 Spring Boot 自动配置，通过配置文件完成 MCP 客户端的设置。
 
-When run, the application demonstrates the MCP client's capabilities by asking a specific question: "Does Spring AI support the Model Context Protocol? Please provide some references." The MCP client uses Brave Search to find relevant information and returns a comprehensive answer. After providing the response, the application exits.
+运行时，应用会提出一个特定问题来演示 MCP 客户端的能力：“Does Spring AI support the Model Context Protocol? Please provide some references.” MCP 客户端使用 Brave Search 查找相关信息并返回全面的答案。给出响应后，应用随即退出。
 
 <img src="spring-ai-mcp-brave.jpg" width="600"/>
 
-## Prerequisites
+## 前置条件
 
-- Java 17 or higher
+- Java 17 或更高版本
 - Maven 3.6+
-- Docker Desktop 4.41 or later
+- Docker Desktop 4.41 或更高版本
 - Git
-- OpenAI API key
-- Brave Search API key (Get one at https://brave.com/search/api/)
+- OpenAI API 密钥
+- Brave Search API 密钥（在 https://brave.com/search/api/ 获取）
 
-## Setup
+## 安装配置
 
-1.  **Start the Dockerized Services:**
-    Make sure Docker (e.g., Docker Desktop 4.41 or later, or Docker Engine with Docker Compose CLI) is installed and running. Then, in the project's root directory (where `compose.yml` is located), start the necessary services:
+1.  **启动容器化服务：**
+    确保 Docker（例如 Docker Desktop 4.41 或更高版本，或带 Docker Compose CLI 的 Docker Engine）已安装并运行。然后在项目根目录（`compose.yml` 所在目录）启动所需服务：
     ```bash
     docker compose up
     ```
 
-2. Clone the repository:
+2. 克隆仓库：
    ```bash
    git clone https://github.com/spring-projects/spring-ai-examples.git
    cd model-context-protocol/brave-docker-agents-gateway
    ```
 
-3. Set up your API keys:
+3. 设置 API 密钥：
    ```bash
    export OPENAI_API_KEY='your-openai-api-key-here'
    export BRAVE_API_KEY='your-brave-api-key-here'
    ```
 
-4. Build the application:
+4. 构建应用：
    ```bash
    ./mvnw clean install
    ```
 
-## Running the Application
+## 运行应用
 
-Run the application using Maven:
+使用 Maven 运行应用：
 ```bash
 ./mvnw spring-boot:run
 ```
 
-The application will execute a single query asking about Spring AI's support for the Model Context Protocol. It uses the Brave Search MCP server to search the internet for relevant information, processes the results through the MCP client, and provides a detailed response before exiting.
+应用会执行一次查询，询问 Spring AI 对模型上下文协议的支持情况。它使用 Brave Search MCP 服务器在互联网上搜索相关信息，通过 MCP 客户端处理结果，并在退出前给出详细响应。
 
-## How it Works
+## 工作原理
 
-The application integrates Spring AI with the Brave Search MCP server through Spring Boot autoconfiguration:
+应用通过 Spring Boot 自动配置将 Spring AI 与 Brave Search MCP 服务器集成：
 
-### MCP Client Configuration
+### MCP 客户端配置
 
-The MCP client is configured using configuration files:
+MCP 客户端通过配置文件进行配置：
 
-1. `application.properties`:
+1. `application.properties`：
 ```properties
 spring.ai.mcp.client.see.gateway.url=http://localhost:8811
 ```
 
-This configuration:
-1. Uses the Brave Search MCP server via Docker MCP Gateway
-2. The Brave API key is passed from environment variables
-3. Initializes a synchronous connection to the server
+该配置会：
+1. 通过 Docker MCP Gateway 使用 Brave Search MCP 服务器
+2. Brave API 密钥从环境变量传入
+3. 初始化到服务器的同步连接
 
-### Chat Integration
+### 聊天集成
 
-The ChatClient is configured with the MCP tool callbacks in the Application class:
+ChatClient 在 Application 类中配置了 MCP 工具回调：
 
 ```java
 var chatClient = chatClientBuilder
@@ -77,14 +77,14 @@ var chatClient = chatClientBuilder
         .build();
 ```
 
-This setup allows the AI model to:
-- Understand when to use Brave Search
-- Format queries appropriately
-- Process and incorporate search results into responses
+该配置让 AI 模型能够：
+- 判断何时使用 Brave Search
+- 合理构造查询
+- 处理搜索结果并将其融入响应
 
-## Dependencies
+## 依赖
 
-The project uses:
+本项目使用：
 - Spring Boot 4.1.1
 - Spring AI 2.1.0-SNAPSHOT
 - spring-ai-starter-model-openai

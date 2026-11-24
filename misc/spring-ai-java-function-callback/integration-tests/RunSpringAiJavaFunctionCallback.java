@@ -6,8 +6,8 @@
 //SOURCES ../../../integration-testing/jbang-lib/IntegrationTestUtils.java
 
 /*
- * Integration test launcher for spring-ai-java-function-callback
- * Refactored to use centralized utilities
+ * spring-ai-java-function-callback 的集成测试启动器
+ * 重构为使用集中式工具类
  */
 
 public class RunSpringAiJavaFunctionCallback {

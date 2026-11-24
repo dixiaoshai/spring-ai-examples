@@ -64,7 +64,7 @@ class ResultFromAgentTest {
     void testMergeSortWithNullArray() {
         int[] array = null;
 
-        // Should not throw an exception
+        // 不应抛出异常
         assertDoesNotThrow(() -> MergeSort.mergeSort(array));
     }
 

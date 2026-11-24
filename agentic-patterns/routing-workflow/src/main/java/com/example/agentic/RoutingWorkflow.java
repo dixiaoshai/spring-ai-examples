@@ -21,46 +21,46 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.util.Assert;
 
 /**
- * Implements the Routing workflow pattern that classifies input and directs it
- * to specialized
- * followup tasks. This workflow enables separation of concerns by routing
- * different types
- * of inputs to specialized prompts and processes optimized for specific
- * categories.
+ * 实现路由工作流模式：对输入进行分类，并将其引导至
+ * 专门化的
+ * 后续任务。该工作流通过将不同类型的输入路由到专门化的提示词，
+ * 以及针对特定类别优化的流程，
+ * 从而实现关注点分离。
+ * 
  * 
  * <p>
- * The routing workflow is particularly effective for complex tasks where:
+ * 路由工作流在以下复杂任务中特别有效：
  * <ul>
- * <li>There are distinct categories of input that are better handled
- * separately</li>
- * <li>Classification can be handled accurately by an LLM or traditional
- * classification model</li>
- * <li>Different types of input require different specialized processing or
- * expertise</li>
+ * <li>存在更适合单独处理的
+ * 明确输入类别</li>
+ * <li>分类可以由 LLM 或传统
+ * 分类模型准确完成</li>
+ * <li>不同类型的输入需要不同的专门化处理或
+ * 专业知识</li>
  * </ul>
  * 
  * <p>
- * Common use cases include:
+ * 常见用例包括：
  * <ul>
- * <li>Customer support systems routing different types of queries (billing,
- * technical, etc.)</li>
- * <li>Content moderation systems routing content to appropriate review
- * processes</li>
- * <li>Query optimization by routing simple/complex questions to different model
- * capabilities</li>
+ * <li>客户支持系统路由不同类型的查询（计费、
+ * 技术等）</li>
+ * <li>内容审核系统将内容路由到适当的审核
+ * 流程</li>
+ * <li>通过将简单/复杂问题路由到不同模型能力实现的
+ * 查询优化</li>
  * </ul>
  * 
  * <p>
- * This implementation allows for dynamic routing based on content
- * classification,
- * with each route having its own specialized prompt optimized for specific
- * types of input.
+ * 本实现支持基于内容分类的动态路由，
+ * 其中每条路由都有自己的、
+ * 针对特定输入类型优化的专门化提示词。
+ * 
  * 
  * <p/>
- * Implementation uses the <a href=
+ * 本实现使用 <a href=
  * "https://docs.spring.io/spring-ai/reference/1.0/api/structured-output-converter.html">Spring
- * AI Structure Output</a> to convert the chat client response into a structured
- * {@link RoutingResponse} object.
+ * AI Structure Output</a>，将聊天客户端的响应转换为结构化的
+ * {@link RoutingResponse} 对象。
  * 
  * @author Christian Tzolov
  * @see org.springframework.ai.chat.client.ChatClient
@@ -84,68 +84,68 @@ public class RoutingWorkflow {
     }
 
     /**
-     * Routes input to a specialized prompt based on content classification. This
-     * method
-     * first analyzes the input to determine the most appropriate route, then
-     * processes
-     * the input using the specialized prompt for that route.
+     * 基于内容分类将输入路由到专门化的提示词。
+     * 该方法首先分析输入以确定最合适的路由，
+     * 然后使用该路由对应的专门化提示词处理输入。
+     * 
+     * 
      * 
      * <p>
-     * The routing process involves:
+     * 路由过程包括：
      * <ol>
-     * <li>Content analysis to determine the appropriate category</li>
-     * <li>Selection of a specialized prompt optimized for that category</li>
-     * <li>Processing the input with the selected prompt</li>
+     * <li>通过内容分析确定适当的类别</li>
+     * <li>选择针对该类别优化的专门化提示词</li>
+     * <li>使用所选提示词处理输入</li>
      * </ol>
      *
      * <p>
-     * This approach allows for:
+     * 该方法支持：
      * <ul>
-     * <li>Better handling of diverse input types</li>
-     * <li>Optimization of prompts for specific categories</li>
-     * <li>Improved accuracy through specialized processing</li>
+     * <li>更好地处理多样化的输入类型</li>
+     * <li>针对特定类别优化提示词</li>
+     * <li>通过专门化处理提升准确度</li>
      * </ul>
      *
-     * @param input  The input text to be routed and processed
-     * @param routes Map of route names to their corresponding specialized prompts
-     * @return Processed response from the selected specialized route
+     * @param input 待路由和处理的输入文本
+     * @param routes 路由名称到其对应专门化提示词的映射
+     * @return 来自所选专门化路由的处理后响应
      */
     public String route(String input, Map<String, String> routes) {
         Assert.notNull(input, "Input text cannot be null");
         Assert.notEmpty(routes, "Routes map cannot be null or empty");
 
-        // Determine the appropriate route for the input
+        // 确定为输入选择适当的路由
         String routeKey = determineRoute(input, routes.keySet());
 
-        // Get the selected prompt from the routes map
+        // 从路由映射中获取所选提示词
         String selectedPrompt = routes.get(routeKey);
 
         if (selectedPrompt == null) {
             throw new IllegalArgumentException("Selected route '" + routeKey + "' not found in routes map");
         }
 
-        // Process the input with the selected prompt
+        // 使用所选提示词处理输入
         return chatClient.prompt(selectedPrompt + "\nInput: " + input).call().content();
     }
 
     /**
-     * Analyzes the input content and determines the most appropriate route based on
-     * content classification. The classification process considers key terms,
-     * context,
-     * and patterns in the input to select the optimal route.
+     * 分析输入内容，并基于内容分类确定最合适的
+     * 路由。分类过程会考虑输入中的关键词、
+     * 上下文，
+     * 以及模式，以选择最优路由。
      * 
      * <p>
-     * The method uses an LLM to:
+     * 该方法使用 LLM 来：
      * <ul>
-     * <li>Analyze the input content and context</li>
-     * <li>Consider the available routing options</li>
-     * <li>Provide reasoning for the routing decision</li>
-     * <li>Select the most appropriate route</li>
+     * <li>分析输入内容与上下文</li>
+     * <li>考虑可用的路由选项</li>
+     * <li>为路由决策提供推理</li>
+     * <li>选择最合适的路由</li>
      * </ul>
      *
-     * @param input           The input text to analyze for routing
-     * @param availableRoutes The set of available routing options
-     * @return The selected route key based on content analysis
+     * @param input 用于路由分析的输入文本
+     * @param availableRoutes 可用路由选项集合
+     * @return 基于内容分析所选择的路由键
      */
     @SuppressWarnings("null")
     private String determineRoute(String input, Iterable<String> availableRoutes) {

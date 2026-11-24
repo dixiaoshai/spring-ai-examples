@@ -22,8 +22,8 @@ import org.springframework.ai.mcp.annotation.context.StructuredElicitResult;
 import org.springframework.stereotype.Component;
 
 /**
- * Client-side handlers for the server-initiated requests of the STREAMABLE server. On the
- * modern protocol these become inputs the client supplies when it retries a call.
+ * 客户端侧的处理器，用于响应 STREAMABLE 服务器发起的请求。在 modern 协议中，这些请求
+ * 变为客户端在重试调用时提供的输入。
  */
 @Component
 public class ClientHandlers {

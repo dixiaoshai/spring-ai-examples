@@ -3,9 +3,8 @@ package com.example.tickets.client;
 import java.util.function.Supplier;
 
 /**
- * The role of the caller that the current thread works for. It stands in for the security
- * context of a web application, where the caller is known on the thread that serves the
- * request.
+ * 当前线程所服务的调用者的角色。它代表 Web 应用的安全上下文，在那里调用者在处理请求的
+ * 线程上即可获知。
  */
 final class CurrentRole {
 
@@ -14,12 +13,12 @@ final class CurrentRole {
 	private CurrentRole() {
 	}
 
-	/** The role of the current caller, or {@code null} for a caller without one. */
+	/** 当前调用者的角色；没有角色的调用者返回 {@code null}。 */
 	static String get() {
 		return ROLE.get();
 	}
 
-	/** Runs the action as a caller with the given role. */
+	/** 以具有给定角色的调用者身份运行操作。 */
 	static <T> T callAs(String role, Supplier<T> action) {
 		ROLE.set(role);
 		try {

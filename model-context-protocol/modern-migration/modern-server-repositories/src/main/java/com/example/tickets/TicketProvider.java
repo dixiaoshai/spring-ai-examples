@@ -11,22 +11,19 @@ import org.springframework.ai.mcp.annotation.McpToolParam;
 import org.springframework.stereotype.Component;
 
 /**
- * The annotated tools and prompt of the other samples. The annotation scanner turns them into
- * the {@code List<McpSyncTool>} and {@code List<McpSyncPrompt>} beans that the repositories
- * are built from.
+ * 其他示例中的注解工具和提示词。注解扫描器会将它们转换为构建仓库所用的
+ * {@code List<McpSyncTool>} 和 {@code List<McpSyncPrompt>} Bean。
  * <p>
- * There are no {@code @McpResource} methods here: this server defines its own resource
- * repository ({@link TicketResourceRepository}), and with it the annotated resources would not
- * be served.
+ * 这里没有 {@code @McpResource} 方法：该服务器定义了自己的资源仓库
+ * （{@link TicketResourceRepository}），有了它，带注解的资源将不会被提供。
  * <p>
- * {@code open_ticket} and the prompt also carry definition attributes: an icon, which the
- * client can render next to the tool, and a display title for the prompt argument. They
- * are plain annotation attributes and work the same on every server kind.
+ * {@code open_ticket} 和该提示词还带有定义属性：一个图标（客户端可以在工具旁渲染），
+ * 以及提示词参数的显示标题。它们都是普通的注解属性，在每种服务器上行为相同。
  */
 @Component
 public class TicketProvider {
 
-	/** The people the daily summary is written for; tickets have no owner of their own. */
+	/** 每日摘要所面向的人员；工单本身没有所有者。 */
 	private static final List<String> OWNERS = List.of("Ana", "Andrei", "Ben", "Chloe");
 
 	private final TicketService tickets;
@@ -57,7 +54,7 @@ public class TicketProvider {
 		return "Summarise the open tickets for " + owner + " in two sentences: " + this.tickets.toJson(this.tickets.list());
 	}
 
-	// Completes the owner argument of daily-summary, which a modern server attaches to that prompt.
+	// 补全 daily-summary 的 owner 参数，modern 服务器会将它附加到该提示词上。
 	@McpComplete(prompt = "daily-summary")
 	public List<String> completeOwner(String prefix) {
 		return OWNERS.stream().filter(owner -> owner.toLowerCase().startsWith(prefix.toLowerCase())).toList();

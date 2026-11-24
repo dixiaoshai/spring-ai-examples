@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Usage: mcp.sh <method> '<params-json>' [mcp-name]
-# Sends one 2026-07-28 MCP request and prints the response (JSON or SSE frames).
+# 用法：mcp.sh <method> '<params-json>' [mcp-name]
+# 发送一个 2026-07-28 MCP 请求并打印响应（JSON 或 SSE 帧）。
 #   ./mcp.sh tools/list '{}'
 #   ./mcp.sh tools/call '{"name":"open_ticket","arguments":{"title":"Printer offline"}}' open_ticket
-# Environment:
-#   MCP_ENDPOINT      default http://localhost:8080/mcp
-#   MCP_HEADER        one extra request header, e.g. 'X-Role: admin'
-#   MCP_CAPABILITIES  client capabilities JSON for _meta, default '{"elicitation":{"form":{}},"sampling":{}}'
+# 环境变量：
+#   MCP_ENDPOINT      默认 http://localhost:8080/mcp
+#   MCP_HEADER        一个额外的请求头，例如 'X-Role: admin'
+#   MCP_CAPABILITIES  _meta 的客户端能力 JSON，默认 '{"elicitation":{"form":{}},"sampling":{}}'
 set -euo pipefail
 METHOD=$1; PARAMS=${2:-"{}"}; NAME=${3:-}
 ENDPOINT=${MCP_ENDPOINT:-http://localhost:8080/mcp}

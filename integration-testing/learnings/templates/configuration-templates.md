@@ -1,13 +1,13 @@
-# Integration Test Configuration Templates
+# 集成测试配置模板
 
-## Overview
+## 概览
 
-This document provides standardized `ExampleInfo.json` templates for different types of Spring AI examples. Use these templates to ensure consistency and optimal configuration for new integration tests.
+本文档提供针对不同类型 Spring AI 示例的标准化 `ExampleInfo.json` 模板。请使用这些模板，确保新集成测试的一致性并实现最优配置。
 
-## Template Categories
+## 模板类别
 
-### 1. Interactive Applications Template
-**Use for**: Applications using Scanner.nextLine(), chat interfaces, interactive prompts
+### 1. 交互式应用模板
+**适用场景**：使用 Scanner.nextLine()、聊天界面、交互式提示词的应用
 
 ```json
 {
@@ -34,10 +34,10 @@ This document provides standardized `ExampleInfo.json` templates for different t
 }
 ```
 
-**Examples**: agents/reflection, sqlite/chatbot, brave-chatbot
+**示例**：agents/reflection、sqlite/chatbot、brave-chatbot
 
-### 2. Agentic Workflow Template
-**Use for**: Multi-step AI processes, complex reasoning workflows, evaluation systems
+### 2. 智能体工作流模板
+**适用场景**：多步 AI 处理、复杂推理工作流、评估系统
 
 ```json
 {
@@ -64,10 +64,10 @@ This document provides standardized `ExampleInfo.json` templates for different t
 }
 ```
 
-**Examples**: agentic-patterns/*, orchestrator-workers, routing-workflow
+**示例**：agentic-patterns/*、orchestrator-workers、routing-workflow
 
-### 3. MCP Integration Template
-**Use for**: Model Context Protocol examples, client-server communication
+### 3. MCP 集成模板
+**适用场景**：Model Context Protocol 示例、客户端—服务器通信
 
 ```json
 {
@@ -94,10 +94,10 @@ This document provides standardized `ExampleInfo.json` templates for different t
 }
 ```
 
-**Examples**: model-context-protocol/*, filesystem, brave, weather servers
+**示例**：model-context-protocol/*、filesystem、brave、weather 服务器
 
-### 4. Simple Example Template
-**Use for**: Basic demonstrations, hello world examples, simple function callbacks
+### 4. 简单示例模板
+**适用场景**：基础演示、hello world 示例、简单的函数回调
 
 ```json
 {
@@ -123,10 +123,10 @@ This document provides standardized `ExampleInfo.json` templates for different t
 }
 ```
 
-**Examples**: models/chat/helloworld, kotlin/kotlin-hello-world, misc/function-callback
+**示例**：models/chat/helloworld、kotlin/kotlin-hello-world、misc/function-callback
 
-### 5. Docker-Dependent Template
-**Use for**: Applications requiring Docker Compose, external services
+### 5. Docker 依赖模板
+**适用场景**：需要 Docker Compose 或外部服务的应用
 
 ```json
 {
@@ -164,48 +164,48 @@ This document provides standardized `ExampleInfo.json` templates for different t
 }
 ```
 
-**Examples**: kotlin/rag-with-kotlin, brave-docker-agents-gateway
+**示例**：kotlin/rag-with-kotlin、brave-docker-agents-gateway
 
-## Configuration Guidelines
+## 配置指南
 
-### Timeout Standards
-| Application Type | Timeout | Reasoning |
+### 超时标准
+| 应用类型 | 超时 | 理由 |
 |------------------|---------|-----------|
-| Simple Examples | 120s | Basic Spring Boot startup + demonstration |
-| Interactive Apps | 15-25s | Quick startup validation, no full workflow |
-| MCP Integration | 120s | Protocol handshake + tool discovery |
-| Agentic Workflows | 300-600s | Complex multi-step AI processing |
-| Docker-Dependent | 180s | Service startup + application initialization |
+| 简单示例 | 120s | 基础 Spring Boot 启动 + 演示 |
+| 交互式应用 | 15-25s | 快速启动校验，不等待完整工作流 |
+| MCP 集成 | 120s | 协议握手 + 工具发现 |
+| 智能体工作流 | 300-600s | 复杂的多步 AI 处理 |
+| Docker 依赖 | 180s | 服务启动 + 应用初始化 |
 
-### AI Validation Modes
-| Mode | Use Case | Pattern Check | AI Check |
+### AI 校验模式
+| 模式 | 使用场景 | 模式检查 | AI 检查 |
 |------|----------|---------------|----------|
-| **primary** | Unpredictable AI outputs | ❌ Skip | ✅ Only |
-| **hybrid** | Mix of predictable/variable | ✅ Required | ✅ Additional |
-| **fallback** | Interactive applications | ✅ Primary | ✅ If regex fails |
+| **primary** | 不可预测的 AI 输出 | ❌ 跳过 | ✅ 仅使用 |
+| **hybrid** | 可预测/可变混合 | ✅ 必需 | ✅ 额外使用 |
+| **fallback** | 交互式应用 | ✅ 为主 | ✅ 正则失败时使用 |
 
-### Success Pattern Guidelines
-1. **Always include**: `"Started.*Application"` for Spring Boot validation
-2. **Application-specific**: Key output indicating functionality works
-3. **Interactive apps**: Include readiness indicator (`"Let's chat!"`, `"Starting interactive"`)
-4. **MCP apps**: Include protocol initialization (`"MCP.*[Ii]nitialized"`)
-5. **Evaluation apps**: Include completion indicator (`"EVALUATION:\\\\s+PASS"`)
+### 成功模式指南
+1. **始终包含**：用于 Spring Boot 校验的 `"Started.*Application"`
+2. **应用特有**：表明功能正常工作的关键输出
+3. **交互式应用**：包含就绪标志（`"Let's chat!"`、`"Starting interactive"`）
+4. **MCP 应用**：包含协议初始化（`"MCP.*[Ii]nitialized"`）
+5. **评估类应用**：包含完成标志（`"EVALUATION:\\\\s+PASS"`）
 
-### Environment Variable Standards
-- **Primary**: `OPENAI_API_KEY` (most common)
-- **Anthropic**: `ANTHROPIC_API_KEY` (for Claude-based examples)
-- **Service-specific**: `BRAVE_API_KEY`, `DATABASE_URL`, etc.
-- **Multiple providers**: Use array: `["OPENAI_API_KEY", "ANTHROPIC_API_KEY"]`
+### 环境变量标准
+- **主要**：`OPENAI_API_KEY`（最常见）
+- **Anthropic**：`ANTHROPIC_API_KEY`（用于基于 Claude 的示例）
+- **服务特有**：`BRAVE_API_KEY`、`DATABASE_URL` 等
+- **多提供商**：使用数组：`["OPENAI_API_KEY", "ANTHROPIC_API_KEY"]`
 
-### AI Validation Best Practices
+### AI 校验最佳实践
 
-#### expectedBehavior Guidelines
-- **Be specific**: Describe what the application should actually do
-- **Include context**: Mention key technologies (MCP, Docker, specific AI features)
-- **Set expectations**: Clarify what constitutes success
-- **Note limitations**: For interactive apps, clarify testing scope
+#### expectedBehavior 指南
+- **要具体**：描述应用实际应该做什么
+- **包含上下文**：提及关键技术（MCP、Docker、特定 AI 功能）
+- **设定预期**：明确什么算作成功
+- **说明限制**：对交互式应用，明确测试范围
 
-#### successCriteria Standards
+#### successCriteria 标准
 ```json
 "successCriteria": {
   "requiresUserInteraction": true,        // For interactive apps
@@ -221,30 +221,30 @@ This document provides standardized `ExampleInfo.json` templates for different t
 }
 ```
 
-## Template Selection Guide
+## 模板选择指南
 
-1. **Identify Application Type**:
-   - Does it require user input? → Interactive Template
-   - Is it a multi-step AI workflow? → Agentic Template  
-   - Does it use MCP? → MCP Template
-   - Does it need Docker? → Docker-Dependent Template
-   - Otherwise → Simple Template
+1. **确定应用类型**：
+   - 是否需要用户输入？→ 交互式模板
+   - 是否为多步 AI 工作流？→ 智能体模板  
+   - 是否使用 MCP？→ MCP 模板
+   - 是否需要 Docker？→ Docker 依赖模板
+   - 其他情况 → 简单模板
 
-2. **Customize Template**:
-   - Replace `[PLACEHOLDERS]` with specific values
-   - Adjust timeout based on complexity
-   - Add application-specific success patterns
-   - Configure appropriate validation mode
+2. **定制模板**：
+   - 将 `[PLACEHOLDERS]` 替换为具体值
+   - 根据复杂度调整超时
+   - 添加应用特有的成功模式
+   - 配置合适的校验模式
 
-3. **Validate Configuration**:
-   - Test locally before committing
-   - Verify all required environment variables
-   - Check timeout is sufficient but not excessive
-   - Ensure success patterns match actual output
+3. **校验配置**：
+   - 提交前先在本地测试
+   - 核实所有必需的环境变量
+   - 检查超时是否充足但不过长
+   - 确保成功模式与实际输出匹配
 
-## Maintenance Notes
+## 维护说明
 
-- **Update templates** when new patterns emerge across multiple examples
-- **Version templates** when making breaking changes to schema
-- **Document exceptions** when examples require non-standard configuration
-- **Regular review** of existing configurations against current templates
+- 当多个示例中出现新模式时，**更新模板**
+- 对 Schema 做破坏性变更时，**为模板设定版本**
+- 当示例需要非标准配置时，**记录例外情况**
+- **定期审查**现有配置与当前模板的匹配情况

@@ -17,14 +17,13 @@ import org.springframework.ai.mcp.annotation.context.StructuredElicitResult;
 import org.springframework.stereotype.Component;
 
 /**
- * The handlers of the legacy client, written for the asynchronous client type: the same
- * annotations and the same legacy schema types, but each method returns a {@code Mono}. One
- * method serves the legacy and the modern connections that it names.
+ * 旧版客户端的处理器，但为异步客户端类型编写：注解相同、旧版 schema 类型也相同，
+ * 但每个方法返回 {@code Mono}。一个方法同时服务于它所指定的旧版连接和 modern 连接。
  * <p>
- * With {@code spring.ai.mcp.client.type=ASYNC} only reactive methods are called. A
- * synchronous method that names a connection is reported with a warning at startup.
+ * 在 {@code spring.ai.mcp.client.type=ASYNC} 下只会调用响应式方法。指定了连接的同步方法
+ * 会在启动时被报告为警告。
  * <p>
- * The {@code legacy} connection exists only with the {@code mixed} profile.
+ * {@code legacy} 连接仅在 {@code mixed} profile 下存在。
  */
 @Component
 public class ClientHandlers {
@@ -35,11 +34,9 @@ public class ClientHandlers {
 	}
 
 	/**
-	 * Answers the form elicitation of both protocols. On a modern connection the SDK client
-	 * calls it for the input request of the server and then retries the tool call. The
-	 * optional {@link ToolContext} is the context of the tool call that the elicitation
-	 * belongs to, so the method knows whom to ask. An application would ask the user here
-	 * and complete the {@code Mono} with the answer.
+	 * 应答两种协议的表单引导。在 modern 连接上，SDK 客户端会在服务器请求输入时调用它，
+	 * 然后重试工具调用。可选的 {@link ToolContext} 是该引导所属工具调用的上下文，
+	 * 因此方法知道该询问谁。应用可以在这里询问用户，并用应答完成该 {@code Mono}。
 	 */
 	@McpElicitation(clients = { "tickets", "legacy" })
 	public Mono<StructuredElicitResult<Confirmation>> confirm(McpSchema.ElicitRequest request,
@@ -49,7 +46,7 @@ public class ClientHandlers {
 		return Mono.just(new StructuredElicitResult<>(ElicitResult.Action.ACCEPT, new Confirmation(true), null));
 	}
 
-	/** A progress method of the asynchronous type returns {@code Mono<Void>}. */
+	/** 异步类型的进度方法返回 {@code Mono<Void>}。 */
 	@McpProgress(clients = { "tickets", "legacy" })
 	public Mono<Void> progress(ProgressNotification notification) {
 		return Mono.fromRunnable(() -> logger.info("PROGRESS {}: {} {}", notification.progressToken(),
@@ -57,10 +54,9 @@ public class ClientHandlers {
 	}
 
 	/**
-	 * Called for a modern connection that sets {@code listen=true}: when its server reports
-	 * that the tools changed, and when the listen stream is established again after it had
-	 * ended. A modern server sends no list with the change, so the tools are listed first,
-	 * for the application and not for a caller.
+	 * 当设置了 {@code listen=true} 的 modern 连接的服务器报告工具变更时调用，
+	 * 监听流在结束之后重新建立时也会调用。modern 服务器在变更时不发送列表，
+	 * 因此会先列出工具，且是面向应用而不是某个调用者。
 	 */
 	@McpToolListChanged(clients = { "tickets", "legacy" })
 	public Mono<Void> toolsChanged(List<McpSchema.Tool> tools) {

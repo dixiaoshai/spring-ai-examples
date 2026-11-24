@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 
-# Add lib directory to path for imports
+# 将 lib 目录加入导入路径
 sys.path.insert(0, str(Path(__file__).parent / "lib"))
 
 try:
@@ -58,7 +58,7 @@ class ValidationResult:
             "recommendations": self.recommendations
         }
         
-        # Include cost information if available
+        # 如可用则包含成本信息
         if self.cost_info:
             result["cost_info"] = self.cost_info
             
@@ -71,7 +71,7 @@ class SpringAIExampleValidator:
         self.templates_dir = templates_dir or Path(__file__).parent / "templates"
         self.claude_wrapper = ClaudeCodeWrapper()
         
-        # Verify templates directory exists
+        # 核实模板目录存在
         if not self.templates_dir.exists():
             raise FileNotFoundError(f"Templates directory not found: {self.templates_dir}")
     
@@ -86,21 +86,21 @@ class SpringAIExampleValidator:
             ValidationResult with analysis outcome
         """
         try:
-            # Load log content
+            # 加载日志内容
             log_content = self._load_log_file(request.log_path)
             
-            # Load README if provided
+            # 如提供则加载 README
             readme_content = self._load_readme(request.readme_path) if request.readme_path else ""
             
-            # Build validation prompt
+            # 构建校验提示词
             prompt_content = self._build_validation_prompt(
                 request, log_content, readme_content
             )
             
-            # Execute AI validation
+            # 执行 AI 校验
             ai_result = self._execute_claude_validation(prompt_content)
             
-            # Parse and return result
+            # 解析并返回结果
             return self._parse_validation_result(ai_result, request)
             
         except Exception as e:
@@ -125,8 +125,8 @@ class SpringAIExampleValidator:
             with open(log_file, 'r', encoding='utf-8') as f:
                 content = f.read()
             
-            # Truncate very large log files to avoid token limits
-            max_chars = 50000  # Approximately 12-15K tokens
+            # 截断过大的日志文件，以避免超出 token 限制
+            max_chars = 50000  # 约 12-15K tokens
             if len(content) > max_chars:
                 truncated_msg = f"\n\n[LOG TRUNCATED - Original size: {len(content)} chars, showing last {max_chars} chars]\n\n"
                 content = truncated_msg + content[-max_chars:]
@@ -146,7 +146,7 @@ class SpringAIExampleValidator:
             with open(readme_file, 'r', encoding='utf-8') as f:
                 content = f.read()
                 
-            # Extract relevant sections (first 2000 chars should be enough for context)
+            # 提取相关章节（前 2000 个字符足以提供上下文）
             if len(content) > 2000:
                 content = content[:2000] + "\n\n[README truncated for brevity...]"
                 
@@ -163,7 +163,7 @@ class SpringAIExampleValidator:
     ) -> str:
         """Build validation prompt from template"""
         
-        # Load template
+        # 加载模板
         template_file = self.templates_dir / f"{request.prompt_template}.md"
         if not template_file.exists():
             template_file = self.templates_dir / "example_validation.md"
@@ -174,12 +174,12 @@ class SpringAIExampleValidator:
         except Exception as e:
             raise Exception(f"Error loading template {template_file}: {str(e)}")
         
-        # Prepare template variables
+        # 准备模板变量
         components_str = ", ".join(request.components) if request.components else "Single component"
         expected_behavior = request.expected_behavior or "Demonstrate Spring AI functionality as described in README"
         readme_excerpt = readme_content[:1000] + "..." if len(readme_content) > 1000 else readme_content
         
-        # Substitute template variables
+        # 替换模板变量
         prompt_content = template.format(
             example_name=request.example_name,
             components=components_str,
@@ -193,12 +193,12 @@ class SpringAIExampleValidator:
     def _execute_claude_validation(self, prompt_content: str) -> Dict[str, Any]:
         """Execute Claude Code validation"""
         try:
-            # Use Claude Code wrapper to analyze the prompt with quiet mode for cleaner JSON
+            # 使用 Claude Code 封装以静默模式分析提示词，便于得到干净的 JSON
             result = self.claude_wrapper.analyze_from_text_with_json(
                 prompt_text=prompt_content,
-                timeout=120,  # 2 minutes should be sufficient
+                timeout=120,  # 2 分钟应该足够
                 show_progress=True,
-                quiet=True  # Suppress logging for cleaner JSON parsing
+                quiet=True  # 抑制日志输出，以便更干净地解析 JSON
             )
             
             if not result.get('success'):
@@ -221,11 +221,11 @@ class SpringAIExampleValidator:
         json_data = ai_result.get('json_data')
         cost_info = ai_result.get('cost_info')
         
-        # If JSON extraction was successful, use it
+        # 如果 JSON 提取成功，则使用它
         if json_data and isinstance(json_data, dict):
             return ValidationResult(
                 success=json_data.get('success', False),
-                confidence=float(json_data.get('confidence', 0.8)),  # Default confidence if not provided
+                confidence=float(json_data.get('confidence', 0.8)),  # 未提供时的默认置信度
                 reasoning=json_data.get('reasoning', 'No reasoning provided'),
                 components_validated=json_data.get('components_validated', []),
                 functionality_demonstrated=json_data.get('functionality_demonstrated', []),
@@ -235,7 +235,7 @@ class SpringAIExampleValidator:
                 cost_info=cost_info
             )
         
-        # Fallback: try to extract JSON manually from raw response
+        # 兜底：尝试从原始响应中手动提取 JSON
         try:
             json_data = self.claude_wrapper.extract_json_from_response(raw_response)
             if json_data:
@@ -253,12 +253,12 @@ class SpringAIExampleValidator:
         except Exception:
             pass
         
-        # Final fallback: analyze raw response for basic success indicators
+        # 最终兜底：分析原始响应中的基础成功标志
         success = self._analyze_raw_response_for_success(raw_response)
         
         return ValidationResult(
             success=success,
-            confidence=0.5,  # Low confidence for non-JSON responses
+            confidence=0.5,  # 非 JSON 响应的置信度较低
             reasoning=f"Could not parse JSON response. Raw analysis: {raw_response[:200]}...",
             components_validated=[],
             functionality_demonstrated=[],
@@ -272,13 +272,13 @@ class SpringAIExampleValidator:
         """Basic heuristic analysis of raw response for success indicators"""
         response_lower = response.lower()
         
-        # Look for positive indicators
+        # 查找正面标志
         positive_indicators = [
             'success', 'successful', 'passed', 'working', 'completed',
             'demonstrated', 'functioning', 'properly'
         ]
         
-        # Look for negative indicators  
+        # 查找负面标志  
         negative_indicators = [
             'failed', 'error', 'exception', 'timeout', 'crashed',
             'unsuccessful', 'not working', 'broken'
@@ -328,7 +328,7 @@ Examples:
     
     args = parser.parse_args()
     
-    # Create validation request
+    # 创建校验请求
     request = ValidationRequest(
         log_path=args.log_path,
         example_name=args.example_name,
@@ -338,11 +338,11 @@ Examples:
         prompt_template=args.template
     )
     
-    # Create validator and run validation
+    # 创建校验器并运行校验
     try:
         validator = SpringAIExampleValidator()
 
-        # Debug: Check if Claude CLI is available
+        # 调试：检查 Claude CLI 是否可用
         if args.verbose:
             import subprocess
             try:
@@ -370,7 +370,7 @@ Examples:
                 for item in result.issues_found:
                     print(f"  - {item}")
                     
-        # Set exit code based on validation result
+        # 根据校验结果设置退出码
         sys.exit(0 if result.success else 1)
         
     except Exception as e:

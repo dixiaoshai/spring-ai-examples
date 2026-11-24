@@ -1,101 +1,101 @@
-# Remaining Test Failures Analysis
+# 剩余测试失败分析
 
-**Date**: December 2024  
-**Status**: 7 tests still failing/excluded from CI
+**日期**：2024 年 12 月  
+**状态**：仍有 7 个测试失败/被排除在 CI 之外
 
-## Summary of Issues
+## 问题汇总
 
-### 1. Web Server Tests (Partial Solution)
+### 1. Web 服务器测试（部分解决）
 
 #### ❌ `misc/openai-streaming-response`
-- **Status**: Test created but validation is weak
-- **Current validation**: Only checks for SSE data pattern
-- **Missing**: Doesn't validate actual joke content or streaming chunks
-- **Need**: Better SSE parsing and content validation
-- **Not in CI**: Need to add to main workflow or web-server workflow
+- **状态**：测试已创建，但校验偏弱
+- **当前校验**：仅检查 SSE 数据模式
+- **缺失**：未校验实际的笑话内容或流式数据块
+- **需要**：更好的 SSE 解析与内容校验
+- **未纳入 CI**：需要加入主工作流或 Web 服务器工作流
 
 #### ❌ `model-context-protocol/weather/starter-webmvc-server`  
-- **Status**: Test created but validation is minimal
-- **Current validation**: Only checks SSE content type
-- **Missing**: No actual MCP protocol testing
-- **Need**: Send MCP initialize request, validate tools listing
-- **Not in CI**: Need to add to main workflow or web-server workflow
+- **状态**：测试已创建，但校验极少
+- **当前校验**：仅检查 SSE 内容类型
+- **缺失**：没有真正的 MCP 协议测试
+- **需要**：发送 MCP initialize 请求，校验工具列表
+- **未纳入 CI**：需要加入主工作流或 Web 服务器工作流
 
-### 2. Infrastructure Dependencies
+### 2. 基础设施依赖
 
 #### ❌ `kotlin/rag-with-kotlin`
-- **Issue**: Requires Docker for vector database
-- **Solution**: Add Docker support to CI or mock the database
-- **Complexity**: High - needs Docker in GitHub Actions
+- **问题**：需要 Docker 提供向量数据库
+- **方案**：为 CI 添加 Docker 支持，或模拟数据库
+- **复杂度**：高 - 需要在 GitHub Actions 中使用 Docker
 
-### 3. Connection Issues
+### 3. 连接问题
 
 #### ❌ `model-context-protocol/client-starter/starter-webflux-client`
-- **Issue**: Connection refused when trying to connect to MCP servers
-- **Error**: Likely trying to connect to servers that aren't running
-- **Solution**: Need to start MCP servers before running client
-- **Complexity**: Medium - requires orchestration
+- **问题**：连接 MCP 服务器时被拒绝
+- **错误**：可能是在尝试连接未运行的服务器
+- **方案**：需要在运行客户端之前启动 MCP 服务器
+- **复杂度**：中 - 需要编排
 
-### 4. Client-Server Orchestration
+### 4. 客户端—服务器编排
 
 #### ❌ `model-context-protocol/dynamic-tool-update/client`
-- **Issue**: Needs server running
-- **Solution**: Start server, then run client
-- **Complexity**: High - requires Phase 5 full implementation
+- **问题**：需要服务器正在运行
+- **方案**：先启动服务器，再运行客户端
+- **复杂度**：高 - 需要完整实现第 5 阶段
 
 #### ❌ `model-context-protocol/dynamic-tool-update/server`
-- **Issue**: Needs client to connect
-- **Solution**: Start server, then run client to test
-- **Complexity**: High - requires Phase 5 full implementation
+- **问题**：需要客户端连接
+- **方案**：先启动服务器，再运行客户端进行测试
+- **复杂度**：高 - 需要完整实现第 5 阶段
 
-### 5. Long Running Tests (Fixed but not in CI)
+### 5. 长时间运行的测试（已修复但未纳入 CI）
 
 #### ⚠️ `prompt-engineering/prompt-engineering-patterns`
-- **Status**: Fixed timeout (120s → 300s)
-- **Issue**: Not added to CI yet
-- **Solution**: Add to CI with longer timeout
-- **Complexity**: Low - just needs CI update
+- **状态**：已修复超时（120 秒 → 300 秒）
+- **问题**：尚未加入 CI
+- **方案**：以更长的超时时间加入 CI
+- **复杂度**：低 - 只需更新 CI
 
-## Validation Quality Issues
+## 校验质量问题
 
-### Current Web Server Test Limitations
+### 当前 Web 服务器测试的局限
 
-1. **openai-streaming-response**:
-   - Sends: `message=Tell%20me%20a%20short%20joke`
-   - Validates: Basic SSE format
-   - **Missing**: Actual joke content, streaming chunks, completion
+1. **openai-streaming-response**：
+   - 发送：`message=Tell%20me%20a%20short%20joke`
+   - 校验：基础 SSE 格式
+   - **缺失**：实际笑话内容、流式数据块、完成状态
 
-2. **weather/starter-webmvc-server**:
-   - Sends: GET to `/mcp/message` 
-   - Validates: Content type only
-   - **Missing**: MCP protocol handshake, tool discovery, weather queries
+2. **weather/starter-webmvc-server**：
+   - 发送：对 `/mcp/message` 的 GET 请求
+   - 校验：仅内容类型
+   - **缺失**：MCP 协议握手、工具发现、天气查询
 
-## Recommended Fixes Priority
+## 建议的修复优先级
 
-### Quick Wins (Low Complexity)
-1. **Add `prompt-engineering-patterns` to CI** - Just needs workflow update
-2. **Add `kotlin-function-callback` to CI** - Already passes locally
+### 快速见效（低复杂度）
+1. **将 `prompt-engineering-patterns` 加入 CI** - 只需更新工作流
+2. **将 `kotlin-function-callback` 加入 CI** - 本地已通过
 
-### Medium Complexity
-3. **Improve web server validations** - Parse SSE properly, validate content
-4. **Add web server tests to CI** - Update workflow to include them
+### 中等复杂度
+3. **改进 Web 服务器校验** - 正确解析 SSE、校验内容
+4. **将 Web 服务器测试加入 CI** - 更新工作流以包含它们
 
-### High Complexity  
-5. **Client-Server Orchestration** - Full Phase 5 implementation needed
-6. **Docker Support** - Add Docker to CI for `kotlin/rag-with-kotlin`
-7. **WebFlux Client Fix** - Debug connection issues, may need server setup
+### 高复杂度  
+5. **客户端—服务器编排** - 需要完整实现第 5 阶段
+6. **Docker 支持** - 为 `kotlin/rag-with-kotlin` 在 CI 中添加 Docker
+7. **修复 WebFlux 客户端** - 排查连接问题，可能需要准备服务器
 
-## Actual Test Coverage
+## 实际测试覆盖情况
 
-- **Total Examples**: ~33
-- **Tests Created**: 24 (73%)
-- **Actually Passing**: 18 (with prompt-engineering fix)
-- **In CI**: 17 (missing prompt-engineering and kotlin-function-callback)
-- **True Coverage**: 54% (18/33)
+- **示例总数**：约 33
+- **已创建测试**：24（73%）
+- **实际通过**：18（含 prompt-engineering 的修复）
+- **已纳入 CI**：17（缺少 prompt-engineering 与 kotlin-function-callback）
+- **真实覆盖率**：54%（18/33）
 
-## Next Steps
+## 后续步骤
 
-1. **Immediate**: Add the 2 fixed tests to CI (prompt-engineering, kotlin-function-callback)
-2. **Short-term**: Improve web server test validation
-3. **Medium-term**: Implement proper client-server orchestration
-4. **Long-term**: Add Docker support for remaining tests
+1. **立即**：将 2 个已修复的测试加入 CI（prompt-engineering、kotlin-function-callback）
+2. **短期**：改进 Web 服务器测试的校验
+3. **中期**：实现合适的客户端—服务器编排
+4. **长期**：为剩余测试添加 Docker 支持

@@ -25,22 +25,22 @@ class MockKotlinWeatherService : Function1<WeatherRequest, WeatherResponse> {
 }
 
 /**
- * Temperature units.
+ * 温度单位。
  */
 enum class Unit(val unitName: String) {
 
     /**
-     * Celsius.
+     * 摄氏度。
      */
     C("metric"),
     /**
-     * Fahrenheit.
+     * 华氏度。
      */
     F("imperial");
 }
 
 /**
- * Weather Function request.
+ * 天气函数请求。
  */
 @JsonInclude(Include.NON_NULL)
 @JsonClassDescription("Weather API request")
@@ -60,7 +60,7 @@ data class WeatherRequest(
 
 
 /**
- * Weather Function response.
+ * 天气函数响应。
  */
 data class WeatherResponse(val temp: Double,
                            val feels_like: Double,

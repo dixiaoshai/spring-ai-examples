@@ -1,20 +1,20 @@
-# Spring AI - MCP Brave Search (Starter)
+# Spring AI - MCP Brave 搜索（Starter）
 
-Demonstrates Spring AI's MCP client with the [Brave Search MCP Server](https://github.com/modelcontextprotocol/servers/tree/main/src/brave-search) using Spring Boot auto-configuration. On startup it asks one predefined question, prints the answer, and exits.
+使用 Spring Boot 自动配置，演示 Spring AI 的 MCP 客户端与 [Brave Search MCP Server](https://github.com/modelcontextprotocol/servers/tree/main/src/brave-search) 的集成。应用启动时提出一个预定义问题，打印答案后退出。
 
-Unlike the manual approach, the MCP client is fully auto-configured via `application.properties` and `mcp-servers-config.json` — no explicit bean definitions required.
+与手动方式不同，MCP 客户端完全通过 `application.properties` 与 `mcp-servers-config.json` 自动配置 —— 无需显式定义 Bean。
 
 <img src="spring-ai-mcp-brave.jpg" width="600"/>
 
-## Prerequisites
+## 前置条件
 
 - Java 17+
 - Maven 3.6+
-- npx (via [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm))
-- Anthropic API key
-- Brave Search API key — [get one here](https://brave.com/search/api/)
+- npx（通过 [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)）
+- Anthropic API 密钥
+- Brave Search API 密钥 —— [在此获取](https://brave.com/search/api/)
 
-## Setup
+## 安装配置
 
 ```bash
 npm install -g npx
@@ -28,15 +28,15 @@ export BRAVE_API_KEY='your-brave-api-key'
 ./mvnw clean install
 ```
 
-## Running
+## 运行
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-## How It Works
+## 工作原理
 
-**Dependencies** (`pom.xml`):
+**依赖**（`pom.xml`）：
 ```xml
 <dependency>
     <groupId>org.springframework.ai</groupId>
@@ -48,15 +48,15 @@ export BRAVE_API_KEY='your-brave-api-key'
 </dependency>
 ```
 
-**MCP configuration** — choose one approach:
+**MCP 配置** —— 选择一种方式：
 
-Option A — inline in `application.properties`:
+方式 A —— 直接写在 `application.properties` 中：
 ```properties
 spring.ai.mcp.client.stdio.connections.brave-search.command=npx
 spring.ai.mcp.client.stdio.connections.brave-search.args=-y,@modelcontextprotocol/server-brave-search
 ```
 
-Option B — external `mcp-servers-config.json`:
+方式 B —— 使用外部 `mcp-servers-config.json`：
 ```properties
 spring.ai.mcp.client.stdio.servers-configuration=classpath:/mcp-servers-config.json
 ```
@@ -72,7 +72,7 @@ spring.ai.mcp.client.stdio.servers-configuration=classpath:/mcp-servers-config.j
 }
 ```
 
-**Application code**:
+**应用代码**：
 ```java
 @Bean
 public CommandLineRunner predefinedQuestions(ChatClient.Builder chatClientBuilder,
@@ -91,9 +91,9 @@ public CommandLineRunner predefinedQuestions(ChatClient.Builder chatClientBuilde
 }
 ```
 
-## Versions
+## 版本
 
-| Dependency | Version |
+| 依赖 | 版本 |
 |---|---|
 | Spring Boot | 4.1.1 |
 | Spring AI | 2.1.0-SNAPSHOT |

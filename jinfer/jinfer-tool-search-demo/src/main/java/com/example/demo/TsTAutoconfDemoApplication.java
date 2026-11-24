@@ -38,8 +38,8 @@ public class TsTAutoconfDemoApplication {
 		SpringApplication.run(TsTAutoconfDemoApplication.class, args);
 	}
 
-	// tool-index-type=vector: the tool descriptions are embedded by the local jinfer
-	// EmbeddingModel and searched in this in-memory store.
+	// tool-index-type=vector：工具描述由本地 jinfer 的
+	// EmbeddingModel 生成嵌入，并在这个内存存储中检索。
 	@Bean
 	VectorStore vectorStore(EmbeddingModel embeddingModel) {
 		return SimpleVectorStore.builder(embeddingModel).build();

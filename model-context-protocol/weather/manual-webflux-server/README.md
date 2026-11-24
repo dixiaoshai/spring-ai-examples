@@ -1,54 +1,54 @@
-# MCP Weather Server — Manual WebFlux
+# MCP 天气服务器 — 手动 WebFlux
 
-A Spring AI MCP server built manually (without the MCP starter) using Spring WebFlux. Supports both **stdio** and **SSE** transports and exposes weather forecast tools via the [National Weather Service API](https://www.weather.gov/documentation/services-web-api).
+一个手动构建（不使用 MCP starter）的 Spring AI MCP 服务器，使用 Spring WebFlux 实现。同时支持 **stdio** 和 **SSE** 传输，并通过 [National Weather Service API](https://www.weather.gov/documentation/services-web-api) 暴露天气预报工具。
 
-## Build
+## 构建
 
 ```bash
 ./mvnw clean install -DskipTests
 ```
 
-## Run the Server
+## 运行服务器
 
-Controlled by the `transport.mode` property:
+由 `transport.mode` 属性控制：
 
-**SSE mode** (HTTP server on port 8080):
+**SSE 模式**（8080 端口上的 HTTP 服务器）：
 ```bash
 java -Dtransport.mode=sse -jar target/mcp-weather-server-0.0.1-SNAPSHOT.jar
 ```
 
-**Stdio mode** (launched automatically by the stdio client):
+**Stdio 模式**（由 stdio 客户端自动启动）：
 ```bash
 java -Dtransport.mode=stdio -Dspring.main.web-application-type=none -jar target/mcp-weather-server-0.0.1-SNAPSHOT.jar
 ```
 
-## Sample Clients
+## 示例客户端
 
-Run from the repository root after building:
+构建后从仓库根目录运行：
 
-**SSE client** — connects to a running SSE server:
+**SSE 客户端** — 连接到正在运行的 SSE 服务器：
 ```bash
 # Start server first (SSE mode), then:
 java -cp target/mcp-weather-server-0.0.1-SNAPSHOT.jar \
   org.springframework.ai.mcp.sample.client.ClientSse
 ```
 
-**Stdio client** — launches the server as a subprocess automatically:
+**Stdio 客户端** — 自动以子进程方式启动服务器：
 ```bash
 java -cp target/mcp-weather-server-0.0.1-SNAPSHOT.jar \
   org.springframework.ai.mcp.sample.client.ClientStdio
 ```
 
-## Available Tools
+## 可用的工具
 
-| Tool | Description | Parameters |
+| 工具 | 描述 | 参数 |
 |------|-------------|------------|
-| `getWeatherForecastByLocation` | Weather forecast for coordinates | `latitude`, `longitude` |
-| `getAlerts` | Active weather alerts by US state | `state` (e.g. `NY`) |
+| `getWeatherForecastByLocation` | 按坐标获取天气预报 | `latitude`、`longitude` |
+| `getAlerts` | 按美国州获取当前天气预警 | `state`（例如 `NY`） |
 
-## Server Configuration
+## 服务器配置
 
-The server is wired manually in `McpServerConfig`:
+服务器在 `McpServerConfig` 中手动装配：
 
 ```java
 McpSyncServer server = McpServer.sync(transportProvider)
@@ -58,6 +58,6 @@ McpSyncServer server = McpServer.sync(transportProvider)
     .build();
 ```
 
-Transport providers are conditionally activated via `transport.mode`:
+传输提供者通过 `transport.mode` 条件启用：
 - `stdio` → `StdioServerTransportProvider`
-- `sse` → `WebFluxSseServerTransportProvider` (endpoint: `/mcp/message`, SSE: `/sse`)
+- `sse` → `WebFluxSseServerTransportProvider`（端点：`/mcp/message`，SSE：`/sse`）

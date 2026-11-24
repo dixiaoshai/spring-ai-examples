@@ -1,36 +1,36 @@
-# Prompt Engineering Patterns - Integration Testing Notes
+# 提示词工程模式 - 集成测试说明
 
-## Application Overview
-This example demonstrates comprehensive prompt engineering patterns with ~24 AI API calls:
-- 17 different prompting techniques
-- Multiple model configurations (temperature, top-k, top-p)
-- Various output formats (strings, JSON, structured entities)
-- Educational content covering advanced AI prompting
+## 应用概述
+本示例演示全面的提示词工程模式，包含约 24 次 AI API 调用：
+- 17 种不同的提示技术
+- 多种模型配置（temperature、top-k、top-p）
+- 多种输出格式（字符串、JSON、结构化实体）
+- 涵盖高级 AI 提示的教学内容
 
-## Integration Test Approach
-✅ Test the full application as-is (no modifications to preserve learning value)
-✅ Extended timeout (15 minutes) to accommodate all API calls
-✅ Success patterns validate key outputs from different prompt types
-✅ Uses original Anthropic Claude configuration
+## 集成测试方法
+✅ 按原样测试完整应用（不做修改，以保留学习价值）
+✅ 延长超时时间（15 分钟），以容纳所有 API 调用
+✅ 成功模式校验来自不同提示词类型的关键输出
+✅ 使用原始的 Anthropic Claude 配置
 
-## Success Pattern Coverage
-✅ pt_zero_shot - "Output: POSITIVE|NEGATIVE|NEUTRAL" 
-✅ pt_role_prompting_1/2 - "Output:.*museum" (travel suggestions)
-✅ pt_self_consistency - "The email is.*IMPORTANT" (classification voting)
-✅ Application completion - "Prompt engineering patterns demonstration completed!"
+## 成功模式覆盖
+✅ pt_zero_shot - "Output: POSITIVE|NEGATIVE|NEUTRAL"
+✅ pt_role_prompting_1/2 - "Output:.*museum"（旅行建议）
+✅ pt_self_consistency - "The email is.*IMPORTANT"（分类投票）
+✅ 应用完成 - "Prompt engineering patterns demonstration completed!"
 
-## Performance Characteristics
-- Expected runtime: 5-10 minutes (depending on API latency)
-- API calls: ~24 total across all patterns
-- Cost: Moderate (comprehensive AI usage for demonstration)
-- Reliability: Dependent on Anthropic API availability
+## 性能特征
+- 预计运行时间：5-10 分钟（取决于 API 延迟）
+- API 调用：所有模式合计约 24 次
+- 成本：中等（演示中全面使用 AI）
+- 可靠性：取决于 Anthropic API 的可用性
 
-## Design Rationale
-This example prioritizes educational value over test speed. It demonstrates:
-1. Multiple prompting strategies
-2. Various model configurations  
-3. Different output parsing approaches
-4. Advanced techniques (CoT, ToT, self-consistency)
+## 设计理由
+本示例优先考虑教学价值而非测试速度。它演示了：
+1. 多种提示策略
+2. 多种模型配置
+3. 不同的输出解析方法
+4. 高级技术（CoT、ToT、自洽性）
 
-The integration test validates the Spring AI framework can handle complex, multi-pattern
-workflows rather than testing individual pattern effectiveness.
+集成测试验证 Spring AI 框架能够处理复杂的多模式
+工作流，而不是测试单个模式的有效性。

@@ -1,51 +1,51 @@
-# Kotlin Spring AI Hello World Application
+# Kotlin Spring AI Hello World 应用
 
-A simple "Hello World" Spring Boot application written in Kotlin that demonstrates Spring AI integration by fetching jokes from OpenAI.
+一个用 Kotlin 编写的简单 "Hello World" Spring Boot 应用，通过从 OpenAI 获取笑话来演示 Spring AI 集成。
 
-## Overview
+## 概述
 
-This hello world application shows how to get started with Spring AI and OpenAI in a Kotlin Spring Boot project. When run, it connects to OpenAI's API and requests a joke, then displays the setup and punchline - a fun twist on the traditional "Hello World" example. The application demonstrates Kotlin's extension function capabilities by using `org.springframework.ai.chat.client.entity` to automatically convert the chat response into a `Joke` data object, showcasing how Kotlin's type-safe builders can make AI response handling more elegant and type-safe.
+这个 hello world 应用展示了如何在 Kotlin Spring Boot 项目中开始使用 Spring AI 与 OpenAI。运行时，它会连接 OpenAI 的 API 并请求一个笑话，然后显示铺垫和笑点——这是对传统 "Hello World" 示例的有趣改编。应用通过使用 `org.springframework.ai.chat.client.entity` 将聊天响应自动转换为 `Joke` 数据对象，展示了 Kotlin 扩展函数的能力，说明 Kotlin 的类型安全构建器如何让 AI 响应处理更优雅、更类型安全。
 
-## Prerequisites
+## 前置条件
 
-- JDK 17 or later
-- OpenAI API key
+- JDK 17 或更高版本
+- OpenAI API 密钥
 
-## Dependencies
+## 依赖
 
-The application uses the following main dependencies:
+应用使用以下主要依赖：
 - Spring Boot
 - Spring AI OpenAI starter
-- Kotlin standard library and reflection
+- Kotlin 标准库与反射
 - Spring Web starter
 
-## Configuration
+## 配置
 
-Add your OpenAI API key to `application.properties` or `application.yml`:
+将你的 OpenAI API 密钥添加到 `application.properties` 或 `application.yml`：
 ```yaml
 spring.ai.openai.api-key=your-api-key-here
 ```
 
-## How It Works
+## 工作原理
 
-The application uses Spring AI's OpenAI integration to make API calls to OpenAI's service. The main components are:
+应用使用 Spring AI 的 OpenAI 集成调用 OpenAI 服务。主要组件包括：
 
-1. A Spring Boot application class (`KotlinHelloWorldApplication`)
-2. A `CommandLineRunner` bean that:
-- Creates a chat client
-- Sends a prompt requesting a joke
-- Parses the response into a `Joke` object
-- Prints the setup and punchline
+1. 一个 Spring Boot 应用类（`KotlinHelloWorldApplication`）
+2. 一个 `CommandLineRunner` Bean，它：
+- 创建聊天客户端
+- 发送请求笑话的提示词
+- 将响应解析为 `Joke` 对象
+- 打印铺垫和笑点
 
-## Running the Application
+## 运行应用
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-The application will start, fetch a joke from OpenAI, and display it in the console.
+应用将启动，从 OpenAI 获取一个笑话并显示在控制台中。
 
-## Example Output
+## 示例输出
 
 ```
 Joke:
@@ -53,8 +53,8 @@ Setup: Why don't programmers like nature?
 Punchline: It has too many bugs!
 ```
 
-## Notes
+## 说明
 
-- Make sure to keep your OpenAI API key secure and never commit it to version control
-- The application requires an active internet connection to communicate with OpenAI's API
-- Rate limits and API usage costs may apply based on your OpenAI account settings
+- 请务必妥善保管你的 OpenAI API 密钥，切勿将其提交到版本控制中
+- 应用需要有效的互联网连接才能与 OpenAI 的 API 通信
+- 根据你的 OpenAI 账户设置，可能会受到速率限制并产生 API 使用费用

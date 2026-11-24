@@ -24,16 +24,15 @@ public class McpClientHandlerProviders {
 	private static final Logger logger = LoggerFactory.getLogger(McpClientHandlerProviders.class);
 
 	/**
-	 * Handles progress notifications for the client identified by
-	 * {@code clientId = "server1"}. <br>
-	 * The {@code clientId} is configured via application properties, for example:
+	 * 处理 {@code clientId = "server1"} 所标识客户端的进度通知。<br>
+	 * {@code clientId} 通过应用属性配置，例如：
 	 * <ul>
 	 * <li>{@code spring.ai.mcp.client.sse.connections.server1.url=...}</li>
 	 * <li>{@code spring.ai.mcp.client.streamable-http.connections.server1.url=...}</li>
 	 * </ul>
 	 *
-	 * The handler is assigned only to the client with ID "server1".
-	 * @param progressNotification the progress notification received from the server
+	 * 该处理器仅分配给 ID 为 "server1" 的客户端。
+	 * @param progressNotification 从服务器收到的进度通知
 	 */
 	@McpProgress(clients = "server1")
 	public void progressHandler(ProgressNotification progressNotification) {

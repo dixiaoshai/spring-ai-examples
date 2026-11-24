@@ -25,44 +25,44 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.util.Assert;
 
 /**
- * Implements the Parallelization Workflow pattern for efficient concurrent processing
- * of multiple LLM operations. This pattern enables parallel execution of LLM calls
- * with automated output aggregation, significantly improving throughput for
- * batch processing scenarios.
+ * 实现并行化工作流模式，用于对多个 LLM 操作进行
+ * 高效的并发处理。该模式支持并行执行 LLM 调用，
+ * 并自动聚合输出，可显著提升
+ * 批处理场景的吞吐量。
  * 
- * <p>The pattern manifests in two key variations:</p>
+ * <p>该模式体现为两种关键变体：</p>
  * 
  * <ul>
- * <li><b>Sectioning</b>: Decomposes a complex task into independent subtasks that
- * can be processed concurrently. For example, analyzing different sections of a
- * document simultaneously.</li>
- * <li><b>Voting</b>: Executes identical prompts multiple times in parallel to
- * gather diverse perspectives or implement majority voting mechanisms. This is
- * particularly useful for validation or consensus-building tasks.</li>
+ * <li><b>分段（Sectioning）</b>：将复杂任务分解为可以
+ * 并发处理的独立子任务。例如，同时分析
+ * 文档的不同部分。</li>
+ * <li><b>投票（Voting）</b>：并行多次执行相同的提示词，
+ * 以收集多样化视角或实现多数投票机制。这对于
+ * 校验或建立共识类任务特别有用。</li>
  * </ul>
  *
- * <p><b>Key Benefits:</b></p>
+ * <p><b>主要优势：</b></p>
  * <ul>
- * <li>Improved throughput through concurrent processing</li>
- * <li>Better resource utilization of LLM API capacity</li>
- * <li>Reduced overall processing time for batch operations</li>
- * <li>Enhanced result quality through multiple perspectives (in voting scenarios)</li>
+ * <li>通过并发处理提升吞吐量</li>
+ * <li>更好地利用 LLM API 容量的资源</li>
+ * <li>缩短批处理操作的整体处理时间</li>
+ * <li>通过多视角提升结果质量（在投票场景中）</li>
  * </ul>
  *
- * <p><b>When to Use:</b></p>
+ * <p><b>使用场景：</b></p>
  * <ul>
- * <li>Processing large volumes of similar but independent items</li>
- * <li>Tasks requiring multiple independent perspectives or validations</li>
- * <li>Scenarios where processing time is critical and tasks are parallelizable</li>
- * <li>Complex operations that can be decomposed into independent subtasks</li>
+ * <li>处理大量相似但相互独立的条目</li>
+ * <li>需要多个独立视角或校验的任务</li>
+ * <li>处理时间至关重要且任务可并行化的场景</li>
+ * <li>可分解为独立子任务的复杂操作</li>
  * </ul>
  *
- * <p><b>Implementation Considerations:</b></p>
+ * <p><b>实现注意事项：</b></p>
  * <ul>
- * <li>Ensure tasks are truly independent to avoid consistency issues</li>
- * <li>Consider API rate limits when determining parallel execution capacity</li>
- * <li>Monitor resource usage (memory, CPU) when scaling parallel operations</li>
- * <li>Implement appropriate error handling for parallel task failures</li>
+ * <li>确保任务真正相互独立，以避免一致性问题</li>
+ * <li>确定并行执行容量时考虑 API 速率限制</li>
+ * <li>扩展并行操作时监控资源使用（内存、CPU）</li>
+ * <li>为并行任务失败实现适当的错误处理</li>
  * </ul>
  *
  * @author Christian Tzolov
@@ -81,21 +81,21 @@ public class ParallelizationlWorkflow {
 	}
 
 	/**
-	 * Processes multiple inputs concurrently using a fixed thread pool and the same prompt template.
-	 * This method maintains the order of results corresponding to the input order.
+	 * 使用固定线程池和相同的提示词模板并发处理多个输入。
+	 * 该方法保持结果顺序与输入顺序一致。
 	 *
-	 * @param prompt   The prompt template to use for each input. The input will be appended to this prompt.
-	 *                 Must not be null. Example: "Translate the following text to French:"
-	 * @param inputs   List of input strings to process. Each input will be processed independently
-	 *                 in parallel. Must not be null or empty. Example: ["Hello", "World", "Good morning"]
-	 * @param nWorkers The number of concurrent worker threads to use. This controls the maximum
-	 *                 number of simultaneous LLM API calls. Must be greater than 0. Consider API
-	 *                 rate limits when setting this value.
-	 * @return List of processed results in the same order as the inputs. Each result contains
-	 *         the LLM's response for the corresponding input.
-	 * @throws IllegalArgumentException if prompt is null, inputs is null/empty, or nWorkers <= 0
-	 * @throws RuntimeException if processing fails for any input, with the cause containing
-	 *         the specific error details
+	 * @param prompt 用于每个输入的提示词模板。输入将追加到该提示词之后。
+	 * 不能为 null。示例："Translate the following text to French:"
+	 * @param inputs 待处理的输入字符串列表。每个输入都将被独立
+	 * 并行处理。不能为 null 或空。示例：["Hello", "World", "Good morning"]
+	 * @param nWorkers 要使用的并发工作线程数。它控制
+	 * 同时进行的 LLM API 调用上限。必须大于 0。设置该值时应
+	 * 考虑 API 速率限制。
+	 * @return 按输入顺序排列的处理结果列表。每个结果包含
+	 * 对应输入的 LLM 响应。
+	 * @throws IllegalArgumentException 如果 prompt 为 null、inputs 为 null/空，或 nWorkers <= 0
+	 * @throws RuntimeException 如果任一输入处理失败，其 cause 包含
+	 * 具体的错误详情
 	 */
 	public List<String> parallel(String prompt, List<String> inputs, int nWorkers) {
 		Assert.notNull(prompt, "Prompt cannot be null");
@@ -114,7 +114,7 @@ public class ParallelizationlWorkflow {
 					}, executor))
 					.collect(Collectors.toList());
 
-			// Wait for all tasks to complete
+			// 等待所有任务完成
 			CompletableFuture<Void> allFutures = CompletableFuture.allOf(
 					futures.toArray(CompletableFuture[]::new));
 			allFutures.join();

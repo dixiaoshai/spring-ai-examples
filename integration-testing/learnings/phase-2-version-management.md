@@ -1,47 +1,47 @@
-# Phase 2: Version Management System - Learnings
+# 第 2 阶段：版本管理系统 - 经验总结
 
-## Summary
-Successfully created Spring AI version management scripts with backup/restore capabilities. All three scripts work as expected.
+## 摘要
+成功创建了具备备份/恢复能力的 Spring AI 版本管理脚本。三个脚本均按预期工作。
 
-## Scripts Created
-1. **update-spring-ai-version.sh** - Updates Spring AI version across all pom.xml files
-2. **restore-spring-ai-version.sh** - Restores versions from backup
-3. **check-spring-ai-version.sh** - Checks current version distribution
+## 创建的脚本
+1. **update-spring-ai-version.sh** - 更新所有 pom.xml 文件中的 Spring AI 版本
+2. **restore-spring-ai-version.sh** - 从备份恢复版本
+3. **check-spring-ai-version.sh** - 检查当前版本分布
 
-## Key Statistics
-- Total pom.xml files: 34
-- Files with spring-ai.version property: 17
-- Files without version property: 17 (use BOM or hardcoded versions)
+## 关键统计
+- pom.xml 文件总数：34
+- 含 spring-ai.version 属性的文件：17
+- 不含版本属性的文件：17（使用 BOM 或硬编码版本）
 
-## Testing Results
-### Version Update to 1.0.1
-- ✅ Successfully updated all 17 files to 1.0.1
-- ✅ Backup created automatically
-- ✅ Integration test passed with 1.0.1
+## 测试结果
+### 版本更新到 1.0.1
+- ✅ 成功将所有 17 个文件更新到 1.0.1
+- ✅ 自动创建备份
+- ✅ 使用 1.0.1 的集成测试通过
 
-### Version Restore to 1.1.0-SNAPSHOT
-- ✅ Successfully restored all 17 files from backup
-- ✅ Integration test passed with 1.1.0-SNAPSHOT
+### 版本恢复到 1.1.0-SNAPSHOT
+- ✅ 成功从备份恢复所有 17 个文件
+- ✅ 使用 1.1.0-SNAPSHOT 的集成测试通过
 
-## Issues Encountered and Resolved
-1. **Check script including backup files**: Initially the check script was counting backup pom.xml files
-   - **Fix**: Added `-not -path "./.version-backups/*"` to find command
+## 遇到并解决的问题
+1. **检查脚本把备份文件也统计进来**：最初检查脚本会统计备份的 pom.xml 文件
+   - **修复**：在 find 命令中添加 `-not -path "./.version-backups/*"`
 
-## Version Compatibility
-| Version | Test Result | Notes |
+## 版本兼容性
+| 版本 | 测试结果 | 备注 |
 |---------|------------|-------|
-| 1.0.1 | ✅ PASSED | Published release version |
-| 1.1.0-SNAPSHOT | ✅ PASSED | Current development version |
+| 1.0.1 | ✅ 通过 | 已发布的发行版版本 |
+| 1.1.0-SNAPSHOT | ✅ 通过 | 当前开发版本 |
 
-## Script Features
-- **Validation**: Version format validation (X.Y.Z or X.Y.Z-SNAPSHOT)
-- **Backup**: Automatic timestamped backups before modifications
-- **Verification**: Sample file check after update
-- **Statistics**: Count of files updated and location of backups
-- **Safety**: Non-destructive with easy restore capability
+## 脚本特性
+- **校验**：版本格式校验（X.Y.Z 或 X.Y.Z-SNAPSHOT）
+- **备份**：修改前自动创建带时间戳的备份
+- **核实**：更新后抽样检查文件
+- **统计**：统计已更新文件数量与备份位置
+- **安全**：非破坏性，且易于恢复
 
-## Ready for Phase 3
-- Version management system fully operational
-- Both target versions tested and working
-- Scripts are idempotent and safe to use in CI/CD
-- Backup/restore provides rollback capability
+## 为第 3 阶段做好准备
+- 版本管理系统已完全可用
+- 两个目标版本均已测试并通过
+- 脚本具有幂等性，可安全用于 CI/CD
+- 备份/恢复提供了回滚能力

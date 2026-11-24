@@ -1,74 +1,74 @@
-# JUnit5 Migration Strategy: From JBang to Annotation-Based Testing
+# JUnit5 迁移策略：从 JBang 到基于注解的测试
 
-## Executive Summary
+## 执行摘要
 
-This document outlines a comprehensive migration strategy for transitioning the Spring AI Examples integration testing framework from the current JBang-based system to a modern JUnit5 annotation-driven architecture. The migration will be executed in phases to ensure zero disruption to existing tests while progressively introducing new capabilities.
+本文档给出了一套完整的迁移策略，用于把 Spring AI Examples 集成测试框架从当前基于 JBang 的系统迁移到现代化的 JUnit5 注解驱动架构。迁移将分阶段执行，在逐步引入新能力的同时确保对现有测试零干扰。
 
-## Current State Analysis
+## 现状分析
 
-### Existing System Overview
-- **24 modules** with integration tests
-- **JBang scripts** using centralized `IntegrationTestUtils.java`
-- **JSON configuration** via `ExampleInfo.json`
-- **AI validation** through Python scripts
-- **Manual execution** via shell scripts
+### 现有系统概览
+- **24 个模块**带集成测试
+- **JBang 脚本**，使用集中式的 `IntegrationTestUtils.java`
+- 通过 `ExampleInfo.json` 进行 **JSON 配置**
+- 通过 Python 脚本实现 **AI 校验**
+- 通过 shell 脚本进行 **手动执行**
 
-### Current System Strengths
-- Lightweight and simple
-- No compilation required
-- Centralized utilities (84% code reduction)
-- Working AI validation pipeline
-- Good test coverage
+### 当前系统的优势
+- 轻量、简单
+- 无需编译
+- 集中式工具类（代码量减少 84%）
+- AI 校验流水线可用
+- 测试覆盖良好
 
-### Current System Limitations
-- No IDE integration for debugging
-- Limited CI/CD integration
-- No type safety for configurations
-- Manual test discovery
-- No parallel execution support
-- Limited reporting capabilities
+### 当前系统的局限
+- 没有可用于调试的 IDE 集成
+- CI/CD 集成有限
+- 配置没有类型安全
+- 测试需手动发现
+- 不支持并行执行
+- 报告能力有限
 
-## Migration Principles
+## 迁移原则
 
-### Core Principles
-1. **Zero Disruption**: Existing tests must continue working throughout migration
-2. **Incremental Adoption**: Module-by-module migration with validation gates
-3. **Backward Compatibility**: Support both systems during transition period
-4. **Automated Tooling**: Provide automated migration tools
-5. **Continuous Validation**: Each migration step validated before proceeding
+### 核心原则
+1. **零干扰**：整个迁移过程中现有测试必须继续可用
+2. **增量采用**：逐模块迁移，并设置验证关卡
+3. **向后兼容**：过渡期间同时支持两套系统
+4. **自动化工具**：提供自动化迁移工具
+5. **持续验证**：每一步迁移都要先验证再继续
 
-## Migration Phases
+## 迁移阶段
 
-### Phase 1: Foundation (Weeks 1-2)
-**Goal**: Establish core JUnit5 infrastructure alongside existing system
+### 阶段 1：基础建设（第 1-2 周）
+**目标**：在现有系统旁建立 JUnit5 核心基础设施
 
-#### Tasks
-1. Create JUnit5 annotation framework
-2. Implement `SpringAITestExtension`
-3. Build compatibility bridge for `IntegrationTestUtils`
-4. Create JSON-to-annotation converter
-5. Set up dual-execution test harness
+#### 任务
+1. 创建 JUnit5 注解框架
+2. 实现 `SpringAITestExtension`
+3. 为 `IntegrationTestUtils` 构建兼容桥接层
+4. 创建 JSON 转注解的转换器
+5. 搭建双执行测试装置
 
-#### Deliverables
-- Core annotation library
-- Compatibility layer
-- Migration toolkit
-- Documentation
+#### 交付物
+- 核心注解库
+- 兼容层
+- 迁移工具集
+- 文档
 
-#### Success Criteria
-- New framework compiles and loads
-- Can execute a simple test
-- No impact on existing tests
+#### 成功标准
+- 新框架可编译并加载
+- 能执行一个简单测试
+- 对现有测试无影响
 
-### Phase 2: Pilot Migration (Weeks 3-4)
-**Goal**: Migrate 3 pilot modules to validate approach
+### 阶段 2：试点迁移（第 3-4 周）
+**目标**：迁移 3 个试点模块以验证方案
 
-#### Pilot Modules Selection
-1. **Simple**: `kotlin/kotlin-hello-world` (basic chat)
-2. **Complex**: `agentic-patterns/chain-workflow` (multi-step workflow)
-3. **MCP**: `model-context-protocol/sqlite/simple` (protocol validation)
+#### 试点模块选择
+1. **简单**：`kotlin/kotlin-hello-world`（基础聊天）
+2. **复杂**：`agentic-patterns/chain-workflow`（多步工作流）
+3. **MCP**：`model-context-protocol/sqlite/simple`（协议校验）
 
-#### Migration Steps per Module
+#### 每个模块的迁移步骤
 ```
 1. Run automated converter on ExampleInfo.json
 2. Generate JUnit5 test class with annotations
@@ -77,15 +77,15 @@ This document outlines a comprehensive migration strategy for transitioning the 
 5. Performance benchmarking
 ```
 
-#### Success Criteria
-- All pilot tests pass with JUnit5
-- Validation results match JBang execution
-- Performance within 10% of original
+#### 成功标准
+- 所有试点测试都能用 JUnit5 通过
+- 校验结果与 JBang 执行一致
+- 性能与原始实现相差不超过 10%
 
-### Phase 3: Gradual Rollout (Weeks 5-8)
-**Goal**: Migrate remaining modules in batches
+### 阶段 3：逐步推广（第 5-8 周）
+**目标**：分批迁移剩余模块
 
-#### Batch Strategy
+#### 批次策略
 ```
 Batch 1 (Week 5): Simple examples (8 modules)
 - kotlin/kotlin-hello-world
@@ -120,16 +120,16 @@ Batch 4 (Week 8): Complex examples (3 modules)
 - misc/anthropic-multimodal
 ```
 
-#### Validation Gates
-- Each batch must pass regression tests
-- Performance benchmarks maintained
-- AI validation accuracy verified
-- Cost metrics within budget
+#### 验证关卡
+- 每个批次都必须通过回归测试
+- 保持性能基准
+- 验证 AI 校验准确率
+- 成本指标保持在预算内
 
-### Phase 4: Dual Runtime (Weeks 9-10)
-**Goal**: Run both systems in parallel for validation
+### 阶段 4：双运行时（第 9-10 周）
+**目标**：并行运行两套系统以进行验证
 
-#### Parallel Execution Strategy
+#### 并行执行策略
 ```yaml
 ci-workflow:
   - name: JBang Tests
@@ -140,41 +140,41 @@ ci-workflow:
     run: python3 scripts/compare_test_results.py
 ```
 
-#### Comparison Metrics
-- Test execution time
-- Pass/fail rates
-- AI validation results
-- Resource usage
-- Cost analysis
+#### 对比指标
+- 测试执行耗时
+- 通过/失败率
+- AI 校验结果
+- 资源使用
+- 成本分析
 
-### Phase 5: Cutover (Week 11)
-**Goal**: Switch primary system to JUnit5
+### 阶段 5：切换（第 11 周）
+**目标**：将主系统切换为 JUnit5
 
-#### Cutover Steps
-1. Update CI/CD to use JUnit5 as primary
-2. Move JBang to legacy/backup status
-3. Update documentation
-4. Notify stakeholders
-5. Monitor for issues
+#### 切换步骤
+1. 更新 CI/CD，以 JUnit5 为主
+2. 将 JBang 置为 legacy/备份状态
+3. 更新文档
+4. 通知干系人
+5. 监控问题
 
-#### Rollback Plan
-- Keep JBang system operational for 30 days
-- One-command rollback capability
-- Dual execution on demand
+#### 回滚方案
+- JBang 系统保持可用 30 天
+- 支持一条命令回滚
+- 可按需进行双执行
 
-### Phase 6: Deprecation (Week 12)
-**Goal**: Complete migration and clean up
+### 阶段 6：弃用（第 12 周）
+**目标**：完成迁移并清理
 
-#### Final Steps
-1. Archive JBang scripts
-2. Remove dual-execution code
-3. Optimize JUnit5 implementation
-4. Final documentation update
-5. Post-migration review
+#### 最后步骤
+1. 归档 JBang 脚本
+2. 移除双执行代码
+3. 优化 JUnit5 实现
+4. 最终更新文档
+5. 迁移后复盘
 
-## Migration Tooling
+## 迁移工具
 
-### Automated Converter Tool
+### 自动转换工具
 ```python
 # json_to_junit5_converter.py
 class JsonToJUnit5Converter:
@@ -186,9 +186,9 @@ class JsonToJUnit5Converter:
         # Return Java source code
 ```
 
-### Example Conversion
+### 转换示例
 
-**Input**: ExampleInfo.json
+**输入**：ExampleInfo.json
 ```json
 {
   "timeoutSec": 300,
@@ -202,7 +202,7 @@ class JsonToJUnit5Converter:
 }
 ```
 
-**Output**: Generated JUnit5 Test
+**输出**：生成的 JUnit5 测试
 ```java
 @SpringAIIntegrationTest(timeout = 300, requiredEnv = {"OPENAI_API_KEY"})
 @SuccessPatterns({"BUILD SUCCESS", "Chain completed"})
@@ -217,9 +217,9 @@ public class ChainWorkflowIntegrationTest {
 }
 ```
 
-### Validation Tools
+### 校验工具
 
-#### Regression Test Suite
+#### 回归测试套件
 ```java
 public class MigrationValidationSuite {
     @Test
@@ -232,7 +232,7 @@ public class MigrationValidationSuite {
 }
 ```
 
-#### Performance Benchmark Tool
+#### 性能基准工具
 ```java
 public class PerformanceBenchmark {
     public void benchmark(String module) {
@@ -244,10 +244,10 @@ public class PerformanceBenchmark {
 }
 ```
 
-## Compatibility Bridge
+## 兼容桥接层
 
-### Dual Execution Support
-During migration, both systems can coexist:
+### 双执行支持
+迁移期间，两套系统可以共存：
 
 ```java
 public class DualExecutionRunner {
@@ -261,7 +261,7 @@ public class DualExecutionRunner {
 }
 ```
 
-### Configuration Compatibility
+### 配置兼容
 ```java
 @ExampleInfoCompatible("integration-tests/ExampleInfo.json")
 public class BackwardCompatibleTest {
@@ -269,88 +269,88 @@ public class BackwardCompatibleTest {
 }
 ```
 
-## Risk Mitigation
+## 风险缓解
 
-### Identified Risks and Mitigations
+### 已识别的风险与缓解措施
 
-| Risk | Impact | Likelihood | Mitigation |
+| 风险 | 影响 | 可能性 | 缓解措施 |
 |------|--------|------------|------------|
-| Test failures during migration | High | Medium | Comprehensive validation at each phase |
-| Performance degradation | Medium | Low | Continuous benchmarking |
-| AI validation discrepancies | High | Medium | Side-by-side comparison |
-| Developer resistance | Medium | Low | Clear benefits documentation |
-| CI/CD integration issues | High | Low | Gradual rollout with fallback |
-| Cost increase from dual execution | Low | High | Time-boxed parallel execution |
+| 迁移期间测试失败 | 高 | 中 | 每个阶段进行全面验证 |
+| 性能下降 | 中 | 低 | 持续基准测试 |
+| AI 校验结果存在差异 | 高 | 中 | 并排对比 |
+| 开发者抵触 | 中 | 低 | 清晰说明收益 |
+| CI/CD 集成问题 | 高 | 低 | 逐步推广并提供兜底 |
+| 双执行导致成本增加 | 低 | 高 | 并行执行限定时间 |
 
-### Contingency Plans
+### 应急方案
 
-1. **Rollback Procedure**
+1. **回滚流程**
    ```bash
    ./scripts/rollback_to_jbang.sh
    ```
 
-2. **Hybrid Mode**
-   - Keep critical tests in JBang
-   - New tests in JUnit5
-   - Gradual transition over time
+2. **混合模式**
+   - 关键测试保留在 JBang
+   - 新测试使用 JUnit5
+   - 随时间逐步过渡
 
-3. **Emergency Fixes**
-   - Hotfix procedure for both systems
-   - Dual maintenance during transition
+3. **紧急修复**
+   - 两套系统均有热修复流程
+   - 过渡期间双线维护
 
-## Success Metrics
+## 成功指标
 
-### Technical Metrics
-- **Test Coverage**: Maintain or improve current 24-module coverage
-- **Execution Time**: No more than 10% increase
-- **Pass Rate**: 100% parity with JBang tests
-- **AI Validation Accuracy**: Maintain current accuracy levels
+### 技术指标
+- **测试覆盖**：保持或改善当前 24 个模块的覆盖
+- **执行耗时**：增幅不超过 10%
+- **通过率**：与 JBang 测试 100% 对等
+- **AI 校验准确率**：保持当前准确率水平
 
-### Business Metrics
-- **Developer Productivity**: 30% reduction in test debugging time
-- **CI/CD Time**: 20% reduction in pipeline execution
-- **Maintenance Effort**: 40% reduction in test maintenance
+### 业务指标
+- **开发者生产力**：测试调试时间减少 30%
+- **CI/CD 耗时**：流水线执行时间减少 20%
+- **维护工作**：测试维护工作量减少 40%
 
-### Quality Metrics
-- **False Positives**: Less than 1%
-- **False Negatives**: Zero tolerance
-- **Flaky Tests**: Less than 2%
+### 质量指标
+- **误报**：低于 1%
+- **漏报**：零容忍
+- **不稳定测试**：低于 2%
 
-## Communication Plan
+## 沟通计划
 
-### Stakeholder Updates
-- Weekly progress reports
-- Bi-weekly demos
-- Migration dashboard
+### 干系人更新
+- 每周进展报告
+- 双周演示
+- 迁移看板
 
-### Documentation Updates
-- Migration guide for developers
-- Updated test writing guide
-- Troubleshooting documentation
+### 文档更新
+- 面向开发者的迁移指南
+- 更新后的测试编写指南
+- 故障排查文档
 
-### Training Plan
-- JUnit5 workshops
-- Annotation system training
-- AI validation best practices
+### 培训计划
+- JUnit5 工作坊
+- 注解系统培训
+- AI 校验最佳实践
 
-## Post-Migration Optimization
+## 迁移后优化
 
-### Performance Tuning
-- Parallel test execution
-- Test result caching
-- AI validation batching
+### 性能调优
+- 并行测试执行
+- 测试结果缓存
+- AI 校验批处理
 
-### Enhanced Features
-- Rich HTML reports
-- Test trend analysis
-- Cost optimization dashboard
+### 增强功能
+- 丰富的 HTML 报告
+- 测试趋势分析
+- 成本优化看板
 
-### Continuous Improvement
-- Regular performance reviews
-- Feature request pipeline
-- Community feedback integration
+### 持续改进
+- 定期性能评审
+- 功能需求流程
+- 社区反馈整合
 
-## Timeline Summary
+## 时间表摘要
 
 ```
 Week 1-2:   Foundation Development
@@ -361,64 +361,64 @@ Week 11:    Production Cutover
 Week 12:    Cleanup & Optimization
 ```
 
-## Resource Requirements
+## 资源需求
 
-### Team Allocation
-- 1 Lead Developer (full-time)
-- 2 Developers (50% allocation)
-- 1 QA Engineer (25% allocation)
-- 1 DevOps Engineer (25% allocation)
+### 团队分配
+- 1 名首席开发工程师（全职）
+- 2 名开发工程师（投入 50%）
+- 1 名 QA 工程师（投入 25%）
+- 1 名 DevOps 工程师（投入 25%）
 
-### Infrastructure
-- Temporary dual CI/CD capacity
-- Additional test environments
-- Monitoring and alerting setup
+### 基础设施
+- 临时的双 CI/CD 容量
+- 额外的测试环境
+- 监控与告警配置
 
-### Budget Considerations
-- Development effort: 240 person-hours
-- Infrastructure costs: +20% during transition
-- Training materials and workshops
-- Contingency: 15% of total budget
+### 预算考量
+- 开发工作量：240 人时
+- 基础设施成本：过渡期间增加 20%
+- 培训材料与工作坊
+- 应急储备：总预算的 15%
 
-## Decision Points
+## 决策点
 
-### Go/No-Go Gates
+### Go/No-Go 关卡
 
-1. **After Pilot (Week 4)**
-   - Pilot success criteria met?
-   - Performance acceptable?
-   - Team confidence level?
+1. **试点之后（第 4 周）**
+   - 试点成功标准是否达成？
+   - 性能是否可接受？
+   - 团队信心如何？
 
-2. **After Batch 2 (Week 6)**
-   - Migration velocity on track?
-   - Quality metrics maintained?
-   - Any blockers identified?
+2. **批次 2 之后（第 6 周）**
+   - 迁移进度是否按计划？
+   - 质量指标是否保持？
+   - 是否发现任何阻塞项？
 
-3. **Before Cutover (Week 10)**
-   - All tests migrated successfully?
-   - Parallel validation complete?
-   - Stakeholder approval?
+3. **切换之前（第 10 周）**
+   - 所有测试是否都已成功迁移？
+   - 并行验证是否完成？
+   - 干系人是否批准？
 
-## Long-term Vision
+## 长期愿景
 
-### Year 1 Goals
-- Complete migration to JUnit5
-- Full IDE integration
-- Enhanced reporting
-- Cost optimization
+### 第 1 年目标
+- 完成向 JUnit5 的迁移
+- 完整的 IDE 集成
+- 增强的报告
+- 成本优化
 
-### Year 2 Goals
-- Multi-model AI support
-- Distributed test execution
-- Advanced analytics
-- Self-healing tests
+### 第 2 年目标
+- 多模型 AI 支持
+- 分布式测试执行
+- 高级分析
+- 自愈测试
 
-### Year 3 Goals
-- AI-driven test generation
-- Predictive failure analysis
-- Automated optimization
-- Platform as a Service
+### 第 3 年目标
+- AI 驱动的测试生成
+- 预测性失败分析
+- 自动化优化
+- 平台即服务
 
-## Conclusion
+## 结论
 
-This migration strategy provides a structured, low-risk approach to modernizing the Spring AI Examples integration testing framework. By following this phased approach with clear validation gates and rollback procedures, we can ensure a smooth transition that delivers immediate value while setting the foundation for future enhancements. The investment in migration will pay dividends through improved developer productivity, better test reliability, and enhanced maintainability.
+本迁移策略为 Spring AI Examples 集成测试框架的现代化提供了结构化、低风险的方法。遵循这种带有清晰验证关卡与回滚流程的分阶段方式，我们可以确保平滑过渡：既带来即时价值，又为未来的增强奠定基础。迁移投入将通过提升开发者生产力、改善测试可靠性与可维护性而获得回报。

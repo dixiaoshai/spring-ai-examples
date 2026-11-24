@@ -38,9 +38,9 @@ import org.springframework.stereotype.Service;
 public class PromptProvider {
 
 	/**
-	 * A simple greeting prompt that takes a name parameter.
-	 * @param name The name to greet
-	 * @return A greeting message
+	 * 一个简单的问候提示词，接收 name 参数。
+	 * @param name 要问候的名字
+	 * @return 问候消息
 	 */
 	@McpPrompt(name = "greeting", description = "A simple greeting prompt")
 	public GetPromptResult greetingPrompt(
@@ -54,12 +54,12 @@ public class PromptProvider {
 	}
 
 	/**
-	 * A more complex prompt that generates a personalized message.
-	 * @param exchange The server exchange
-	 * @param name The user's name
-	 * @param age The user's age
-	 * @param interests The user's interests
-	 * @return A personalized message
+	 * 一个更复杂的提示词，用于生成个性化消息。
+	 * @param exchange 服务器交换上下文
+	 * @param name 用户姓名
+	 * @param age 用户年龄
+	 * @param interests 用户的兴趣
+	 * @return 个性化消息
 	 */
 	@McpPrompt(name = "personalized-message",
 			description = "Generates a personalized message based on user information")
@@ -102,9 +102,9 @@ public class PromptProvider {
 	}
 
 	/**
-	 * A prompt that returns a list of messages forming a conversation.
-	 * @param request The prompt request
-	 * @return A list of messages
+	 * 一个返回消息列表以构成对话的提示词。
+	 * @param request 提示词请求
+	 * @return 消息列表
 	 */
 	@McpPrompt(name = "conversation-starter", description = "Provides a conversation starter with the system")
 	public List<PromptMessage> conversationStarter(GetPromptRequest request) {
@@ -123,9 +123,9 @@ public class PromptProvider {
 	}
 
 	/**
-	 * A prompt that accepts arguments as a map.
-	 * @param arguments The arguments map
-	 * @return A prompt result
+	 * 一个以 Map 形式接收参数的提示词。
+	 * @param arguments 参数 Map
+	 * @return 提示词结果
 	 */
 	@McpPrompt(name = "map-arguments", description = "Demonstrates using a map for arguments")
 	public GetPromptResult mapArguments(Map<String, Object> arguments) {
@@ -147,9 +147,9 @@ public class PromptProvider {
 	}
 
 	/**
-	 * A prompt that returns a single PromptMessage.
-	 * @param name The user's name
-	 * @return A single PromptMessage
+	 * 一个返回单个 PromptMessage 的提示词。
+	 * @param name 用户姓名
+	 * @return 单个 PromptMessage
 	 */
 	@McpPrompt(name = "single-message", description = "Demonstrates returning a single PromptMessage")
 	public PromptMessage singleMessagePrompt(
@@ -159,9 +159,9 @@ public class PromptProvider {
 	}
 
 	/**
-	 * A prompt that returns a list of strings.
-	 * @param topic The topic to provide information about
-	 * @return A list of strings with information about the topic
+	 * 一个返回字符串列表的提示词。
+	 * @param topic 需要提供信息的主题
+	 * @return 包含该主题信息的字符串列表
 	 */
 	@McpPrompt(name = "string-list", description = "Demonstrates returning a list of strings")
 	public List<String> stringListPrompt(@McpArg(name = "topic", description = "The topic to provide information about",

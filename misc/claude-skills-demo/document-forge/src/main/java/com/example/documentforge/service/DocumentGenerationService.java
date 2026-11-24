@@ -36,7 +36,7 @@ import com.example.documentforge.model.GenerationResult;
 import com.example.documentforge.model.GenerationResult.GeneratedFile;
 
 /**
- * Service for generating documents using Claude Skills.
+ * 使用 Claude Skills 生成文档的服务。
  */
 @Service
 public class DocumentGenerationService {
@@ -47,7 +47,7 @@ public class DocumentGenerationService {
 	private final AnthropicClient anthropicClient;
 	private final String customSkillId;
 
-	// In-memory storage for generation history (session-based in real app)
+	// 生成历史记录的内存存储（真实应用中应基于会话）
 	private final Map<String, GenerationResult> history = new ConcurrentHashMap<>();
 
 	private final Executor asyncExecutor = Executors.newVirtualThreadPerTaskExecutor();
@@ -61,29 +61,29 @@ public class DocumentGenerationService {
 	}
 
 	/**
-	 * Check if a document type should use async generation by default.
+	 * 检查某文档类型是否默认使用异步生成。
 	 */
 	public boolean shouldUseAsync(DocumentType type) {
 		return type == DocumentType.PPTX;
 	}
 
 	/**
-	 * Generate a document using Claude Skills.
+	 * 使用 Claude Skills 生成文档。
 	 */
 	public GenerationResult generate(GenerationRequest request) {
 		String id = UUID.randomUUID().toString();
 		logger.info("Generating {} document with id: {}", request.documentType(), id);
 
 		try {
-			// Build the prompt with skill-specific instructions
+			// 构建包含 skill 专用指令的提示词
 			String enhancedPrompt = buildEnhancedPrompt(request);
 
-			// Configure options with the appropriate skill(s)
+			// 使用相应的 skill 配置选项
 			AnthropicChatOptions.Builder optionsBuilder = AnthropicChatOptions.builder()
 					.skill(request.documentType().getSkill())
 					.maxTokens(8192);
 
-			// Add custom skill if requested and configured
+			// 如果请求并已配置，则添加自定义 skill
 			if (request.useWatermark() && hasCustomSkill()) {
 				logger.info("Adding custom skill: {}", customSkillId);
 				optionsBuilder.skill(customSkillId);
@@ -93,17 +93,17 @@ public class DocumentGenerationService {
 
 			Prompt prompt = new Prompt(List.of(new UserMessage(enhancedPrompt)), options);
 
-			// Call Claude with Skills
+			// 携带 Skills 调用 Claude
 			ChatResponse response = chatModel.call(prompt);
 
 			String responseText = response.getResult().getOutput().getText();
 			logger.debug("Response text: {}", responseText);
 
-			// Extract file IDs from the response
+			// 从响应中提取文件 ID
 			List<String> fileIds = AnthropicSkillsResponseHelper.extractFileIds(response);
 			logger.info("Extracted {} file(s) from response", fileIds.size());
 
-			// Get file metadata for each file
+			// 获取每个文件的元数据
 			List<GeneratedFile> files = new ArrayList<>();
 			for (String fileId : fileIds) {
 				try {
@@ -121,7 +121,7 @@ public class DocumentGenerationService {
 			GenerationResult result = GenerationResult.success(id, request.documentType(),
 					request.prompt(), responseText, files);
 
-			// Store in history
+			// 存入历史记录
 			history.put(id, result);
 
 			return result;
@@ -136,7 +136,7 @@ public class DocumentGenerationService {
 	}
 
 	/**
-	 * Generate a document using Claude Skills with an attached source file.
+	 * 使用 Claude Skills 并附带源文件生成文档。
 	 */
 	public GenerationResult generateWithFile(GenerationRequest request, MultipartFile sourceFile) {
 		String id = UUID.randomUUID().toString();
@@ -144,15 +144,15 @@ public class DocumentGenerationService {
 				sourceFile.getOriginalFilename());
 
 		try {
-			// Build the prompt with file context
+			// 构建包含文件上下文的提示词
 			String enhancedPrompt = buildEnhancedPromptWithFile(request, sourceFile);
 
-			// Configure options with the appropriate skill(s)
+			// 使用相应的 skill 配置选项
 			AnthropicChatOptions.Builder optionsBuilder = AnthropicChatOptions.builder()
 					.skill(request.documentType().getSkill())
 					.maxTokens(8192);
 
-			// Add custom skill if requested and configured
+			// 如果请求并已配置，则添加自定义 skill
 			if (request.useWatermark() && hasCustomSkill()) {
 				logger.info("Adding custom skill: {}", customSkillId);
 				optionsBuilder.skill(customSkillId);
@@ -160,14 +160,14 @@ public class DocumentGenerationService {
 
 			AnthropicChatOptions options = optionsBuilder.build();
 
-			// Create the message - for text files, include content in prompt
-			// For PDFs, attach as media
+			// 创建消息 - 文本文件将内容包含在提示词中
+			// PDF 则作为媒体附件
 			UserMessage userMessage;
 			String contentType = sourceFile.getContentType();
 			String filename = sourceFile.getOriginalFilename();
 
 			if (isPdfFile(filename, contentType)) {
-				// Attach PDF as media
+				// 将 PDF 作为媒体附件
 				MimeType mimeType = MimeType.valueOf("application/pdf");
 				ByteArrayResource resource = new ByteArrayResource(sourceFile.getBytes());
 				Media media = new Media(mimeType, resource);
@@ -178,23 +178,23 @@ public class DocumentGenerationService {
 				logger.debug("Attached PDF file as media");
 			}
 			else {
-				// For text-based files, include content in the prompt
+				// 对于文本类文件，将内容包含在提示词中
 				userMessage = new UserMessage(enhancedPrompt);
 			}
 
 			Prompt prompt = new Prompt(List.of(userMessage), options);
 
-			// Call Claude with Skills
+			// 携带 Skills 调用 Claude
 			ChatResponse response = chatModel.call(prompt);
 
 			String responseText = response.getResult().getOutput().getText();
 			logger.debug("Response text: {}", responseText);
 
-			// Extract file IDs from the response
+			// 从响应中提取文件 ID
 			List<String> fileIds = AnthropicSkillsResponseHelper.extractFileIds(response);
 			logger.info("Extracted {} file(s) from response", fileIds.size());
 
-			// Get file metadata for each file
+			// 获取每个文件的元数据
 			List<GeneratedFile> files = new ArrayList<>();
 			for (String fileId : fileIds) {
 				try {
@@ -225,17 +225,17 @@ public class DocumentGenerationService {
 	}
 
 	/**
-	 * Start async generation (returns immediately with pending status).
+	 * 启动异步生成（立即返回处于 pending 状态的结果）。
 	 */
 	public GenerationResult generateAsync(GenerationRequest request) {
 		String id = UUID.randomUUID().toString();
 		logger.info("Starting async generation for {} document with id: {}", request.documentType(), id);
 
-		// Create pending result
+		// 创建 pending 状态的结果
 		GenerationResult pendingResult = GenerationResult.pending(id, request.documentType(), request.prompt());
 		history.put(id, pendingResult);
 
-		// Run generation in background
+		// 在后台运行生成
 		CompletableFuture.runAsync(() -> {
 			try {
 				GenerationResult result = doGenerate(id, request, null);
@@ -252,7 +252,7 @@ public class DocumentGenerationService {
 	}
 
 	/**
-	 * Start async generation with file (returns immediately with pending status).
+	 * 启动带文件的异步生成（立即返回处于 pending 状态的结果）。
 	 */
 	public GenerationResult generateWithFileAsync(GenerationRequest request, byte[] fileContent, String fileName,
 			String contentType) {
@@ -260,11 +260,11 @@ public class DocumentGenerationService {
 		logger.info("Starting async generation for {} document with id: {} from file: {}", request.documentType(), id,
 				fileName);
 
-		// Create pending result
+		// 创建 pending 状态的结果
 		GenerationResult pendingResult = GenerationResult.pending(id, request.documentType(), request.prompt());
 		history.put(id, pendingResult);
 
-		// Run generation in background
+		// 在后台运行生成
 		CompletableFuture.runAsync(() -> {
 			try {
 				GenerationResult result = doGenerateWithFile(id, request, fileContent, fileName, contentType);
@@ -281,10 +281,10 @@ public class DocumentGenerationService {
 	}
 
 	/**
-	 * Internal method to perform generation (used by both sync and async).
+	 * 执行生成的内部方法（同步和异步路径共用）。
 	 */
 	private GenerationResult doGenerate(String id, GenerationRequest request, Void unused) {
-		// Delegate to the existing generate logic but with provided ID
+		// 委托给现有的生成逻辑，但使用指定的 ID
 		try {
 			String enhancedPrompt = buildEnhancedPrompt(request);
 
@@ -292,7 +292,7 @@ public class DocumentGenerationService {
 					.skill(request.documentType().getSkill())
 					.maxTokens(8192);
 
-			// Add custom skill if requested and configured
+			// 如果请求并已配置，则添加自定义 skill
 			if (request.useWatermark() && hasCustomSkill()) {
 				logger.info("Adding custom skill (async): {}", customSkillId);
 				optionsBuilder.skill(customSkillId);
@@ -317,7 +317,7 @@ public class DocumentGenerationService {
 	}
 
 	/**
-	 * Internal method to perform generation with file.
+	 * 执行带文件生成的内部方法。
 	 */
 	private GenerationResult doGenerateWithFile(String id, GenerationRequest request, byte[] fileContent,
 			String fileName, String contentType) {
@@ -328,7 +328,7 @@ public class DocumentGenerationService {
 					.skill(request.documentType().getSkill())
 					.maxTokens(8192);
 
-			// Add custom skill if requested and configured
+			// 如果请求并已配置，则添加自定义 skill
 			if (request.useWatermark() && hasCustomSkill()) {
 				logger.info("Adding custom skill (async with file): {}", customSkillId);
 				optionsBuilder.skill(customSkillId);
@@ -364,7 +364,7 @@ public class DocumentGenerationService {
 	}
 
 	/**
-	 * Extract file metadata from file IDs.
+	 * 从文件 ID 中提取文件元数据。
 	 */
 	private List<GeneratedFile> extractFiles(List<String> fileIds, DocumentType documentType) {
 		List<GeneratedFile> files = new ArrayList<>();
@@ -383,7 +383,7 @@ public class DocumentGenerationService {
 	}
 
 	/**
-	 * Build enhanced prompt with file content (for async where we have byte[]).
+	 * 构建包含文件内容的增强提示词（用于已有 byte[] 的异步场景）。
 	 */
 	private String buildEnhancedPromptWithFileContent(GenerationRequest request, byte[] fileContent, String fileName,
 			String contentType) {
@@ -418,7 +418,7 @@ public class DocumentGenerationService {
 	}
 
 	/**
-	 * Download a file by its ID.
+	 * 按 ID 下载文件。
 	 */
 	public byte[] downloadFile(String fileId) {
 		logger.info("Downloading file: {}", fileId);
@@ -431,42 +431,42 @@ public class DocumentGenerationService {
 	}
 
 	/**
-	 * Get file metadata.
+	 * 获取文件元数据。
 	 */
 	public BetaFileMetadata getFileMetadata(String fileId) {
 		return anthropicClient.beta().files().retrieveMetadata(fileId);
 	}
 
 	/**
-	 * Get generation history.
+	 * 获取生成历史记录。
 	 */
 	public List<GenerationResult> getHistory() {
 		return new ArrayList<>(history.values());
 	}
 
 	/**
-	 * Get a specific generation result.
+	 * 获取指定的生成结果。
 	 */
 	public GenerationResult getResult(String id) {
 		return history.get(id);
 	}
 
 	/**
-	 * Clear history.
+	 * 清空历史记录。
 	 */
 	public void clearHistory() {
 		history.clear();
 	}
 
 	/**
-	 * Remove a specific item from history.
+	 * 从历史记录中移除指定项。
 	 */
 	public void removeFromHistory(String id) {
 		history.remove(id);
 	}
 
 	/**
-	 * Build an enhanced prompt with document-type-specific instructions.
+	 * 构建包含文档类型专用指令的增强提示词。
 	 */
 	private String buildEnhancedPrompt(GenerationRequest request) {
 		String typeInstruction = switch (request.documentType()) {
@@ -484,13 +484,13 @@ public class DocumentGenerationService {
 	}
 
 	/**
-	 * Build an enhanced prompt with file content included.
+	 * 构建包含文件内容的增强提示词。
 	 */
 	private String buildEnhancedPromptWithFile(GenerationRequest request, MultipartFile sourceFile)
 			throws IOException {
 		StringBuilder promptBuilder = new StringBuilder();
 
-		// Add document type instruction
+		// 添加文档类型指令
 		String typeInstruction = switch (request.documentType()) {
 			case XLSX -> "Analyze the provided source document and create an Excel spreadsheet (.xlsx file). " +
 					"Extract relevant data and organize it into a well-structured spreadsheet with appropriate " +
@@ -508,7 +508,7 @@ public class DocumentGenerationService {
 		promptBuilder.append(typeInstruction);
 		promptBuilder.append("\n\nUser instructions: ").append(request.prompt());
 
-		// For text-based files, include content in the prompt
+		// 对于文本类文件，将内容包含在提示词中
 		String filename = sourceFile.getOriginalFilename();
 		String contentType = sourceFile.getContentType();
 
@@ -527,7 +527,7 @@ public class DocumentGenerationService {
 	}
 
 	/**
-	 * Check if the file is a PDF based on filename or content type.
+	 * 根据文件名或内容类型判断文件是否为 PDF。
 	 */
 	private boolean isPdfFile(String filename, String contentType) {
 		return "application/pdf".equals(contentType)
@@ -535,7 +535,7 @@ public class DocumentGenerationService {
 	}
 
 	/**
-	 * Check if a custom skill is configured.
+	 * 检查是否已配置自定义 skill。
 	 */
 	public boolean hasCustomSkill() {
 		return customSkillId != null && !customSkillId.isBlank();
